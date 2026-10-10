@@ -232,6 +232,26 @@ section.view{padding-top:18px}
 .tree summary.leaf::before{content:"·"}
 .tree .who{color:var(--fg-dim);font-size:12px}
 .tree .num{font-family:var(--f-mono);font-size:11.5px;color:var(--fg-mute)}
+.tree .loc{font-size:11.5px;color:var(--fg-mute)}
+.tree .hd{font-size:12px;color:var(--fg-dim)}
+.tree .hd b{font-weight:500;color:var(--amber);font-family:var(--f-mono);font-size:11.5px;margin-right:4px}
+.tree .only{font-family:var(--f-mono);font-size:10.5px;color:var(--warn);border:1px solid var(--warn);padding:0 4px;border-radius:2px}
+.tree .note{font-size:12px;color:var(--fg-mute);margin:0 0 6px 16px;max-width:70ch}
+.tree mark{background:var(--amber-dim);color:var(--fg);padding:0 1px}
+.tree .chip{padding:1px 7px;font-size:11.5px}
+.orgbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.orgbar input{flex:1 1 200px;min-width:0}
+.orgbar .cnt{font-family:var(--f-mono);font-size:11px;color:var(--fg-mute)}
+.banner{margin:12px 14px 0;padding:8px 10px;border:1px dashed var(--warn);color:var(--warn);font-size:12.5px;border-radius:2px}
+.rsys{display:flex;gap:6px;padding:10px 14px 0}
+.rsys button[aria-pressed="true"]{background:var(--amber);color:#1B1305;border-color:var(--amber)}
+.eqv{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.eqv td{padding:3px 6px;border-bottom:1px solid var(--line)}
+.eqv td:last-child{color:var(--fg-dim);font-family:var(--f-mono);font-size:11.5px}
+.eqv tr.cur td{color:var(--amber)}
+.holders{display:grid;gap:4px;margin-top:6px}
+.holders .h{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.holders .h small{color:var(--fg-mute);font-size:11.5px}
 .stack{padding:14px}
 .stackbar{display:flex;gap:2px;height:30px}
 .stackbar button{border:0;border-radius:0;padding:0;cursor:pointer;min-width:0;position:relative}
@@ -286,11 +306,36 @@ select.inp,input.inp{background:var(--panel-2);border:1px solid var(--line-2);bo
 .tags{display:flex;flex-wrap:wrap;gap:5px}
 .tags span{font-size:11.5px;padding:1px 6px;border-radius:2px;border:1px solid var(--ok);color:var(--ok)}
 .tags span.de{border-color:var(--red);color:var(--red)}
-.roller{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:start}
+.roller{display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;align-items:center}
 @media (max-width:520px){.roller{grid-template-columns:minmax(0,1fr)}}
-.roller .form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.roller .form label{display:grid;gap:3px;font-size:11.5px;color:var(--fg-mute)}
-.roller .form .full{grid-column:1/-1}
+.feed{display:grid;gap:12px;padding:14px;max-height:620px;overflow-y:auto;scroll-behavior:smooth}
+.entry{min-width:0}
+.entry.gm{white-space:pre-wrap;font-size:13.5px;line-height:1.75;color:var(--fg)}
+.entry.gm.stream::after{content:"▍";color:var(--amber);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.entry.pc{border-left:3px solid var(--amber);background:var(--panel-2);padding:8px 12px;font-size:13.5px}
+.entry.pc .label{display:block;margin-bottom:2px;color:var(--amber)}
+.entry.roll{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:#070B0D;padding:8px 10px;color:var(--fg-dim)}
+.entry.roll .ok{color:var(--ok)} .entry.roll .no{color:var(--red)} .entry.roll .crit{color:var(--amber)}
+.entry.sys{font-size:12px;color:var(--fg-mute);font-family:var(--f-mono)}
+.turnsep{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;color:var(--fg-mute)}
+.turnsep::before,.turnsep::after{content:"";flex:1;border-top:1px solid var(--line)}
+.opts{display:grid;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.opt{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:10px 12px;cursor:pointer;font-size:13.5px}
+.opt:hover{border-color:var(--line-2)}
+.opt[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.opt b{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1;color:var(--amber)}
+.opt.free{cursor:text}
+.opt.free textarea{width:100%;min-height:58px;resize:vertical;background:transparent;border:0;color:var(--fg);font:inherit;padding:0}
+.opt.free textarea:focus{outline:none}
+.actbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 14px 14px}
+.actbar .st{font-size:12px;color:var(--fg-mute);flex:1 1 200px}
+.gmmode{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;padding:2px 6px;border-radius:2px;border:1px solid currentColor}
+.ruling{display:grid;gap:4px;font-size:12.5px}
+.ruling .row{display:grid;grid-template-columns:62px minmax(0,1fr) 40px;gap:8px;align-items:baseline;border-bottom:1px dashed var(--line);padding:3px 0}
+.ruling .row span:first-child{font-family:var(--f-mono);font-size:11px;color:var(--fg-mute)}
+.ruling .row span:last-child{font-family:var(--f-mono);text-align:right}
+.ruling .row.tot{border-bottom:0;font-weight:600}
 .die{display:grid;place-items:center;gap:6px}
 #d20{width:130px;height:130px;max-width:100%}
 #d20 .face{fill:var(--panel-2);stroke:var(--amber);stroke-width:2}
@@ -441,25 +486,29 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
   <section class="view" id="v-org" hidden>
     <div class="view-head">
       <h2>조직 편제</h2>
-      <p>계급은 대한민국 국군 편제와 동일합니다. 계급을 누르면 통상 연령·복무연수를, 병력 막대를 누르면 해당 전구를 지도에서 엽니다.</p>
+      <p>군 계급과 공무원 계급은 대한민국 편제와 동일합니다. 계급을 누르면 그 시점의 현역 해당자가 나오고, 조직도는 검색·펼치기와 인물·지도 연결을 지원합니다.</p>
     </div>
     <div class="grid-2">
-      <div style="display:grid;gap:16px;min-width:0">
+      <div style="display:grid;gap:16px;min-width:0;align-content:start">
         <div class="panel">
           <div class="panel-h"><span>연방군 병력 배분 · 140만</span><span class="mono">2020 재편</span></div>
           <div class="stack"><div class="stackbar" id="stackbar"></div><div class="stack-legend" id="stackLegend"></div></div>
         </div>
         <div class="panel">
-          <div class="orgtabs" id="orgTabs">
-            <button class="btn" type="button" data-o="mil" aria-pressed="true">연방군</button>
-            <button class="btn" type="button" data-o="kgb" aria-pressed="false">연방보안유지국</button>
-            <button class="btn" type="button" data-o="pra" aria-pressed="false">친위군 · 비상동원위</button>
+          <div class="orgtabs" id="orgTabs"></div>
+          <div class="orgbar">
+            <input class="inp" id="orgQ" type="search" placeholder="조직·인물·지역 검색 (예: 디트로이트, 방첩, 중장)" aria-label="조직도 검색">
+            <button class="btn" type="button" id="orgOpen">전체 펼치기</button>
+            <button class="btn" type="button" id="orgClose">접기</button>
+            <span class="cnt" id="orgCnt"></span>
           </div>
+          <div id="orgBanner"></div>
           <div class="tree" id="orgTree"></div>
         </div>
       </div>
       <aside class="panel">
         <div class="panel-h"><span>계급 체계</span><span class="mono">ROK-SYNC</span></div>
+        <div class="rsys" id="rsys"><button class="btn" type="button" data-rs="mil" aria-pressed="true">군 계급</button><button class="btn" type="button" data-rs="civ" aria-pressed="false">공무원 계급</button></div>
         <div class="pyr" id="pyr"></div>
         <div class="panel-b" id="rankInfo" style="border-top:1px solid var(--line)"></div>
       </aside>
@@ -506,46 +555,42 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
   <!-- 06 SESSION -->
   <section class="view" id="v-session" hidden>
     <div class="view-head">
-      <h2>세션 개시 · 판정 · 상태창</h2>
-      <p>분기점을 고르면 상태창 프리셋이 로드되고 콘솔 전체가 그 시점으로 맞춰집니다. d20 판정은 마스터 규칙의 공개 공식 그대로 계산합니다.</p>
+      <h2>작전 콘솔 · 판정 · 상태창</h2>
+      <p>당신은 주인공으로서 선택지 A·B·C 중 하나를 고르거나 직접 행동·대사를 입력하기만 하면 됩니다. 판정 여부, 스탯, 특성·상황 보정, 난이도는 GM이 상황에 따라 정하고 결과와 다음 선택지를 이 콘솔에 서술합니다.</p>
     </div>
     <div class="bp-cards" id="bpCards"></div>
     <div class="sess">
       <div style="display:grid;gap:16px;min-width:0;align-content:start">
         <div class="panel">
-          <div class="panel-h"><span>📊 현재 상태창</span><span class="mono" id="turnNo">TURN 0</span></div>
-          <div class="panel-b statebox" id="statebox"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-h"><span>GM 응답 포맷 템플릿</span><button class="btn" type="button" id="copyTmpl">복사</button></div>
-          <div class="panel-b"><textarea class="tmpl" id="tmpl" readonly aria-label="GM 응답 포맷 템플릿"></textarea></div>
+          <div class="panel-h"><span>📜 작전 콘솔</span><span><span class="gmmode s3" id="gmMode">GM 연결 확인 중</span> <span class="mono" id="turnNo">TURN 0</span></span></div>
+          <div class="feed" id="feed" aria-live="polite"></div>
+          <div class="opts" id="opts" role="group" aria-label="행동 선택지"></div>
+          <div class="actbar">
+            <button class="btn primary" type="button" id="actGo">행동 실행</button>
+            <button class="btn" type="button" id="actStop" hidden>중지</button>
+            <span class="st" id="actSt">선택지를 고르거나 D칸에 직접 입력하세요.</span>
+          </div>
         </div>
       </div>
       <div style="display:grid;gap:16px;min-width:0;align-content:start">
         <div class="panel">
-          <div class="panel-h"><span>🎲 d20 판정기</span><span class="mono">d20 + 스탯 + 특성 + 상황 ≥ DC</span></div>
+          <div class="panel-h"><span>📊 현재 상태창</span><button class="btn" type="button" id="sessReset">이 분기 처음부터</button></div>
+          <div class="panel-b statebox" id="statebox"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span>🎲 GM 판정</span><span class="mono">d20 + 스탯 + 특성 + 상황 ≥ DC</span></div>
           <div class="panel-b">
             <div class="roller">
-              <div class="form">
-                <label class="full">판정 행동<input class="inp" id="rAct" value="에단 케인에게 친위군 케르베로스 라인 해체를 통보"></label>
-                <label>스탯<select class="inp" id="rStat"></select></label>
-                <label>DC<select class="inp" id="rDC">
-                  <option value="10">10 · 일상</option><option value="15">15 · 도전</option>
-                  <option value="20" selected>20 · 고난도</option><option value="25">25 · 극한</option><option value="30">30 · 전설</option>
-                </select></label>
-                <label>특성 보정<input class="inp mono" id="rTrait" type="number" value="0" min="-10" max="10"></label>
-                <label>상황 보정<input class="inp mono" id="rSit" type="number" value="-2" min="-10" max="10"></label>
-              </div>
               <div class="die">
                 <svg id="d20" viewBox="0 0 120 120" aria-hidden="true">
                   <polygon class="face" points="60,6 107,33 107,87 60,114 13,87 13,33"/>
                   <polyline class="facet" points="60,6 30,72 90,72 60,6"/>
                   <path class="facet" d="M13,33 L30,72 L13,87 M107,33 L90,72 L107,87"/>
                   <line class="facet" x1="30" y1="72" x2="60" y2="114"/><line class="facet" x1="90" y1="72" x2="60" y2="114"/>
-                  <text x="60" y="56" id="dieNum">20</text>
+                  <text x="60" y="56" id="dieNum">–</text>
                 </svg>
-                <button class="btn primary" type="button" id="rollBtn">굴리기</button>
               </div>
+              <div class="ruling" id="ruling"><span class="empty">행동을 실행하면 GM이 정한 판정 내역이 여기에 표시됩니다.</span></div>
             </div>
             <div class="formula" id="formula">판정 대기.</div>
           </div>
@@ -639,7 +684,7 @@ const PEOPLE = {
     career:[["1968","OCS 임관 (베트남)"],["1990","육군 감찰감실"],["1998","최고감찰원 창설"],["2005","최고감찰원장, 소장"],["2022","퇴임"]],
     regions:["washington"], note:"1998년 이후 모든 숙청의 사본을 쥔 노인. 그 서류철이 그의 생명보험이다." },
   dunbar:{ name:"제임스 던바", en:"JAMES DUNBAR", ini:"J", fac:"kgb", x:620, y:460,
-    rank:{A:"육군 대위", B:"육군 대령 (파견)", C:"준장 상당"},
+    rank:{A:"육군 대위", B:"육군 대령 (KGB 파견)", C:"육군 준장 (KGB 파견)"},
     post:{A:"육군 방첩대 분석관", B:"중앙방첩본부 부본부장", C:"연방보안유지국 제1차장 겸 중앙방첩본부장"},
     loyal:61, risk:72,
     traits:["현역 15% 실무 총책","에단 감시 파일","무소속 실용주의"],
@@ -737,6 +782,38 @@ const ECAT = { person:["인물","var(--c-stars)"], politics:["정치","var(--c-k
 const STATS = [["지능(연산)",10],["정치(권모)",6],["카리스마",4],["통솔(군 장악)",5],["체력",null],["공감(신뢰)",-1]];
 const HP_MOD = {A:2,B:-1,C:-3};
 
+/* 분기별 계급 원장 — st(예비역·예편)가 있으면 군 현역에서 제외 */
+const GRADE = {
+  drac:{A:{mil:"준장",svc:"해군",st:"예비역"},B:{civ:"국가원수"},C:{civ:"국가원수"}},
+  ethan:{A:{mil:"중령",svc:"해군"},B:{mil:"대장",svc:"친위군"},C:{civ:"부총리급",st:"예편"}},
+  arthur:{A:{mil:"소장",svc:"해군"},B:{mil:"원수",svc:"해군"},C:{mil:"원수",svc:"해군"}},
+  weiss:{A:{mil:"중위",svc:"육군"},B:{mil:"준장",svc:"육군"},C:{mil:"소장",svc:"육군"}},
+  hoji:{A:{mil:"소령",svc:"육군"},B:{mil:"중장",svc:"친위군"},C:{mil:"대장",svc:"친위군"}},
+  crevat:{A:{mil:"대령",svc:"육군"},B:{mil:"소장",svc:"육군",civ:"장관급"},C:{mil:"소장",svc:"육군",st:"예비역"}},
+  dunbar:{A:{mil:"대위",svc:"육군"},B:{mil:"대령",svc:"육군"},C:{mil:"준장",svc:"육군",civ:"차관급"}}
+};
+const CIV_RANKS = [
+  ["정무직",[["국가원수","총통"],["총리급",""],["부총리급",""],["장관급",""],["차관급",""]]],
+  ["고위공무원단",[["고위공무원 가급","구 1급"],["고위공무원 나급","구 2급"]]],
+  ["일반직 I",[["3급","부이사관"],["4급","서기관"],["5급","사무관"]]],
+  ["일반직 II",[["6급","주사"],["7급","주사보"],["8급","서기"],["9급","서기보"]]]
+];
+const CIV_INFO = {
+  "국가원수":["—","종신 총통 1인. 연방군 통수권·사면권·다모클레스 승인권."],
+  "총리급":["원수","연방국무총리. 최고평의회 제2부의장 겸임."],
+  "부총리급":["원수","최고평의회 제1부의장. 의전 서열 2위, 총통 유고 시 권한대행."],
+  "장관급":["대장","부·처 장관, 연방보안유지국 국장, 총통비서실장, 최고감찰원장, 보호령 총독."],
+  "차관급":["중장","차관, 정보기관 차장, 청장, 국가최고비서관, NSC 사무처장."],
+  "고위공무원 가급":["소장","실장·감찰국장·대표부 대사급. 통상 52–58세."],
+  "고위공무원 나급":["준장","국장급·지국장. 통상 48–55세."],
+  "3급":["대령","부이사관. 부국장·과장 상위. 44–52세."],
+  "4급":["중령","서기관. 과장. 38–48세."],
+  "5급":["소령","사무관. 실무 책임자, 행정고시 임용. 28–40세."],
+  "6급":["대위","주사. 실무 팀장급."],
+  "7급":["중위·소위","주사보. 7급 공채 임용."],
+  "8급":["준위·상사","서기."],
+  "9급":["중사·하사","서기보. 9급 공채 임용."]
+};
 const THEATER_FORCE = [["atl","대서양",38,"var(--c-mil)"],["pac","태평양",38,"var(--c-navy)"],["gulf","남부·멕시코만",33,"var(--c-stars)"],["glk","오대호·중부",31,"var(--c-kgb)"]];
 
 const RANKS = [
@@ -766,39 +843,8 @@ const RANK_INFO = {
   "병장":["21–23세","의무복무 말기."],"상병":["20–22세","—"],"일병":["20–21세","—"],"이병":["19–21세","신병. 드라크마는 18개월 징병제."]
 };
 
-const ORG = {
-  mil:{t:"드라크마 연방군 — 140만",c:[
-    {t:"총통 겸 최고평의회 의장",w:"드락 V. 에버하트",c:[
-      {t:"합동참모본부",w:"의장: 육군 대장 G. 랜싱",c:[
-        {t:"대서양 전구사령부 (노퍽)",n:"38만",map:"atl",c:[{t:"제2함대 (대서양)"},{t:"제1군단 — 포트 브래그"},{t:"제18공수사단"}]},
-        {t:"오대호·중부 전구사령부 (그레이트레이크스)",n:"31만",map:"glk",c:[{t:"제5군단"},{t:"제18보병연대 — 디트로이트",w:"B: 반란 징후"},{t:"오대호 경비전대"}]},
-        {t:"남부·멕시코만 전구사령부 (포트 후드)",n:"33만",map:"gulf",c:[{t:"제3군단"},{t:"제4함대 (멕시코만)"},{t:"국경경비여단"}]},
-        {t:"태평양 전구사령부 (샌디에이고)",n:"38만",map:"pac",c:[{t:"제3·7함대"},{t:"제1해병원정군"},{t:"알래스카 사령부"}]}
-      ]},
-      {t:"잠수함전력사령부",w:"아서 맥도널드 원수",c:[{t:"오하이오급 SSBN 14척",w:"킹스베이 / 뱅고어"},{t:"버지니아급 SSN 22척",w:"예: 제3대양함대 제11잠수전대 SSN-774 타이탄호"}]},
-      {t:"우주전략사령부 (슈리버)",w:"공군 대장 R. 오쿠보",c:[{t:"다모클레스 위성망"},{t:"반덴버그 발사단"}]}
-    ]}
-  ]},
-  kgb:{t:"연방보안유지국 — 약 35,000",c:[
-    {t:"국장 (장관급)",w:"레너드 P. 스톤 · 62세 · 민간",c:[
-      {t:"제1차장 (차관급) 겸 중앙방첩본부장",w:"제임스 던바 · 준장 상당",c:[{t:"중앙방첩본부",n:"9,800"},{t:"특무타격단",n:"4,300",w:"현역 군인 15% 영구 배속"}]},
-      {t:"제2차장 (해외공작)",w:"미리엄 하틀리 · 55세",c:[{t:"해외공작본부",n:"6,200",w:"소코부 · 유럽 망명정부"}]},
-      {t:"제3차장 (신호·과학기술)",w:"오언 리 · 49세",c:[{t:"신호정보본부",n:"14,500",w:"구 NSA 포트미드 흡수"}]}
-    ]}
-  ]},
-  pra:{t:"흑수리 친위군 — 약 85,000 · 총통 직속",c:[
-    {t:"흑수리 친위군 총사령관",w:"초대 에단 R. 케인 → 마커스 호우지 대장 (2022-11~)",c:[
-      {t:"제1친위기갑사단 '아이언 이글'",w:"포트 미드 · 수도권 방위"},
-      {t:"제2친위공수사단",w:"포트 캠벨 · 신속 진압"},
-      {t:"총통경호여단",w:"워싱턴 / 레이븐록"},
-      {t:"케르베로스 특수임무단",w:"비공개 · 에단 라인 잔존"}
-    ]},
-    {t:"국가비상동원위원회 (마운트 웨더)",w:"위원장 에단 R. 케인 (2022-11~)",c:[
-      {t:"계엄 시 연방 행정·물자·예비군 동원 총괄"},
-      {t:"친위군 작전통제권 일부 차용 가능",w:"구조적 허점"}
-    ]}
-  ]}
-};
+const ORG = {"state": {"t": "국가 최고기구", "sub": "총통 직할 · 헌정 위 기구", "c": [{"t": "총통 겸 최고평의회 의장", "h": {"nm": "드락 V. 에버하트", "b": 1951, "civ": "국가원수", "pid": "drac"}, "loc": "워싱턴 D.C. 총통부", "map": "washington", "note": "연방군 통수권·다모클레스 발사 승인권·사면권 보유. 임기 종신.", "c": [{"t": "총통부 (구 백악관)", "loc": "워싱턴 D.C.", "map": "washington", "c": [{"t": "총통비서실장", "h": {"nm": "에블린 마시", "b": 1964, "civ": "장관급"}}, {"t": "국가최고비서관", "h": {"nm": "토머스 렌", "b": 1978, "civ": "차관급"}, "note": "총통 일정·문서·접견 통제. 사실상의 '문지기'."}, {"t": "총통 군사보좌관실", "h": {"B": {"nm": "빅토리아 바이스", "b": 1973, "svc": "육군", "mil": "준장", "pid": "weiss"}, "C": {"nm": "빅토리아 바이스", "b": 1973, "svc": "육군", "mil": "소장", "pid": "weiss"}}}, {"t": "총통 의무실", "h": {"nm": "새뮤얼 크로프트", "b": 1958, "civ": "고위공무원 가급"}, "note": "C: 총통 심부전 진단 기록 1급 기밀 지정."}, {"t": "총통경호처", "note": "집행은 흑수리 친위군 총통경호여단 → 친위군 탭"}]}, {"t": "최고평의회 (15석)", "note": "입법·후계 승인 기구. 의석: 스타즈 원로 4 · 군 5 · 정보·치안 3 · 행정 3", "c": [{"t": "제1부의장", "h": {"B": {"nm": "공석 (국무총리 대행)", "b": 0}, "C": {"nm": "에단 R. 케인", "b": 1960, "civ": "부총리급", "pid": "ethan", "st": "예편"}}, "note": "의전 서열 2위. 총통 유고 시 권한대행 1순위."}, {"t": "제2부의장", "h": {"nm": "헨리 A. 볼트", "b": 1956, "civ": "총리급"}, "note": "연방국무총리 겸임"}, {"t": "스타즈 원로석 (4)", "note": "크레바트(C: 원로석 유지) 외 창립 멤버 3인. 평균 연령 74세."}, {"t": "군·정보 당연직", "note": "합참의장, 해군참모총장, 친위군 총사령관, 연방보안유지국 국장, 최고감찰원장"}]}, {"t": "국가안전보장회의 (NSC)", "loc": "총통부 지하 국가상황실", "c": [{"t": "NSC 사무처장", "h": {"nm": "대니얼 쇼", "b": 1969, "civ": "차관급"}}, {"t": "국가위기관리센터", "n": "240명", "note": "24시간 상황 감시. 다모클레스·핵 경보 1차 수신."}]}, {"t": "국가비상동원위원회", "h": {"B": {"nm": "헨리 A. 볼트 (총리 겸임)", "b": 1956, "civ": "총리급"}, "C": {"nm": "에단 R. 케인", "b": 1960, "civ": "부총리급", "pid": "ethan", "st": "예편"}}, "loc": "버지니아 마운트 웨더", "map": "mtweather", "note": "계엄 시 행정·물자·예비군 동원 총괄. 친위군 작전통제권 일부 차용 가능 — 구조적 허점.", "c": [{"t": "동원기획국"}, {"t": "전략물자통제국"}, {"t": "예비군동원국", "n": "예비군 210만 관리"}, {"t": "민방위본부"}]}, {"t": "최고감찰원", "h": {"B": {"nm": "찰스 E. 크레바트", "b": 1946, "svc": "육군", "mil": "소장", "civ": "장관급", "pid": "crevat"}, "C": {"nm": "레이먼드 쿨", "b": 1965, "svc": "육군", "mil": "소장", "civ": "장관급"}}, "loc": "워싱턴 D.C.", "note": "군·관료 감찰 및 숙청 심사. C: 크레바트 퇴임 후 쿨 소장 승계.", "c": [{"t": "군감찰국", "h": {"nm": "엘리 바너드", "b": 1970, "svc": "육군", "mil": "준장"}}, {"t": "행정감찰국", "h": {"nm": "수전 오크스", "b": 1968, "civ": "고위공무원 가급"}}, {"t": "숙청기록보존소", "note": "1998년 이후 숙청 기록 원본. 크레바트 사본 유출 의혹."}]}]}]}, "gov": {"t": "연방 행정부", "sub": "연방국무원 · 13개 부·청", "c": [{"t": "연방국무원", "h": {"nm": "헨리 A. 볼트", "b": 1956, "civ": "총리급"}, "loc": "워싱턴 D.C.", "note": "국무총리. 전 버지니아 주지사, 1998년 쿠데타 지지 선언으로 발탁.", "c": [{"t": "국무조정실", "h": {"nm": "로라 펜윅", "b": 1971, "civ": "차관급"}}, {"t": "국방부", "h": {"nm": "마틴 그리어", "b": 1959, "civ": "장관급", "st": "예비역 육군 대장"}, "loc": "펜타곤", "map": "pentagon", "note": "군정권(인사·예산). 군령권은 합참 → 연방군 탭"}, {"t": "내무부", "h": {"nm": "오스카 델라니", "b": 1962, "civ": "장관급"}, "c": [{"t": "연방경찰청", "h": {"nm": "마거릿 휴즈", "b": 1967, "civ": "차관급"}, "n": "11만", "note": "구 FBI·주 경찰 통합"}, {"t": "국경경비청", "h": {"nm": "라파엘 오르테가", "b": 1966, "civ": "차관급"}, "n": "4.2만", "map": "gulf"}, {"t": "주정부통제국", "note": "50개 주 → 12개 행정구. 행정구별 군정관 파견."}]}, {"t": "외무부", "h": {"nm": "줄리언 프렌티스", "b": 1961, "civ": "장관급"}, "c": [{"t": "캐나다 보호령 총독부", "h": {"nm": "월터 그랜트", "b": 1958, "civ": "장관급"}, "loc": "오타와", "map": "canada"}, {"t": "레이캬비크 휴전감시대표부", "h": {"nm": "아이린 쿡", "b": 1970, "civ": "고위공무원 가급"}, "map": "reykjavik", "only": ["C"]}, {"t": "대유럽 비공식 협상단", "note": "스위스 경유 채널. 망명정부 승인 저지가 목표."}]}, {"t": "재무부", "h": {"nm": "찰스 웹", "b": 1960, "civ": "장관급"}, "c": [{"t": "연방준비국"}, {"t": "전시채권국", "only": ["C"]}, {"t": "관세·제재대응국"}]}, {"t": "에너지부", "h": {"nm": "앤드루 킴볼", "b": 1963, "civ": "장관급"}, "c": [{"t": "국가핵안보청", "h": {"nm": "패트리샤 레인", "b": 1965, "civ": "차관급"}, "note": "핵탄두 3,700발 관리 · 로스앨러모스·오크리지·팬텍스"}]}, {"t": "법무부", "h": {"nm": "에드워드 스펜스", "b": 1957, "civ": "장관급"}, "c": [{"t": "연방검찰청", "h": {"nm": "니나 로스", "b": 1969, "civ": "차관급"}}, {"t": "국가반역특별재판소", "note": "단심제. 사형 선고율 61%."}, {"t": "교정청", "note": "재교육수용소 9곳 관리"}]}, {"t": "국민계도부", "h": {"nm": "빅터 헤일리", "b": 1968, "civ": "장관급"}, "c": [{"t": "연방방송공사"}, {"t": "출판·인터넷 검열국"}, {"t": "청년충성단 본부"}]}, {"t": "산업동원부", "h": {"nm": "그레고리 해먼드", "b": 1961, "civ": "장관급"}, "note": "방산·철강·반도체 국유화 관리"}, {"t": "교통부", "h": {"nm": "린다 차오", "b": 1966, "civ": "장관급"}}, {"t": "보건부", "h": {"nm": "마이클 도노번", "b": 1964, "civ": "장관급"}}, {"t": "우주항공청 (구 NASA)", "h": {"nm": "이선 파크", "b": 1972, "civ": "차관급"}, "note": "다모클레스 발사체 공급 · 우주전략사령부 지원"}]}]}, "mil": {"t": "드라크마 연방군 — 140만", "sub": "군정(국방부) · 군령(합참) 이원 체계", "c": [{"t": "연방군 통수권자 — 총통", "h": {"nm": "드락 V. 에버하트", "b": 1951, "civ": "국가원수", "pid": "drac"}, "c": [{"t": "국방부 (군정)", "h": {"nm": "마틴 그리어", "b": 1959, "civ": "장관급", "st": "예비역 육군 대장"}, "loc": "펜타곤", "map": "pentagon", "c": [{"t": "국방부 직할", "c": [{"t": "사이버작전사령부", "h": {"nm": "나탈리 브룩스", "b": 1971, "svc": "공군", "mil": "소장"}, "loc": "포트 미드"}, {"t": "국군의무사령부", "h": {"nm": "조너선 헤이스", "b": 1967, "svc": "육군", "mil": "소장"}}, {"t": "국군수송사령부", "h": {"nm": "케빈 앤더스", "b": 1968, "svc": "공군", "mil": "소장"}, "loc": "스콧 기지"}, {"t": "국방정보본부 · 국군방첩사령부 · 국방부 조사본부", "note": "→ 군 정보·방첩 탭"}]}]}, {"t": "합동참모본부 (군령)", "h": {"nm": "조지 랜싱", "b": 1960, "svc": "육군", "mil": "대장"}, "loc": "펜타곤", "map": "pentagon", "c": [{"t": "합참 차장", "h": {"nm": "헬렌 보스", "b": 1963, "svc": "해군", "mil": "중장"}}, {"t": "작전본부 (J-3)", "h": {"nm": "마크 토레스", "b": 1965, "svc": "육군", "mil": "중장"}}, {"t": "전략기획본부 (J-5)", "h": {"nm": "데이비드 린", "b": 1967, "svc": "공군", "mil": "중장"}}, {"t": "대서양 전구사령부", "h": {"nm": "엘런 프로스트", "b": 1962, "svc": "해군", "mil": "대장"}, "n": "38만", "loc": "버지니아 노퍽", "map": "atl", "c": [{"t": "지상구성군 · 제18공수군단", "h": {"nm": "데릭 샤프", "b": 1966, "svc": "육군", "mil": "중장"}, "loc": "포트 브래그", "c": [{"t": "제82공수사단", "h": {"nm": "앤서니 그레이", "b": 1971, "svc": "육군", "mil": "소장"}, "n": "1.8만", "loc": "포트 브래그"}, {"t": "제10산악사단", "h": {"nm": "스콧 벨", "b": 1970, "svc": "육군", "mil": "소장"}, "n": "1.6만", "loc": "포트 드럼"}, {"t": "제29보병사단", "h": {"nm": "로이 패터슨", "b": 1969, "svc": "육군", "mil": "소장"}, "n": "1.5만", "loc": "포트 벨부아"}]}, {"t": "해군구성군 · 제2함대", "h": {"nm": "로런스 웨이드", "b": 1965, "svc": "해군", "mil": "중장"}, "loc": "노퍽", "map": "norfolk", "c": [{"t": "제2항모타격단", "note": "CVN-75 해리 S. 트루먼"}, {"t": "제8항모타격단", "note": "CVN-77 조지 H. W. 부시"}, {"t": "제22구축전대 · 대서양 기뢰전단"}]}, {"t": "공군구성군 · 제1전술공군", "h": {"nm": "브라이언 콜", "b": 1967, "svc": "공군", "mil": "중장"}, "loc": "랭글리 기지", "c": [{"t": "제1전투비행단 (F-22)"}, {"t": "제4전투비행단 (F-15E)"}]}, {"t": "해병구성군 · 제2해병원정군", "h": {"nm": "케이시 브래넌", "b": 1966, "svc": "해병대", "mil": "중장"}, "loc": "캠프 르준", "c": [{"t": "제2해병사단"}]}]}, {"t": "오대호·중부 전구사령부", "h": {"B": {"nm": "토머스 헤일", "b": 1959, "svc": "육군", "mil": "대장"}, "C": {"nm": "로버트 칼라일", "b": 1961, "svc": "육군", "mil": "대장"}}, "n": "31만", "loc": "일리노이 그레이트레이크스", "map": "glk", "note": "B: 헤일 대장 — 디트로이트 반란 책임으로 2020-11 경질.", "c": [{"t": "제5군단", "h": {"nm": "짐 프랫", "b": 1966, "svc": "육군", "mil": "중장"}, "loc": "포트 녹스", "c": [{"t": "제1보병사단", "h": {"nm": "앨런 리브스", "b": 1970, "svc": "육군", "mil": "소장"}, "loc": "포트 라일리"}, {"t": "제38보병사단", "h": {"nm": "칼 위버", "b": 1969, "svc": "육군", "mil": "소장"}, "loc": "인디애나폴리스", "c": [{"t": "제18보병연대", "h": {"B": {"nm": "조엘 하퍼", "b": 1975, "svc": "육군", "mil": "대령"}, "C": {"nm": "마커스 레인", "b": 1979, "svc": "육군", "mil": "대령"}}, "n": "3,100", "loc": "디트로이트", "map": "detroit", "note": "B: 탄약 출납 공백 · 반란 징후. C: 재편성, 장교 전원 교체."}]}, {"t": "제34보병사단", "h": {"nm": "에릭 손더스", "b": 1971, "svc": "육군", "mil": "소장"}, "loc": "미네소타"}]}, {"t": "TF-디트로이트 군정사령부", "h": {"nm": "케네스 오두", "b": 1972, "svc": "육군", "mil": "소장"}, "loc": "디트로이트", "map": "detroit", "note": "2020-10 진압 후 군정 지속. 초대 사령관 바이스.", "only": ["C"]}, {"t": "제2전술공군", "h": {"nm": "데니스 홀", "b": 1968, "svc": "공군", "mil": "중장"}, "loc": "스콧 기지"}, {"t": "오대호 경비전대", "h": {"nm": "피터 노박", "b": 1972, "svc": "해군", "mil": "준장"}, "loc": "그레이트레이크스"}]}, {"t": "남부·멕시코만 전구사령부", "h": {"nm": "알프레도 루나", "b": 1963, "svc": "육군", "mil": "대장"}, "n": "33만", "loc": "텍사스 포트 후드", "map": "gulf", "c": [{"t": "제3군단", "h": {"nm": "레이 콜먼", "b": 1967, "svc": "육군", "mil": "중장"}, "loc": "포트 후드", "c": [{"t": "제1기병사단", "h": {"nm": "트래비스 넬슨", "b": 1971, "svc": "육군", "mil": "소장"}, "loc": "포트 후드"}, {"t": "제1기갑사단", "h": {"nm": "호세 바르가스", "b": 1970, "svc": "육군", "mil": "소장"}, "loc": "포트 블리스"}, {"t": "제3보병사단", "h": {"nm": "그랜트 필립스", "b": 1972, "svc": "육군", "mil": "소장"}, "loc": "포트 스튜어트"}]}, {"t": "국경경비여단 ×2", "h": {"nm": "다나 브룩", "b": 1974, "svc": "육군", "mil": "준장"}, "note": "멕시코 국경 3,100km"}, {"t": "제4함대", "h": {"nm": "로버트 앨런", "b": 1966, "svc": "해군", "mil": "중장"}, "loc": "메이포트", "c": [{"t": "제40구축전대"}, {"t": "멕시코만 초계전대"}]}, {"t": "제3전술공군", "h": {"nm": "주디스 케인", "b": 1968, "svc": "공군", "mil": "중장"}, "loc": "바크스데일 기지", "c": [{"t": "제2폭격비행단 (B-52H)"}]}]}, {"t": "태평양 전구사령부", "h": {"nm": "새뮤얼 이노우에", "b": 1961, "svc": "해군", "mil": "대장"}, "n": "38만", "loc": "샌디에이고", "map": "pac", "c": [{"t": "제1군단", "h": {"nm": "마이클 오닐", "b": 1966, "svc": "육군", "mil": "중장"}, "loc": "조인트 베이스 루이스-맥코드", "c": [{"t": "제7보병사단"}, {"t": "제25보병사단", "loc": "하와이 스코필드"}, {"t": "제11공수사단", "loc": "알래스카"}]}, {"t": "제3함대", "h": {"nm": "크리스 왓슨", "b": 1965, "svc": "해군", "mil": "중장"}, "loc": "샌디에이고", "map": "sandiego", "c": [{"t": "제1항모타격단", "note": "CVN-70 칼 빈슨"}, {"t": "제3항모타격단", "note": "CVN-72 에이브러햄 링컨"}]}, {"t": "제7함대", "h": {"nm": "케이 다나카", "b": 1966, "svc": "해군", "mil": "중장"}, "loc": "진주만", "c": [{"t": "제5항모타격단", "note": "CVN-76 로널드 레이건 — C: 2022-03 알류샨 해전에서 상실"}]}, {"t": "제1해병원정군", "h": {"nm": "빌 맥과이어", "b": 1965, "svc": "해병대", "mil": "중장"}, "loc": "캠프 펜들턴", "c": [{"t": "제1해병사단"}, {"t": "제3해병사단", "loc": "하와이"}]}, {"t": "제4전술공군 · 알래스카 사령부", "h": {"nm": "린 하트", "b": 1967, "svc": "공군", "mil": "중장"}, "loc": "엘먼도프-리처드슨"}]}, {"t": "잠수함전력사령부", "h": {"B": {"nm": "아서 맥도널드", "b": 1954, "svc": "해군", "mil": "원수", "pid": "arthur"}, "C": {"nm": "아서 맥도널드", "b": 1954, "svc": "해군", "mil": "원수", "pid": "arthur"}}, "loc": "킹스베이 / 뱅고어", "map": "kingsbay", "note": "해군참모총장 겸임. 핵 2차 타격 전력 단독 통제.", "c": [{"t": "제1잠수전단", "map": "kingsbay", "note": "오하이오급 SSBN 8척 · 킹스베이"}, {"t": "제9잠수전단", "map": "bangor", "note": "오하이오급 SSBN 6척 · 뱅고어"}, {"t": "제3대양함대 (공격원잠)", "h": {"nm": "대니얼 크루즈", "b": 1968, "svc": "해군", "mil": "소장"}, "loc": "그로턴", "c": [{"t": "제11잠수전대", "h": {"nm": "이언 맥닐", "b": 1975, "svc": "해군", "mil": "대령"}, "c": [{"t": "SSN-774 타이탄호", "note": "구 USS 버지니아, 2004 개명. 작전관 소령 1·함장 중령 1"}]}]}]}, {"t": "우주전략사령부", "h": {"nm": "레이 오쿠보", "b": 1962, "svc": "공군", "mil": "대장"}, "loc": "슈리버 기지", "map": "schriever", "c": [{"t": "다모클레스 운용단", "h": {"nm": "세라 블레인", "b": 1974, "svc": "공군", "mil": "준장"}, "note": "→ 다모클레스 탭"}, {"t": "반덴버그 발사단", "map": "vandenberg"}, {"t": "미사일경보단", "loc": "버클리 기지"}]}, {"t": "전략미사일사령부", "h": {"nm": "폴 아이버슨", "b": 1964, "svc": "공군", "mil": "중장"}, "loc": "F.E. 워런 기지", "note": "미니트맨 III 400기"}, {"t": "합동특수작전사령부", "h": {"nm": "캘빈 로크", "b": 1967, "svc": "육군", "mil": "중장"}, "loc": "포트 브래그", "c": [{"t": "제1특수작전단 (델타)"}, {"t": "해군특수전개발단 (DEVGRU)", "note": "에단 케인 출신 부대"}, {"t": "제75레인저연대"}]}]}, {"t": "각군 본부 (양성·지원)", "c": [{"t": "육군본부", "h": {"nm": "윌리엄 태너", "b": 1960, "svc": "육군", "mil": "대장"}, "n": "68만"}, {"t": "해군본부", "h": {"B": {"nm": "아서 맥도널드", "b": 1954, "svc": "해군", "mil": "원수", "pid": "arthur"}, "C": {"nm": "아서 맥도널드", "b": 1954, "svc": "해군", "mil": "원수", "pid": "arthur"}}, "n": "31만"}, {"t": "공군본부", "h": {"nm": "캐서린 블룸", "b": 1963, "svc": "공군", "mil": "대장"}, "n": "29만"}, {"t": "해병대사령부", "h": {"nm": "앤서니 루소", "b": 1962, "svc": "해병대", "mil": "대장"}, "n": "12만"}]}]}]}, "intel": {"t": "연방보안유지국 (KGB) — 약 35,000", "sub": "국가중앙정보기관 · 현역 군인 15% 영구 배속", "c": [{"t": "국장", "h": {"nm": "레너드 P. 스톤", "b": 1960, "civ": "장관급"}, "loc": "버지니아 랭글리", "map": "langley", "c": [{"t": "기획조정실", "h": {"nm": "앨리스 모로", "b": 1972, "civ": "고위공무원 가급"}}, {"t": "감찰실", "h": {"nm": "조지 패럴", "b": 1966, "civ": "고위공무원 나급"}}, {"t": "제1차장 (국내·방첩)", "h": {"B": {"nm": "아이작 펠", "b": 1956, "civ": "차관급"}, "C": {"nm": "제임스 던바", "b": 1970, "svc": "육군", "mil": "준장", "civ": "차관급", "pid": "dunbar"}}, "c": [{"t": "중앙방첩본부", "h": {"B": {"nm": "아이작 펠 (겸임)", "b": 1956, "civ": "차관급"}, "C": {"nm": "제임스 던바 (겸임)", "b": 1970, "svc": "육군", "mil": "준장", "civ": "차관급", "pid": "dunbar"}}, "n": "9,800", "c": [{"t": "부본부장", "h": {"B": {"nm": "제임스 던바", "b": 1970, "svc": "육군", "mil": "대령", "pid": "dunbar"}, "C": {"nm": "로절린 메이어", "b": 1975, "civ": "고위공무원 나급"}}}, {"t": "군·관료 방첩국", "note": "국군방첩사령부와 관할 경합"}, {"t": "반체제수사국", "note": "자유의 아들들 전담 TF '랜턴'"}, {"t": "대테러국"}]}, {"t": "특무타격단", "h": {"nm": "그레타 손", "b": 1972, "svc": "육군", "mil": "준장"}, "n": "4,300 (현역 100%)", "note": "체포·제거 작전. 현역 파견 15% 인원의 핵심.", "c": [{"t": "제1~4타격대대", "note": "전구별 1개 대대"}, {"t": "특수체포대 '해머'"}]}, {"t": "지역 지국 ×4", "note": "대서양·오대호·남부·태평양 지국. 지국장 고위공무원 나급"}]}, {"t": "제2차장 (해외공작)", "h": {"nm": "미리엄 하틀리", "b": 1967, "civ": "차관급"}, "c": [{"t": "해외공작본부", "n": "6,200", "c": [{"t": "유라시아국", "note": "소코부 제국"}, {"t": "유럽국", "note": "제네바 망명정부 · 영·불 정보기관"}, {"t": "미주국", "note": "캐나다 · 멕시코"}, {"t": "공작지원국", "note": "위장 신분 · 비자금"}]}]}, {"t": "제3차장 (신호·과학기술)", "h": {"nm": "오언 리", "b": 1973, "civ": "차관급"}, "c": [{"t": "신호정보본부", "n": "14,500", "loc": "포트 미드", "map": "ftmeade", "note": "구 NSA 흡수", "c": [{"t": "감청국"}, {"t": "암호해독국"}, {"t": "사이버공작국"}]}, {"t": "과학기술국", "note": "생체인식 감시망 '아르고스'"}]}]}]}, "milintel": {"t": "군 정보·방첩 기관", "sub": "국방부 직할 · 합참 연계", "c": [{"t": "국방정보본부 (구 DIA)", "h": {"nm": "프랭크 델가도", "b": 1965, "svc": "육군", "mil": "중장"}, "loc": "볼링 기지", "note": "합참 정보본부장(J-2) 겸임", "c": [{"t": "국군정보사령부", "h": {"nm": "앤 해리슨", "b": 1970, "svc": "육군", "mil": "소장"}, "loc": "포트 벨부아", "note": "인간정보(HUMINT) · 해외 군사첩보", "c": [{"t": "해외첩보단"}, {"t": "특수정보부대"}]}, {"t": "국가정찰청 (구 NRO)", "h": {"nm": "벤저민 콜", "b": 1969, "svc": "공군", "mil": "소장"}, "loc": "버지니아 샹티이", "note": "정찰위성 · 다모클레스 표적정보 공급"}, {"t": "국방지리정보단 (구 NGA)", "h": {"nm": "에이미 로런스", "b": 1974, "svc": "육군", "mil": "준장"}}, {"t": "전구 J-2 정보참모부 ×4"}]}, {"t": "국군방첩사령부", "h": {"nm": "칼 브레넌", "b": 1964, "svc": "육군", "mil": "중장"}, "loc": "포트 미드", "map": "ftmeade", "note": "군 내부 방첩·보안. 연방보안유지국 중앙방첩본부와 관할 분쟁, 최고감찰원과 공조.", "c": [{"t": "전구 방첩부대 ×4"}, {"t": "보안감사단"}, {"t": "방산보안단"}]}, {"t": "국방부 조사본부 (군사경찰)", "h": {"nm": "더글러스 쿠퍼", "b": 1971, "svc": "육군", "mil": "준장"}, "c": [{"t": "군사경찰단"}, {"t": "과학수사연구소"}]}]}, "guard": {"t": "흑수리 친위군 — 약 85,000", "sub": "총통 직속 · 국방부 경유 없음", "c": [{"t": "친위군 총사령관", "h": {"B": {"nm": "에단 R. 케인", "b": 1960, "svc": "친위군", "mil": "대장", "pid": "ethan"}, "C": {"nm": "마커스 호우지", "b": 1966, "svc": "친위군", "mil": "대장", "pid": "hoji"}}, "loc": "포트 미드", "map": "ftmeade", "c": [{"t": "부사령관", "h": {"B": {"nm": "마커스 호우지", "b": 1966, "svc": "친위군", "mil": "중장", "pid": "hoji"}, "C": {"nm": "레너드 바스케스", "b": 1968, "svc": "친위군", "mil": "중장"}}, "note": "C: 바스케스 — 케르베로스 라인, 에단에게 직보."}, {"t": "정치보위부", "h": {"nm": "어맨다 크롤", "b": 1973, "svc": "친위군", "mil": "준장"}, "note": "장교 충성 심사 · 사상 교육"}, {"t": "작전참모부", "h": {"nm": "트레버 문", "b": 1975, "svc": "친위군", "mil": "준장"}}, {"t": "제1친위기갑사단 '아이언 이글'", "h": {"nm": "하비 스톤웰", "b": 1970, "svc": "친위군", "mil": "소장"}, "n": "2.6만", "loc": "포트 미드", "map": "ftmeade", "c": [{"t": "제1·2기갑여단"}, {"t": "수도방공여단"}]}, {"t": "제2친위공수사단", "h": {"nm": "올리비아 드레이크", "b": 1972, "svc": "친위군", "mil": "소장"}, "n": "2.2만", "loc": "포트 캠벨", "c": [{"t": "제3·4공수여단"}]}, {"t": "총통경호여단", "h": {"nm": "니콜라스 페인", "b": 1974, "svc": "친위군", "mil": "준장"}, "n": "6,500", "loc": "워싱턴 / 레이븐록", "map": "ravenrock", "c": [{"t": "근접경호대대"}, {"t": "레이븐록 경비대대"}]}, {"t": "케르베로스 특수임무단", "h": {"nm": "로완 피어스", "b": 1978, "svc": "친위군", "mil": "대령"}, "n": "비공개", "note": "숙청·제거. 에단 라인 잔존 — 형식상 총사령관 직할, 실제로는 에단에게 보고."}]}]}};
+const ORG_TABS = [["state", "국가 최고기구"], ["gov", "행정부"], ["mil", "연방군"], ["intel", "정보기관"], ["milintel", "군 정보·방첩"], ["guard", "친위군"]];
 
 const DAM = [
   {id:"AEGIS",blk:"I",name:"AEGIS · 고고도 EMP",col:"#4F8CC4",alt:1100,inc:63.4,n:6,on:{A:0,B:6,C:5},spec:["탑재체: 고고도 EMP 탄두","유효 반경: 지상 1,200km 전자장비 무력화","운용 개시: 2004","부수 피해: 민간 전력망 전면 붕괴"]},
@@ -811,7 +857,7 @@ const store = {
   get(k,d){ try{ const v=localStorage.getItem("drachma."+k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
   set(k,v){ try{ localStorage.setItem("drachma."+k,JSON.stringify(v)); }catch(e){} }
 };
-const S = { branch: store.get("branch","C"), view:"map", region:"atl", person:"ethan", dam:"THOR", org:"mil", rank:"대장", filters:new Set(Object.keys(ECAT)), evSel:"BP-C" };
+const S = { branch: store.get("branch","C"), view:"map", region:"atl", person:"ethan", dam:"THOR", org:"mil", rank:"대장", rankSys:"mil", civRank:"장관급", orgQ:"", filters:new Set(Object.keys(ECAT)), evSel:"BP-C" };
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -846,7 +892,7 @@ function setBranch(b){
   $("#gameClock").textContent = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:00`;
   $("#gameLoc").textContent = `분기점 ${b} · ${B.title} — ${B.loc}`;
   $("#footBranch").textContent = `ACTIVE BRANCH ${b} · ${B.theme}`;
-  renderMapState(); renderBrief(); renderTimeline(); renderNet(); renderPerson(); renderDamPanel(); renderSession();
+  renderMapState(); renderBrief(); renderTimeline(); renderNet(); renderPerson(); renderDamPanel(); renderPyr(); renderTree(); renderSession();
 }
 $$("#branchSwitch button").forEach(x => x.addEventListener("click", () => setBranch(x.dataset.b)));
 
@@ -1220,28 +1266,87 @@ function renderPerson(){
 }
 
 /* ═════════════ ORG ═════════════ */
-function renderPyr(){
-  $("#pyr").innerHTML = RANKS.map(([tier,rs],i) => `<div class="tier"><span class="tn">${tier}</span><div class="ranks" style="width:${40+i*15}%">${rs.map(([r,ins])=>`<button class="rk${r===S.rank?" sel":""}" type="button" data-rank="${r}"><span class="ins">${ins}</span>${r}</button>`).join("")}</div></div>`).join("");
-  $$("#pyr [data-rank]").forEach(b => b.addEventListener("click", () => { S.rank=b.dataset.rank; renderPyr(); }));
-  const [age,desc]=RANK_INFO[S.rank];
-  const holders=Object.entries(PEOPLE).filter(([,p])=>p.rank[S.branch].includes(S.rank)).map(([k])=>k);
-  $("#rankInfo").innerHTML = `<div class="label">선택 계급</div><h3 style="font-family:var(--f-disp);font-size:24px;margin:2px 0 6px">${S.rank}</h3>
-    <dl class="kv"><dt>통상 연령</dt><dd>${esc(age)}</dd><dt>보직</dt><dd>${esc(desc)}</dd></dl>
-    <div class="label" style="margin-top:10px">분기 ${S.branch} 해당 인물</div><div style="margin-top:6px">${personChips(holders)}</div>`;
+const orgBranch = () => S.branch==="A" ? "B" : S.branch;
+const headAt = (h,br) => !h ? null : (h.B||h.C) ? (h[br]||null) : h;
+const ageAt = (b,br) => { const d=new Date(BRANCH[br].date); return d.getFullYear()-b-(d.getMonth()<6?1:0); };
+const visible = (n,br) => !n.only || n.only.includes(br);
+function rosterAt(br){
+  const out=[], seen=new Set();
+  if(br!=="A"){
+    const walk=(nodes,tab)=>nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br);
+      if(h && h.b){ const key=h.pid||h.nm.replace(/ \(.*\)$/,""); if(!seen.has(key+"|"+n.t)){ seen.add(key+"|"+n.t); out.push({key,nm:h.nm.replace(/ \(.*\)$/,""),pid:h.pid,b:h.b,svc:h.svc,mil:h.mil,civ:h.civ,st:h.st,post:n.t,tab}); } }
+      if(n.c) walk(n.c,tab); });
+    ORG_TABS.forEach(([k])=>walk(ORG[k].c,k));
+  }
+  for(const id in GRADE){ const g=GRADE[id][br]; if(!g) continue;
+    if(out.some(r=>r.pid===id)) continue;
+    out.push({key:id,nm:PEOPLE[id].name,pid:id,b:+BORN[id].slice(0,4),svc:g.svc,mil:g.mil,civ:g.civ,st:g.st,post:PEOPLE[id].post[br]}); }
+  // 같은 인물 겸직 → 하나로
+  const merged=new Map(); out.forEach(r=>{ const k=r.pid||r.nm; if(merged.has(k)){ merged.get(k).post+=" · "+r.post; } else merged.set(k,{...r}); });
+  return [...merged.values()];
 }
+function holderList(rows,br){
+  if(!rows.length) return `<div class="empty">이 시점 현역 해당자가 기록에 없습니다.</div>`;
+  return `<div class="holders">${rows.map(r=>`<div class="h">${r.pid?`<button class="chip" type="button" data-person="${r.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[r.pid].fac]}"></span>${esc(r.nm)}</button>`:`<b style="font-weight:500">${esc(r.nm)}</b>`}<small>${esc([r.svc,r.mil&&!r.st?r.mil:null].filter(Boolean).join(" "))}${r.civ?" · "+esc(r.civ):""} · ${ageAt(r.b,br)}세</small><small>${esc(r.post)}</small></div>`).join("")}</div>`;
+}
+function renderPyr(){
+  $$("#rsys button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rs===S.rankSys));
+  const br=S.branch, when=`분기 ${br} · ${BRANCH[br].date.slice(0,10)}`;
+  if(S.rankSys==="mil"){
+    $("#pyr").innerHTML = RANKS.map(([tier,rs],i) => `<div class="tier"><span class="tn">${tier}</span><div class="ranks" style="width:min(100%,${rs.length*68}px)">${rs.map(([r,ins])=>`<button class="rk${r===S.rank?" sel":""}" type="button" data-rank="${r}"><span class="ins">${ins}</span>${r}</button>`).join("")}</div></div>`).join("");
+    $$("#pyr [data-rank]").forEach(b => b.addEventListener("click", () => { S.rank=b.dataset.rank; renderPyr(); }));
+    const [age,desc]=RANK_INFO[S.rank];
+    const rows=rosterAt(br).filter(r=>r.mil===S.rank && !r.st);
+    $("#rankInfo").innerHTML = `<div class="label">선택 계급</div><h3 style="font-family:var(--f-disp);font-size:24px;margin:2px 0 6px">${S.rank}</h3>
+      <dl class="kv"><dt>통상 연령</dt><dd>${esc(age)}</dd><dt>보직</dt><dd>${esc(desc)}</dd></dl>
+      <div class="label" style="margin-top:12px">현역 해당자 · ${when} · ${rows.length}명</div>${holderList(rows,br)}
+      ${br==="A"?`<p class="hint" style="margin-top:8px">1998년 쿠데타 전야: 미군 계급 기준, 주요 인물만 표시합니다.</p>`:`<p class="hint" style="margin-top:8px">예비역·예편 인물은 제외됩니다.</p>`}`;
+  } else {
+    $("#pyr").innerHTML = CIV_RANKS.map(([tier,rs],i) => `<div class="tier"><span class="tn">${tier}</span><div class="ranks" style="width:min(100%,${rs.length*78}px)">${rs.map(([r,sub])=>`<button class="rk${r===S.civRank?" sel":""}" type="button" data-civ="${r}"><span class="ins">${sub||"&nbsp;"}</span>${r.replace("고위공무원 ","")}</button>`).join("")}</div></div>`).join("");
+    $$("#pyr [data-civ]").forEach(b => b.addEventListener("click", () => { S.civRank=b.dataset.civ; renderPyr(); }));
+    const [eq,desc]=CIV_INFO[S.civRank];
+    const rows=rosterAt(br).filter(r=>r.civ===S.civRank);
+    $("#rankInfo").innerHTML = `<div class="label">선택 계급</div><h3 style="font-family:var(--f-disp);font-size:24px;margin:2px 0 6px">${S.civRank}</h3>
+      <dl class="kv"><dt>군 상응</dt><dd>${esc(eq)}</dd><dt>보직</dt><dd>${esc(desc)}</dd></dl>
+      <div class="label" style="margin-top:12px">재직자 · ${when} · ${rows.length}명</div>${holderList(rows,br)}
+      <div class="label" style="margin-top:14px">공무원 ↔ 군 상응표 (의전·대우 참고)</div>
+      <table class="eqv"><tbody>${Object.entries(CIV_INFO).map(([k,[e]])=>`<tr class="${k===S.civRank?"cur":""}"><td>${k}</td><td>${e}</td></tr>`).join("")}</tbody></table>`;
+  }
+}
+$$("#rsys button").forEach(b=>b.addEventListener("click",()=>{ S.rankSys=b.dataset.rs; renderPyr(); }));
 function renderStack(){
   const tot=THEATER_FORCE.reduce((a,b)=>a+b[2],0);
   $("#stackbar").innerHTML = THEATER_FORCE.map(([id,n,v,c]) => `<button type="button" data-mapgo="${id}" style="flex:${v};background:${c}" aria-label="${n} 전구 ${v}만" data-tipn="${n}" data-tipv="${v}"></button>`).join("");
   $("#stackLegend").innerHTML = THEATER_FORCE.map(([id,n,v,c]) => `<div><i style="background:${c}"></i>${n}<b>${v}만 · ${Math.round(v/tot*100)}%</b></div>`).join("");
   $$("#stackbar button").forEach(b => { b.addEventListener("mousemove",e=>showTip(`<b>${b.dataset.tipv}만 명</b><br>${b.dataset.tipn} 전구 · 클릭 시 지도`,e)); b.addEventListener("mouseleave",hideTip); });
 }
-function renderTree(){
-  const o=ORG[S.org];
-  const node=(n,depth)=> n.c ? `<details ${depth<2?"open":""}><summary><span>${esc(n.t)}</span>${n.w?`<span class="who">${esc(n.w)}</span>`:""}${n.n?`<span class="num">${esc(n.n)}</span>`:""}${n.map?`<button class="chip" type="button" data-mapgo="${n.map}">⌖ 지도</button>`:""}</summary>${n.c.map(x=>node(x,depth+1)).join("")}</details>`
-    : `<details><summary class="leaf"><span>${esc(n.t)}</span>${n.w?`<span class="who">${esc(n.w)}</span>`:""}${n.n?`<span class="num">${esc(n.n)}</span>`:""}</summary></details>`;
-  $("#orgTree").innerHTML = `<div class="label" style="margin-bottom:8px">${esc(o.t)}</div>` + o.c.map(x=>node(x,0)).join("");
+function renderOrgTabs(){
+  $("#orgTabs").innerHTML = ORG_TABS.map(([k,n])=>`<button class="btn" type="button" data-o="${k}" aria-pressed="${S.org===k}">${n}</button>`).join("");
+  $$("#orgTabs button").forEach(b => b.addEventListener("click", () => { S.org=b.dataset.o; renderOrgTabs(); renderTree(); }));
 }
-$$("#orgTabs button").forEach(b => b.addEventListener("click", () => { S.org=b.dataset.o; $$("#orgTabs button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderTree(); }));
+function renderTree(){
+  const br=orgBranch(), o=ORG[S.org], q=S.orgQ.trim().toLowerCase();
+  const hl = t => { const e=esc(t); if(!q) return e; const i=t.toLowerCase().indexOf(q); return i<0?e:esc(t.slice(0,i))+"<mark>"+esc(t.slice(i,i+q.length))+"</mark>"+esc(t.slice(i+q.length)); };
+  let units=0, heads=0;
+  const text = n => { const h=headAt(n.h,br); return [n.t,n.note,n.loc,n.n,h&&h.nm,h&&h.mil,h&&h.civ,h&&h.svc].filter(Boolean).join(" ").toLowerCase(); };
+  const match = n => !q || text(n).includes(q) || (n.c||[]).some(c=>visible(c,br)&&match(c));
+  const node=(n,depth)=>{
+    if(!visible(n,br) || !match(n)) return "";
+    units++; const h=headAt(n.h,br); if(h&&h.b) heads++;
+    const kids=(n.c||[]).map(x=>node(x,depth+1)).join("");
+    const head = h ? `<span class="hd">${h.mil||h.civ?`<b>${esc([h.svc,h.mil,h.civ&&!h.mil?h.civ:null].filter(Boolean).join(" "))}</b>`:""}${h.pid?`<button class="chip" type="button" data-person="${h.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[h.pid].fac]}"></span>${hl(h.nm)}</button>`:hl(h.nm)}${h.b?` · ${ageAt(h.b,br)}세`:""}${h.st?` · ${esc(h.st)}`:""}</span>` : "";
+    const sum = `<span>${hl(n.t)}</span>${n.only?`<span class="only">분기 ${n.only.join("/")} 한정</span>`:""}${head}${n.n?`<span class="num">${esc(n.n)}</span>`:""}${n.loc?`<span class="loc">📍${hl(n.loc)}</span>`:""}${n.map?`<button class="chip" type="button" data-mapgo="${n.map}">⌖ 지도</button>`:""}`;
+    const note = n.note?`<div class="note">${hl(n.note)}</div>`:"";
+    return kids||note ? `<details ${depth<2||q?"open":""}><summary>${sum}</summary>${note}${kids}</details>` : `<details><summary class="leaf">${sum}</summary></details>`;
+  };
+  const html=o.c.map(x=>node(x,0)).join("");
+  $("#orgBanner").innerHTML = S.branch==="A" ? `<div class="banner">분기점 A(1998-02-14) 시점에는 드라크마 연방 편제가 아직 없습니다. 아래는 건국(1998-02-17) 이후 분기 B 기준 편제입니다.</div>` : "";
+  $("#orgTree").innerHTML = `<div class="label" style="margin-bottom:8px">${esc(o.t)} · ${esc(o.sub)} · 분기 ${br} 기준</div>` + (html || `<div class="empty">'${esc(S.orgQ)}' 검색 결과가 없습니다.</div>`);
+  $("#orgCnt").textContent = `${units}개 조직 · 지휘관 ${heads}명`;
+}
+$("#orgQ").addEventListener("input", e => { S.orgQ=e.target.value; renderTree(); });
+$("#orgOpen").addEventListener("click", () => $$("#orgTree details").forEach(d=>d.open=true));
+$("#orgClose").addEventListener("click", () => $$("#orgTree details").forEach(d=>d.open=false));
 
 /* ═════════════ DAMOCLES ═════════════ */
 const cv=$("#orbit"), ctx=cv.getContext("2d");
@@ -1335,11 +1440,74 @@ $("#simFire").addEventListener("click",()=>{
 });
 
 /* ═════════════ SESSION ═════════════ */
+/* 플레이어는 선택(A·B·C)이나 자유 입력만 한다. 판정 여부·스탯·보정·DC·결과 서술은 GM(Claude)이 정한다. */
+const OPENING = {
+  A:{ scene:`📜 [상황 서술]
+1998년 2월 14일 02:00. 버지니아 알링턴, 펜타곤 남측 주차장. 시동을 끈 GMC 지휘차량 안에는 PRC-117 무전기의 녹색 표시등과 식은 커피 냄새뿐이다. 성에 낀 창 너머로 오각형 청사의 윤곽이 가로등에 잘려 보인다. H-hour까지 60분. 케르베로스 강습조 42명은 지하 하역장 C-7 게이트 앞에서 숨을 죽이고 있고, 노퍽에서는 맥도널드의 잠수함 2척이 '야간 훈련' 명목으로 원자로 출력을 올리고 있다.
+암호표 위로 땀 한 방울이 떨어진다. NMCC 당직 장교 교대는 02:30. 그 30분이 전부다.
+
+🗣️ [NPC 대사 및 반응]
+에단 R. 케인 [미 해군 JTF-케르베로스 단장, 해군 중령, 37세] : "준장님, C-7 게이트 경비가 둘에서 넷으로 늘었습니다. 누가 냄새를 맡았거나, 밸런타인데이 근무표가 꼬였거나. 어느 쪽이든 결정은 지금 하셔야 합니다."
+아서 맥도널드 [미 해군 제6잠수전대 사령관, 해군 소장, 44세] (잡음 섞인 암호 무전) : "드락, 함장 하나가 출항 명령서 서명을 망설이고 있네. 30분 안에 신호가 없으면 난 이걸 훈련으로 끝내겠어."`,
+    options:["H-hour를 02:30 당직 교대 시점으로 앞당겨 즉시 강습을 개시한다",
+             "에단에게 위조 명령서로 증원 경비를 교대시키라고 지시하고, 03:00 일정을 고수한다",
+             "맥도널드에게 출항 신호를 먼저 보내 해군의 퇴로부터 끊는다"] },
+  B:{ scene:`📜 [상황 서술]
+2020년 10월 14일 09:00. 워싱턴 총통부 지하 국가상황실. 건국 22주년 열병식까지 3시간. 벽면 전술 스크린에 4개 전구 재편 현황이 녹색으로 점멸하는 가운데, 오대호 전구 칸 하나만 황색이다. 공조기의 저음, 식은 커피. 69세의 드락은 오른쪽 무릎을 찌르는 통증에 의자 팔걸이를 움켜쥔다.
+던바 대령이 내민 서류철. 디트로이트 제18보병연대 탄약고, 지난 3주간 5.56mm 4만 발과 대전차 로켓 60기의 출납 기록이 비어 있다.
+
+🗣️ [NPC 대사 및 반응]
+제임스 던바 [연방보안유지국 중앙방첩본부 부본부장, 육군 대령(파견), 49세] : "회계 착오로 보기엔 숫자가 너무 깔끔합니다. 연대 작전과장이 지난주에 휴대폰을 두 번 바꿨습니다."
+빅토리아 바이스 [총통실 군사보좌관, 육군 준장, 47세] : "열병식을 취소하면 22년 만에 처음으로 총통이 겁먹었다는 신호가 됩니다. 연대 하나쯤은 오늘 밤 안에 지울 수 있습니다."
+토머스 헤일 [오대호·중부 전구사령관, 육군 대장, 61세] (화상 연결, 굳은 얼굴) : "착오일 뿐입니다, 각하. 정보기관이 제 부대를 들쑤시는 건 용납하기 어렵습니다."`,
+    options:["열병식을 강행하고, 던바에게 제18연대 지휘부를 조용히 체포하라고 지시한다",
+             "바이스에게 TF-디트로이트 지휘권을 주고 오늘 중 제18연대를 선제 무장해제한다",
+             "헤일 대장을 즉시 워싱턴으로 소환하고, 열병식은 '기상 악화'를 이유로 연기 발표한다"] },
+  C:{ scene:`📜 [상황 서술]
+2022년 11월 14일 11:00. 펜실베이니아 레이븐록 지하 180m, 총통 집무실. 화강암 벽을 타고 공조기 저음이 울리고, 책상 옆 산소 농축기가 3초마다 쉭 소리를 낸다. 71세의 드락은 어젯밤 두 시간을 잤다. 서랍 속 심전도 기록지에는 '심부전 초기'라는 붉은 인장이 찍혀 있다.
+문이 열리고 전역복 차림의 에단 케인이 들어선다. 왼손에 든 국가비상동원위원회 첫 업무보고서, 표지 둘째 줄: '비상시 친위군 작전통제권 이관 절차(안)'.
+
+🗣️ [NPC 대사 및 반응]
+에단 R. 케인 [최고평의회 제1부의장 겸 국가비상동원위원장, 예편, 62세] : "형님. 아니, 총통 각하. 전쟁은 끝났습니다. 이제 다음 20년을 이야기할 때입니다."
+마커스 호우지 [흑수리 친위군 총사령관, 친위군 대장, 56세] (인터컴, 낮은 목소리) : "각하, 독대 중 경호는 제 병력으로 교체했습니다. 부의장 측 경호원 넷은 B구역에 대기시켰습니다."`,
+    options:["보고서를 덮고, 친위군 작전통제권 이관 조항을 즉시 삭제하라고 명령한다",
+             "후계자 지위를 암시하며, 그 대가로 케르베로스 라인 명단 전체를 요구한다",
+             "독대를 30분 미루고, 던바를 먼저 불러 에단 감시 파일을 열람한다"] }
+};
+const TRAITS = [
+  ["초연산","지능 판정 +2 (계산·분석·암호, 1턴 1회)"],
+  ["스타즈의 맹약","창립 멤버(에단·맥도널드·크레바트) 대상 설득 +3"],
+  ["톰캣의 반사신경","물리적 위기 회피 +2 (분기 C에서는 소멸)"]
+];
+const statMod = name => { const s=STATS.find(([n])=>n===name); return s ? (s[1]==null ? HP_MOD[S.branch] : s[1]) : 0; };
+
+function freshSess(br){
+  const B=BRANCH[br];
+  return { turn:0, hp:B.hp, time:B.date, loc:B.loc, buffs:[...B.buffs], debuffs:[...B.debuffs],
+    feed:[{k:"gm",text:OPENING[br].scene}], options:[...OPENING[br].options], history:[] };
+}
+const SESS = {};
+const sess = () => SESS[S.branch] || (SESS[S.branch] = store.get("sess."+S.branch, null) || freshSess(S.branch));
+const saveSess = () => store.set("sess."+S.branch, sess());
+let pick = 0, busy = false, gmCtl = null, sampleFn = null;
+
+/* ── GM 연결: claude.use("sample") 가능하면 Claude가 GM, 아니면 규칙 엔진 */
+async function initGM(){
+  try{ sampleFn = window.claude?.use ? await window.claude.use("sample") : null; }catch(e){ sampleFn=null; }
+  setGMMode();
+}
+function setGMMode(note){
+  const el=$("#gmMode");
+  if(sampleFn){ el.textContent="GM: CLAUDE 연결"; el.className="gmmode s1"; }
+  else { el.textContent="GM: 규칙 엔진 (오프라인)"; el.className="gmmode s3"; }
+  if(note) $("#actSt").textContent=note;
+}
+
 function renderBpCards(){
   $("#bpCards").innerHTML = Object.entries(BRANCH).map(([k,b])=>{
-    const d=new Date(b.date);
+    const d=new Date(b.date), t=(SESS[k]||store.get("sess."+k,null))?.turn||0;
     return `<button class="bp" type="button" data-bp="${k}" aria-pressed="${S.branch===k}">
-      <span class="tag status ${S.branch===k?"s3":"s0"}">${S.branch===k?"선택됨":"대기"}</span>
+      <span class="tag status ${S.branch===k?"s3":"s0"}">${S.branch===k?"진행 중":t?`TURN ${t} 저장됨`:"대기"}</span>
       <span class="letter">${k}</span>
       <span class="when">${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:00 · 드락 ${ageOf("drac",d)}세</span>
       <h4>${esc(b.title)} — ${esc(b.sub)}</h4>
@@ -1348,98 +1516,267 @@ function renderBpCards(){
   }).join("");
   $$("#bpCards [data-bp]").forEach(b=>b.addEventListener("click",()=>setBranch(b.dataset.bp)));
 }
-function hpHtml(v){ const cls=v<=8?"crit":v<=14?"low":""; return `<span class="hp ${cls}">${Array.from({length:20},(_,i)=>`<i class="${i<v?"on":""}"></i>`).join("")}<b>${v} / 20</b></span>`; }
-function renderSession(){
-  renderBpCards();
-  const B=BRANCH[S.branch], d=branchDate(), age=ageOf("drac");
-  const stamp=`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,"0")}월 ${String(d.getDate()).padStart(2,"0")}일 ${String(d.getHours()).padStart(2,"0")}시 00분`;
+function hpHtml(v){ v=Math.max(0,Math.min(20,v)); const cls=v<=8?"crit":v<=14?"low":""; return `<span class="hp ${cls}">${Array.from({length:20},(_,i)=>`<i class="${i<v?"on":""}"></i>`).join("")}<b>${v} / 20</b></span>`; }
+const stampOf = iso => { const d=new Date(iso); return isNaN(d) ? iso : `${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,"0")}월 ${String(d.getDate()).padStart(2,"0")}일 ${String(d.getHours()).padStart(2,"0")}시 ${String(d.getMinutes()).padStart(2,"0")}분`; };
+
+function renderState(){
+  const B=BRANCH[S.branch], X=sess(), age=ageOf("drac");
+  $("#turnNo").textContent=`TURN ${X.turn}`;
   $("#statebox").innerHTML = `<div class="ttl">드락 V. 에버하트 · 분기점 ${S.branch}</div><ul>
     <li><span>이름/나이</span><span>드락 V. 에버하트 (만 ${age}세)</span></li>
     <li><span>소속/직책</span><span>${esc(B.post)}</span></li>
-    <li><span>HP</span>${hpHtml(B.hp)}</li>
-    <li><span>현재 일시/위치</span><span>${stamp} / ${esc(B.loc)}</span></li>
+    <li><span>HP</span>${hpHtml(X.hp)}</li>
+    <li><span>현재 일시/위치</span><span>${esc(stampOf(X.time))} / ${esc(X.loc)}</span></li>
     <li><span>소지품</span><span>${esc(B.gear)}</span></li>
-    <li><span>버프·디버프</span><span class="tags">${B.buffs.map(t=>`<span>${esc(t)}</span>`).join("")}${B.debuffs.map(t=>`<span class="de">${esc(t)}</span>`).join("")}</span></li>
-    <li><span>정치 자본</span><span class="mono">${B.res.political}</span></li>
-    <li><span>군 충성도</span><span class="mono">${B.res.loyalty}%</span></li>
-    <li><span>다모클레스</span><span class="mono">${B.res.dam?B.res.dam+"기 가동":"미가동 (설계 단계)"}</span></li>
-    <li><span>동기화 파일</span><span class="mono" style="font-size:12px">state.md, timeline.md, characters/protagonist.md</span></li></ul>`;
-  $("#rStat").innerHTML = STATS.map(([n,m],i)=>{ const mod=m==null?HP_MOD[S.branch]:m; return `<option value="${i}">${n} (${mod>=0?"+":""}${mod})</option>`; }).join("");
-  $("#tmpl").value =
-`📜 [상황 서술]
-(${stamp}, ${B.loc}. ${B.desc})
-
-🗣️ [NPC 대사 및 반응]
-에단 R. 케인 [${PEOPLE.ethan.post[S.branch]}, ${PEOPLE.ethan.rank[S.branch]}, ${ageOf("ethan")}세] : "…"
-빅토리아 바이스 [${PEOPLE.weiss.post[S.branch]}, ${PEOPLE.weiss.rank[S.branch]}, ${ageOf("weiss")}세] : "…"
-
-🎲 [GM의 판정 및 다음 행동 선택지]
-판정: d20 + 스탯 보정 + 특성 보정 + 상황 보정 ≥ DC
-1. [구체적 행동 옵션 1]
-2. [구체적 행동 옵션 2]
-3. [구체적 행동 옵션 3]
-4. [직접 행동이나 대사 입력하기]
-
-📊 [현재 상태창]
-* 이름/나이: 드락 V. 에버하트 (만 ${age}세)
-* 소속/직책: ${B.post}
-* HP: ${B.hp} / 20 (노화 및 질환 페널티 반영)
-* 현재 일시/위치: ${stamp} / ${B.loc}
-* 주요 소지품/상태: ${B.gear} · ${[...B.buffs,...B.debuffs].join(", ")}
-* [동기화 파일]: state.md, timeline.md`;
+    <li><span>버프·디버프</span><span class="tags">${X.buffs.map(t=>`<span>${esc(t)}</span>`).join("")}${X.debuffs.map(t=>`<span class="de">${esc(t)}</span>`).join("")}</span></li>
+    <li><span>스탯 보정</span><span class="mono" style="font-size:12px">${STATS.map(([n])=>`${n.split("(")[0]} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(" · ")}</span></li>
+    <li><span>동기화 파일</span><span class="mono" style="font-size:12px">state.md, timeline.md${X.turn?", characters/*.md":""}</span></li></ul>`;
+}
+function renderFeed(streamText){
+  const X=sess();
+  let html="", t=0;
+  X.feed.forEach(e=>{
+    if(e.k==="pc"){ t++; html+=`<div class="turnsep">TURN ${t}</div><div class="entry pc"><span class="label">드락의 행동</span>${esc(e.text)}</div>`; }
+    else if(e.k==="roll") html+=`<div class="entry roll">${e.html}</div>`;
+    else if(e.k==="sys") html+=`<div class="entry sys">${esc(e.text)}</div>`;
+    else html+=`<div class="entry gm">${esc(e.text)}</div>`;
+  });
+  if(streamText!=null) html+=`<div class="entry gm stream">${esc(streamText||"GM이 상황을 서술하는 중…")}</div>`;
+  const f=$("#feed"); f.innerHTML=html; f.scrollTop=f.scrollHeight;
+}
+function renderOpts(){
+  const X=sess();
+  $("#opts").innerHTML = X.options.map((o,i)=>`<button class="opt" type="button" data-pick="${i}" aria-pressed="${pick===i}"><b>${"ABC"[i]}</b><span>${esc(o)}</span></button>`).join("")
+    + `<label class="opt free" data-pick="3" aria-pressed="${pick===3}"><b>D</b><textarea id="freeAct" placeholder="직접 행동이나 대사를 입력하세요. 예) 에단의 눈을 똑바로 보며 '그 서류, 누가 썼나?'라고 묻는다" aria-label="직접 행동·대사 입력"></textarea></label>`;
+  $$("#opts [data-pick]").forEach(b=>b.addEventListener("click",()=>{ pick=+b.dataset.pick; $$("#opts [data-pick]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.pick===pick)); if(pick===3) $("#freeAct").focus(); }));
+  $("#freeAct").addEventListener("input",()=>{ if(pick!==3){ pick=3; $$("#opts [data-pick]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.pick===3)); } });
+}
+function renderSession(){
+  renderBpCards(); renderState(); renderFeed(); renderOpts();
+  const B=BRANCH[S.branch], age=ageOf("drac");
   $("#files").innerHTML =
 `drachma_trpg/
 ├── <b>CLAUDE.md</b>             마스터 엔진 규칙
 ├── <b>timeline.md</b>           연표 · 분기 ${S.branch} 기준
-├── <b>state.md</b>              상태창 프리셋 ${S.branch}
+├── <b>state.md</b>              상태창 · TURN ${sess().turn}
 ├── characters/
 │   ├── protagonist.md    드락 (${age}세)
 │   ├── stars_inner.md    에단 · 맥도널드
 │   └── high_command.md   바이스 · 호우지 · 크레바트 · 던바
 ├── factions/
-│   ├── military.md       4개 전구 · 140만
-│   ├── intelligence.md   연방보안유지국
-│   └── praetorian.md     흑수리 친위군 · 비상동원위
+│   ├── government.md     국가 최고기구 · 행정부 · 공무원 계급
+│   ├── military.md       계급 · 4개 전구 · 140만
+│   ├── intelligence.md   연방보안유지국 · 군 정보·방첩
+│   └── praetorian.md     흑수리 친위군
 ├── lore/
 │   ├── damocles.md       ${B.res.dam}기 가동
 │   └── world_state.md    소코부 · 망명정부 · 자유의 아들들
 └── site/index.html       이 콘솔`;
   renderLog();
 }
-$("#copyTmpl").addEventListener("click", () => {
-  const ta=$("#tmpl");
-  const done=()=>{ $("#copyTmpl").textContent="복사됨"; setTimeout(()=>$("#copyTmpl").textContent="복사",1600); };
-  try{ navigator.clipboard.writeText(ta.value).then(done,()=>{ ta.select(); }); }catch(e){ ta.select(); }
+$("#sessReset").addEventListener("click",()=>{
+  if(busy) return;
+  const btn=$("#sessReset");
+  if(btn.dataset.armed!=="1"){ btn.dataset.armed="1"; btn.textContent="한 번 더 누르면 초기화"; setTimeout(()=>{ btn.dataset.armed=""; btn.textContent="이 분기 처음부터"; },3000); return; }
+  btn.dataset.armed=""; btn.textContent="이 분기 처음부터";
+  SESS[S.branch]=freshSess(S.branch); saveSess(); pick=0; renderSession();
+  $("#ruling").innerHTML=`<span class="empty">새 세션을 시작했습니다.</span>`; $("#formula").textContent="판정 대기."; $("#dieNum").textContent="–";
 });
+
+/* ── 판정 기록 */
 let LOG = store.get("log",[]);
 function log(text, ok){ LOG.unshift({t:new Date().toLocaleTimeString("ko-KR",{hour12:false}),b:S.branch,text,ok}); LOG=LOG.slice(0,40); store.set("log",LOG); renderLog(); }
 function renderLog(){
-  $("#log").innerHTML = LOG.length ? LOG.map(l=>`<div><span class="t">${l.t} · ${l.b}</span><span>${esc(l.text)}</span><span class="${l.ok==null?"t":l.ok?"ok":"no"}">${l.ok==null?"SIM":l.ok?"성공":"실패"}</span></div>`).join("")
-    : `<div class="empty" style="display:block;border:0">아직 판정 기록이 없습니다. 위의 '굴리기'를 누르면 이 브라우저에 기록됩니다.</div>`;
+  $("#log").innerHTML = LOG.length ? LOG.map(l=>`<div><span class="t">${l.t} · ${l.b}</span><span>${esc(l.text)}</span><span class="${l.ok==null?"t":l.ok?"ok":"no"}">${l.ok==null?"—":l.ok?"성공":"실패"}</span></div>`).join("")
+    : `<div class="empty" style="display:block;border:0">아직 판정 기록이 없습니다. 행동을 실행하면 이 브라우저에 기록됩니다.</div>`;
 }
 $("#clearLog").addEventListener("click",()=>{ LOG=[]; store.set("log",LOG); renderLog(); });
-$("#rollBtn").addEventListener("click",()=>{
-  const die=$("#d20"), num=$("#dieNum");
-  const r=1+Math.floor(Math.random()*20);
-  const si=+$("#rStat").value, [sn,sm]=STATS[si], stat=sm==null?HP_MOD[S.branch]:sm;
-  const trait=+$("#rTrait").value||0, sit=+$("#rSit").value||0, dc=+$("#rDC").value;
-  const buff = S.branch==="C" && sn.startsWith("공감") ? -2 : 0;
-  const total=r+stat+trait+sit+buff;
-  die.classList.remove("rolling"); void die.getBoundingClientRect(); die.classList.add("rolling");
-  let n=0; const flick=setInterval(()=>{ num.textContent=1+Math.floor(Math.random()*20); if(++n>8){ clearInterval(flick); num.textContent=r; finish(); } }, reduceMotion?0:70);
-  function finish(){
-    const crit=r===20, fumble=r===1, ok = crit || (!fumble && total>=dc);
-    const sign=v=>v>=0?`+ ${v}`:`− ${Math.abs(v)}`;
-    $("#formula").innerHTML = `${esc($("#rAct").value||"판정")}<br>d20(<b>${r}</b>) ${sign(stat)} [${esc(sn)}] ${sign(trait)} [특성] ${sign(sit)} [상황]${buff?` ${sign(buff)} [의심암귀]`:""} = <b>${total}</b> vs DC ${dc}
-      <div class="res ${crit?"crit":ok?"ok":"no"}">${crit?"자연 20 — 대성공. 추가 이득 발생.":fumble?"자연 1 — 대실패. 보정치와 무관하게 최악의 결과.":ok?`성공 (여유 ${total-dc})`:`실패 (부족 ${dc-total}) — GM은 비가역 페널티를 집행합니다.`}</div>`;
-    log(`${$("#rAct").value||"판정"} · ${total} vs DC${dc}${crit?" · NAT20":fumble?" · NAT1":""}`, ok);
+
+/* ── 프롬프트용 세계 상태 요약 */
+function worldBrief(){
+  const B=BRANCH[S.branch], X=sess(), br=S.branch;
+  const npcs=Object.entries(PEOPLE).filter(([k])=>k!=="drac").map(([k,p])=>`- ${p.name} [${p.post[br]}, ${p.rank[br]}, ${ageOf(k)}세] 충성 ${p.loyal??"-"} / 위험 ${p.risk??"-"} · ${p.note}`).join("\n");
+  const hist=X.history.slice(-6).map(h=>`T${h.turn}: ${h.action} → ${h.result}. ${h.summary||""}`).join("\n") || "(첫 턴)";
+  const lastGM=[...X.feed].reverse().find(e=>e.k==="gm")?.text || "";
+  return `[세계] 대체역사 TRPG 'Project Drachma'. 1998년 '피의 그믐날' 쿠데타로 미합중국이 해체되고 드라크마 연방(군벌 테크노크라시)이 들어섰다. 외적: 소코부 제국(구 러시아 극우 군국주의). 내적: 자유의 아들들(레지스탕스), 제네바 망명정부. 다모클레스 궤도 타격 위성망 보유. 계급은 대한민국 국군·공무원 편제를 쓴다.
+[분기점 ${br}] ${B.title} — ${B.sub}. 주제: ${B.theme}
+[주인공] 드락 V. 에버하트, 만 ${ageOf("drac")}세, ${B.post}. HP ${X.hp}/20. 현재 ${stampOf(X.time)}, ${X.loc}.
+스탯 보정: ${STATS.map(([n])=>`${n} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(", ")}
+고유 특성: ${TRAITS.map(([n,d])=>`${n}(${d})`).join(", ")}
+버프: ${X.buffs.join(", ")||"없음"} / 디버프: ${X.debuffs.join(", ")||"없음"}
+[주요 NPC]
+${npcs}
+[지난 경과]
+${hist}
+[직전 장면]
+${lastGM.slice(-1800)}`;
+}
+
+/* ── 1단계: GM 판정 결정 (Claude 또는 규칙 엔진) */
+async function gmRuling(action, signal){
+  if(sampleFn){
+    const prompt = `너는 50년 경력의 냉혹한 하드코어 TRPG 게임 마스터다. 플레이어는 주인공의 행동만 선언하고, 판정 여부와 수치는 전적으로 네가 정한다. 무리하거나 중요한 행동은 절대 그냥 성공시키지 말고 d20 판정을 요구하라. 사소하고 확실한 행동만 판정 없이 처리한다.
+${worldBrief()}
+
+[플레이어의 행동]
+${action}
+
+다음 JSON 하나로만 답하라. 다른 문장은 쓰지 마라.
+{"roll": true, "stat": "${STATS.map(([n])=>n).join('" | "')}", "trait": [{"name": "적용 특성/버프/디버프 이름", "mod": 정수}], "situation": [{"reason": "상황 보정 사유(짧게)", "mod": 정수}], "dc": 10~30 정수, "why": "판정 성격 한 문장"}
+규칙: stat은 위 목록 중 하나 그대로. trait는 실제 해당되는 것만(없으면 []), situation은 NPC의 이해관계·시간 압박·노화·정보 부족 등을 반영해 1~3개. 각 mod는 -6~+6. roll이 false면 dc는 0.`;
+    const r = await sampleFn.json(prompt, { modelTier:"quick", cache:false, signal });
+    const stat = STATS.some(([n])=>n===r?.stat) ? r.stat : "통솔(군 장악)";
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,Math.round(+v||0)));
+    return { roll: r?.roll!==false, stat,
+      trait: (Array.isArray(r?.trait)?r.trait:[]).slice(0,3).map(t=>({name:String(t.name||"특성").slice(0,40),mod:clamp(t.mod,-6,6)})).filter(t=>t.mod),
+      situation: (Array.isArray(r?.situation)?r.situation:[]).slice(0,4).map(t=>({reason:String(t.reason||"상황").slice(0,60),mod:clamp(t.mod,-6,6)})).filter(t=>t.mod),
+      dc: r?.roll===false ? 0 : clamp(r?.dc,8,32), why: String(r?.why||"").slice(0,140), by:"Claude GM" };
   }
-});
+  return ruleEngine(action);
+}
+function ruleEngine(action){
+  const a=action, has=re=>re.test(a), X=sess(), br=S.branch;
+  let stat="통솔(군 장악)", why="지휘권을 행사하는 행동";
+  if(has(/조사|분석|열람|파일|계산|암호|기록|확인|정보/)){ stat="지능(연산)"; why="정보를 분석·판단하는 행동"; }
+  else if(has(/설득|요구|암시|회유|협상|약속|묻|물어|달래|제안/)){ stat="카리스마"; why="상대를 움직이는 대인 행동"; }
+  else if(has(/숙청|체포|발표|연기|정치|평의회|여론|후계/)){ stat="정치(권모)"; why="권력 구도를 흔드는 정치 행동"; }
+  else if(has(/피하|도주|사격|격투|몸을|뛰|쏜다|총을/)){ stat="체력"; why="육체적 위기 대응"; }
+  else if(has(/믿|신뢰|고백|사과|위로/)){ stat="공감(신뢰)"; why="신뢰를 얻어야 하는 행동"; }
+  const trait=[];
+  if(stat==="지능(연산)") trait.push({name:"초연산",mod:2});
+  if(stat==="카리스마" && has(/에단|맥도널드|크레바트|아서/)) trait.push({name:"스타즈의 맹약",mod:3});
+  if(br==="A") trait.push({name:"수면 부족",mod:-1});
+  if(br==="A" && stat==="카리스마") trait.push({name:"혁명의 열기",mod:2});
+  if(br==="B" && stat==="정치(권모)") trait.push({name:"22년 통치",mod:2});
+  if(br==="C" && stat==="통솔(군 장악)") trait.push({name:"전승 총통",mod:2});
+  if(br==="C" && (stat==="공감(신뢰)"||stat==="카리스마")) trait.push({name:"의심암귀",mod:-2});
+  const situation=[];
+  let dc=15;
+  if(has(/친위군|핵|다모클레스|지휘권|작전통제권|명단/)){ dc+=5; situation.push({reason:"권력 핵심을 건드리는 사안",mod:-2}); }
+  if(has(/즉시|당장|앞당/)) situation.push({reason:"준비 없는 강행",mod:-1});
+  if(has(/미루|기다|연기/)) situation.push({reason:"시간을 벌어 정보 확보",mod:+1});
+  if(X.hp<=12) situation.push({reason:"체력 저하로 집중력 감소",mod:-1});
+  if(br==="A" && has(/강습|게이트|경비|펜타곤/)) dc+=3;
+  return { roll:true, stat, trait, situation, dc:Math.min(30,dc), why:why+" (오프라인 규칙 엔진 판정)", by:"규칙 엔진" };
+}
+
+/* ── 2단계: 주사위 */
+function rollDie(){
+  return new Promise(res=>{
+    const die=$("#d20"), num=$("#dieNum"), r=1+Math.floor(Math.random()*20);
+    die.classList.remove("rolling"); void die.getBoundingClientRect(); die.classList.add("rolling");
+    if(reduceMotion){ num.textContent=r; return res(r); }
+    let n=0; const flick=setInterval(()=>{ num.textContent=1+Math.floor(Math.random()*20); if(++n>9){ clearInterval(flick); num.textContent=r; res(r); } },70);
+  });
+}
+const sign=v=>v>=0?`+${v}`:`−${Math.abs(v)}`;
+function showRuling(R, r){
+  const sm=statMod(R.stat), tm=R.trait.reduce((a,t)=>a+t.mod,0), xm=R.situation.reduce((a,t)=>a+t.mod,0);
+  const rows=[[`스탯`,R.stat,sm],...R.trait.map(t=>[`특성`,t.name,t.mod]),...R.situation.map(t=>[`상황`,t.reason,t.mod])];
+  $("#ruling").innerHTML = `<div class="label" style="margin-bottom:4px">${esc(R.by)} · ${esc(R.why)}</div>`
+    + (R.roll ? rows.map(([k,n,v])=>`<div class="row"><span>${k}</span><span>${esc(n)}</span><span>${sign(v)}</span></div>`).join("")
+      + `<div class="row tot"><span>DC</span><span>목표치</span><span>${R.dc}</span></div>` : `<div class="row"><span>판정</span><span>불필요 — 자동 성공</span><span>—</span></div>`);
+  if(!R.roll) return {ok:true, crit:false, fumble:false, total:null, line:"판정 불필요 · 자동 처리"};
+  const total=r+sm+tm+xm, crit=r===20, fumble=r===1, ok=crit||(!fumble&&total>=R.dc);
+  const verdict = crit?"자연 20 — 대성공":fumble?"자연 1 — 대실패":ok?`성공 (여유 ${total-R.dc})`:`실패 (부족 ${R.dc-total})`;
+  const line=`d20(${r}) ${sign(sm)} [${R.stat}] ${sign(tm)} [특성] ${sign(xm)} [상황] = ${total} vs DC ${R.dc} → ${verdict}`;
+  $("#formula").innerHTML = `${esc(line.split(" → ")[0])}<div class="res ${crit?"crit":ok?"ok":"no"}">${esc(verdict)}${!ok?" — GM이 비가역 페널티를 집행합니다.":""}</div>`;
+  return {ok,crit,fumble,total,line,verdict};
+}
+
+/* ── 3단계: 결과 서술 + 다음 선택지 */
+async function gmNarrate(action, R, res, signal){
+  if(sampleFn){
+    const prompt = `너는 50년 경력의 냉혹한 하드코어 TRPG 게임 마스터다. 판정 결과를 그대로 집행해 다음 장면을 서술하라. 실패면 숙청·참패·암살 위협·배신 같은 뼈아픈 결과를 가차 없이 집행하고, 대성공이면 추가 이득을 준다. NPC는 플레이어를 무비판적으로 따르지 않고 각자의 야망·조직 이해·트라우마·자존심으로 반응한다. 시간을 몇 시간 이상 점프시키지 마라. 화약 냄새, 안면 경련, 공조기 소음, 전술 모니터 점멸 같은 감각 묘사를 써라. 한국어로.
+${worldBrief()}
+
+[이번 턴 플레이어 행동]
+${action}
+[GM 판정]
+${res.line}
+
+출력 형식(정확히 지킬 것):
+📜 [상황 서술]
+(행동의 결과와 장면, 3~6문장)
+
+🗣️ [NPC 대사 및 반응]
+이름 [상세 소속, 계급/직급, 나이] : "대사"
+(1~3명, 엇갈린 이해관계)
+
+그리고 마지막에 아래 JSON을 \`\`\`json 코드 블록 하나로 붙여라:
+{"options":["다음 행동 선택지 A","B","C"],"hp_delta":정수(-4~+1),"time":"YYYY-MM-DDTHH:MM","location":"현재 위치","add_buffs":[],"add_debuffs":[],"remove":[],"summary":"이번 턴 결과 한 문장"}
+선택지 3개는 서로 다른 전략 방향의 구체적 행동이어야 한다.`;
+    let shown="";
+    const {text} = await sampleFn(prompt, { modelTier:"default", cache:false, signal,
+      onText:({text})=>{ shown=text.split("```")[0].trimEnd(); renderFeed(shown); } });
+    const narr=text.split("```")[0].trim();
+    let meta={};
+    try{ const m=text.match(/```(?:json)?\s*([\s\S]*?)```/); meta=JSON.parse(m?m[1]:text.slice(text.lastIndexOf("{"))); }catch(e){ meta={}; }
+    return { narr, meta };
+  }
+  const X=sess();
+  const narr = `📜 [상황 서술]
+(오프라인 규칙 엔진) 판정 ${res.ok?"성공":"실패"}. ${res.crit?"대성공으로 예상 이상의 이득을 얻는다.":res.fumble?"대실패. 최악의 방향으로 사태가 굴러간다.":res.ok?"계획은 의도대로 실행되지만 누군가는 이 장면을 기억할 것이다.":"계획은 어긋났고, 그 대가는 곧 청구된다."}
+세부 장면 서술과 NPC 반응은 Claude GM이 연결된 상태(claude.ai에서 이 페이지를 열고 Claude 사용 허용)에서 자동 생성됩니다.`;
+  const t=new Date(X.time); t.setMinutes(t.getMinutes()+20);
+  return { narr, meta:{ options:["결과를 수습하며 측근에게 즉시 보고를 요구한다","같은 방향으로 더 강하게 밀어붙인다","한발 물러서 시간을 벌고 정보를 모은다"],
+    hp_delta: res.ok?0:-1, time:t.toISOString().slice(0,16), location:X.loc, summary:`${res.ok?"성공":"실패"} — 오프라인 판정` } };
+}
+
+/* ── 턴 실행 */
+async function runTurn(){
+  if(busy) return;
+  const X=sess();
+  const action = pick===3 ? ($("#freeAct").value||"").trim() : X.options[pick];
+  if(!action){ $("#actSt").textContent="D칸에 행동이나 대사를 입력하세요."; $("#freeAct").focus(); return; }
+  busy=true; gmCtl=new AbortController();
+  $("#actGo").disabled=true; $("#actStop").hidden=!sampleFn;
+  X.feed.push({k:"pc",text:action}); renderFeed();
+  try{
+    $("#actSt").textContent = sampleFn ? "GM이 판정 방식을 정하는 중… (처음 한 번은 Claude 사용 허용 창이 뜹니다)" : "규칙 엔진이 판정을 정하는 중…";
+    const R = await gmRuling(action, gmCtl.signal);
+    $("#actSt").textContent = R.roll ? "주사위를 굴립니다…" : "판정 없이 진행합니다…";
+    const r = R.roll ? await rollDie() : 0;
+    const res = showRuling(R, r);
+    X.feed.push({k:"roll",html:`${esc(R.by)} · ${esc(R.stat)}${R.roll?` · DC ${R.dc}`:""}<br>${R.roll?`<span class="${res.crit?"crit":res.ok?"ok":"no"}">${esc(res.line)}</span>`:"판정 불필요 · 자동 처리"}`});
+    renderFeed(""); $("#actSt").textContent="GM이 결과를 서술하는 중…";
+    const {narr, meta} = await gmNarrate(action, R, res, gmCtl.signal);
+    X.feed.push({k:"gm",text:narr||"(서술 없음)"});
+    X.turn++;
+    if(Array.isArray(meta.options) && meta.options.length>=3) X.options=meta.options.slice(0,3).map(o=>String(o).slice(0,160));
+    if(Number.isFinite(+meta.hp_delta)) X.hp=Math.max(0,Math.min(20,X.hp+Math.max(-6,Math.min(2,Math.round(+meta.hp_delta)))));
+    if(meta.time && !isNaN(new Date(meta.time))) X.time=String(meta.time).slice(0,16);
+    if(meta.location) X.loc=String(meta.location).slice(0,80);
+    const rm=new Set((meta.remove||[]).map(String));
+    X.buffs=X.buffs.filter(b=>!rm.has(b)).concat((meta.add_buffs||[]).map(String)).slice(-6);
+    X.debuffs=X.debuffs.filter(b=>!rm.has(b)).concat((meta.add_debuffs||[]).map(String)).slice(-6);
+    X.history.push({turn:X.turn, action, result:R.roll?res.verdict:"자동 처리", summary:String(meta.summary||"").slice(0,200)});
+    X.feed=X.feed.slice(-60);
+    log(`T${X.turn} ${action.slice(0,40)}${R.roll?` · ${res.total} vs DC${R.dc}`:""}`, R.roll?res.ok:null);
+    if(X.hp<=0) X.feed.push({k:"sys",text:"HP 0 — 총통이 쓰러졌습니다. '이 분기 처음부터'로 다시 시작할 수 있습니다."});
+    pick=0; saveSess();
+    $("#actSt").textContent="다음 행동을 고르세요.";
+  }catch(e){
+    X.feed.pop(); // 실패한 턴의 행동 기록 제거
+    const code=e&&e.code;
+    if(code==="not_granted"||code==="sampling_disabled"||code==="capability_disabled"||code==="not_declared"){ sampleFn=null; setGMMode("Claude 사용이 허용되지 않아 규칙 엔진으로 전환했습니다. 다시 실행하세요."); }
+    else if(code==="cancelled") $("#actSt").textContent="중지했습니다. 같은 행동을 다시 실행할 수 있습니다.";
+    else if(code==="rate_limited") $("#actSt").textContent="Claude 호출이 잠시 제한되었습니다. 조금 뒤 다시 실행하세요.";
+    else if(code==="invalid_json") $("#actSt").textContent="GM 판정 형식을 읽지 못했습니다. 다시 실행하세요.";
+    else $("#actSt").textContent="GM 연결 중 문제가 생겼습니다. 다시 실행하세요.";
+  }finally{
+    busy=false; gmCtl=null; $("#actGo").disabled=false; $("#actStop").hidden=true;
+    renderSession();
+  }
+}
+$("#actGo").addEventListener("click", runTurn);
+$("#actStop").addEventListener("click", ()=>gmCtl?.abort());
 
 /* ═════════════ INIT ═════════════ */
-buildMap(); renderFilters(); fillTargets(); renderPyr(); renderStack(); renderTree();
+buildMap(); renderFilters(); fillTargets(); renderOrgTabs(); renderStack();
 markSel();
 setBranch(["A","B","C"].includes(S.branch)?S.branch:"C");
+initGM();
 go(location.hash.slice(1)||"map");
 if(matchMedia("(max-width: 700px)").matches) setVB(VB.na);
 if(!reduceMotion) animMap(); else { mapT=0.2; animMap(); cancelAnimationFrame(mapAnim); }

@@ -40,7 +40,7 @@
 - [ ] `state.md` — 턴 수, HP, 일시/위치, 버프·디버프
 - [ ] `timeline.md` — 신규 사건, 분기 이탈 기록
 - [ ] `characters/*.md` — 생사, 직책, 충성도/위험도 변동
-- [ ] `factions/*.md` — 편제·지휘관 교체
+- [ ] `factions/*.md` — 편제·지휘관 교체 (`tools/org_data.py` 수정 후 `python3 tools/build_org.py`)
 - [ ] `lore/*.md` — 다모클레스 가동률, 세계 정세
 
 ## 6. 응답 포맷 (고정)
@@ -56,7 +56,7 @@
 drachma_trpg/
 ├── CLAUDE.md · timeline.md · state.md
 ├── characters/  protagonist · stars_inner · high_command
-├── factions/    military · intelligence · praetorian
+├── factions/    government · military · intelligence · praetorian  (← tools/org_data.py 자동 생성)
 ├── lore/        damocles · world_state
-└── site/        index.html  (인터랙티브 지휘 콘솔 — DB 시각화)
+└── site/        index.html  (인터랙티브 지휘 콘솔 — 원본 console.fragment.html)
 ```
