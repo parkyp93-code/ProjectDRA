@@ -141,6 +141,14 @@ section.view{padding-top:18px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:10px;height:10px;display:inline-block;border-radius:50%}
 .legend i.sq{border-radius:1px}
+#worldmap{touch-action:none;cursor:grab}
+#worldmap.dragging{cursor:grabbing}
+.zoomctl{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.zoomctl button{width:32px;height:32px;padding:0;background:rgba(17,26,31,.92);border:1px solid var(--line-2);border-radius:3px;cursor:pointer;font-family:var(--f-mono);font-size:16px;color:var(--fg);line-height:1}
+.zoomctl button:hover{border-color:var(--amber);color:var(--amber)}
+.zoomctl .lv{font-family:var(--f-mono);font-size:10.5px;color:var(--amber);background:rgba(11,16,19,.85);padding:1px 4px;border-radius:2px}
+.maphint{position:absolute;left:50px;top:12px;font-size:11px;color:var(--fg-mute);pointer-events:none;background:rgba(11,16,19,.7);padding:2px 6px;border-radius:2px}
+@media (max-width:560px){.maphint{display:none}}
 .coord{position:absolute;right:10px;bottom:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--fg-mute);pointer-events:none}
 .brief h3{font-family:var(--f-disp);font-size:24px;letter-spacing:.03em;margin:4px 0 6px;line-height:1.05}
 .brief .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
@@ -359,6 +367,13 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
         </div>
         <div class="map-wrap">
           <svg id="worldmap" viewBox="0 0 1000 430" role="img" aria-label="드라크마 연방 4개 전구와 소코부 제국, 유럽 망명정부, 저항 거점을 표시한 전술 지도"></svg>
+          <div class="zoomctl" role="group" aria-label="지도 확대·축소">
+            <button type="button" id="zIn" aria-label="확대">+</button>
+            <span class="lv" id="zLv">×1.0</span>
+            <button type="button" id="zOut" aria-label="축소">−</button>
+            <button type="button" id="zReset" aria-label="전체 보기" style="font-size:13px">⟲</button>
+          </div>
+          <div class="maphint">휠·핀치로 확대 · 드래그로 이동 · 더블클릭 확대</div>
           <div class="coord mono" id="coord">LAT — · LON —</div>
         </div>
         <div class="legend">
@@ -871,7 +886,8 @@ const CLIP = {
   atl:  L("-84,36.5 -84,39.7 -80.5,39.7 -80.5,84 -50,84 -50,36.5"),
   gulf: L("-104,36.5 -50,36.5 -50,15 -104,15")
 };
-const VB = { world:[0,0,1000,430], na:[18,40,330,190], eu:[440,10,330,160], dc:[279.0,128.6,12.4,5.4] };
+const VB = { world:[0,0,1000,430], na:[10,30,400,172], eu:[440,8,340,146.2], dc:[279.0,128.5,12.4,5.33] };
+const ASPECT=430/1000, MINW=6;
 
 const svg = $("#worldmap");
 svg.addEventListener("click", hideTip);
@@ -965,15 +981,59 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function applyZoom(vb){
   const z=vb[2]/1000, k=z*(z<0.5?2.2:1);
   for(const id in PTS){ const p=PTS[id]; p._inner.setAttribute("transform",`translate(${p._xy[0]},${p._xy[1]}) scale(${k})`); }
-  $$("#worldmap .rlabel").forEach(t=>t.style.fontSize=(8*Math.max(z,0.25))+"px");
+  $$("#worldmap .rlabel").forEach(t=>{ t.style.fontSize=(8*z*(z<0.5?1.8:1))+"px"; t.style.display = z<0.06 ? "none" : ""; });
   DAM.forEach(d=>d._dots.forEach(c=>c.setAttribute("r",2*k)));
 }
+function getVB(){ return svg.getAttribute("viewBox").split(" ").map(Number); }
+function clampVB([x,y,w]){
+  w=Math.min(1000,Math.max(MINW,w)); const h=w*ASPECT;
+  x=Math.min(1000-w*0.3,Math.max(-w*0.7,x)); y=Math.min(430-h*0.3,Math.max(-h*0.7,y));
+  if(w>=1000){ x=0; y=0; }
+  return [x,y,w,h];
+}
+function setVB(v){ const c=clampVB(v); svg.setAttribute("viewBox",c.map(n=>n.toFixed(3)).join(" ")); applyZoom(c); $("#zLv").textContent="×"+(1000/c[2]).toFixed(1); }
+function toSvg(cx,cy){ const r=svg.getBoundingClientRect(), [x,y,w,h]=getVB(); return [x+(cx-r.left)/r.width*w, y+(cy-r.top)/r.height*h]; }
+function zoomAt(f,px,py){ const [x,y,w,h]=getVB(); setVB([px-(px-x)*f, py-(py-y)*f, w*f]); }
+function zoomCenter(f){ const [x,y,w,h]=getVB(); zoomAt(f,x+w/2,y+h/2); }
+svg.addEventListener("wheel", e => { e.preventDefault(); hideTip(); const [px,py]=toSvg(e.clientX,e.clientY); zoomAt(Math.exp(e.deltaY*(e.deltaMode===1?0.05:0.0015)),px,py); }, {passive:false});
+svg.addEventListener("dblclick", e => { e.preventDefault(); const [px,py]=toSvg(e.clientX,e.clientY); zoomAt(0.5,px,py); });
+$("#zIn").addEventListener("click",()=>zoomCenter(0.6));
+$("#zOut").addEventListener("click",()=>zoomCenter(1/0.6));
+$("#zReset").addEventListener("click",()=>zoomTo("world"));
+// 드래그 이동 + 핀치 줌
+svg.addEventListener("mousedown", e => e.preventDefault()); // 클릭 시 포커스 스크롤 방지 (키보드 Tab 포커스는 유지)
+const ptrs=new Map(); let drag=null, pinch=null, suppressClick=false;
+svg.addEventListener("pointerdown", e => {
+  if(e.pointerType==="mouse" && e.button!==0) return;
+  ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+  if(ptrs.size===1){ drag={x:e.clientX,y:e.clientY,vb:getVB(),moved:false,id:e.pointerId}; pinch=null; }
+  else if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+    pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),vb:getVB(),c:toSvg(mid[0],mid[1])}; drag=null; suppressClick=true; }
+});
+svg.addEventListener("pointermove", e => {
+  if(!ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pinch && ptrs.size>=2){ const [a,b]=[...ptrs.values()]; const d=Math.hypot(a[0]-b[0],a[1]-b[1]); if(d<10) return;
+    const f=pinch.d/d, [x,y,w]=pinch.vb, [px,py]=pinch.c; setVB([px-(px-x)*f, py-(py-y)*f, w*f]); return; }
+  if(!drag) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  if(!drag.moved && Math.hypot(dx,dy)<5) return;
+  if(!drag.moved){ drag.moved=true; svg.classList.add("dragging"); hideTip(); try{ svg.setPointerCapture(drag.id); }catch(_){} }
+  const r=svg.getBoundingClientRect(), [x,y,w]=drag.vb;
+  setVB([x-dx/r.width*w, y-dy/r.height*w*ASPECT, w]);
+});
+const endPtr = e => { ptrs.delete(e.pointerId); if(drag && drag.moved) suppressClick=true;
+  if(ptrs.size===0){ drag=null; pinch=null; svg.classList.remove("dragging"); }
+  else if(ptrs.size===1){ pinch=null; const [id,[cx,cy]]=[...ptrs.entries()][0]; drag={x:cx,y:cy,vb:getVB(),moved:true,id}; } };
+["pointerup","pointercancel"].forEach(t=>svg.addEventListener(t,endPtr));
+svg.addEventListener("click", e => { if(suppressClick){ e.stopPropagation(); e.preventDefault(); suppressClick=false; } }, true);
+svg.addEventListener("pointerdown", () => { if(ptrs.size<=1) suppressClick=false; }, true);
 function zoomTo(key){
   const to=VB[key]||VB.world, from=svg.getAttribute("viewBox").split(" ").map(Number);
-  if(reduceMotion){ svg.setAttribute("viewBox",to.join(" ")); applyZoom(to); return; }
+  if(reduceMotion){ setVB(to); return; }
   const t0=performance.now();
   const step=now=>{ const k=Math.min(1,(now-t0)/450), e=1-Math.pow(1-k,3);
-    const cur=from.map((v,i)=>v+(to[i]-v)*e); svg.setAttribute("viewBox", cur.map(v=>v.toFixed(3)).join(" ")); applyZoom(cur); if(k<1) requestAnimationFrame(step); };
+    const cur=from.map((v,i)=>v+(to[i]-v)*e); setVB(cur); if(k<1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
 $$("[data-zoom]").forEach(b => b.addEventListener("click", () => zoomTo(b.dataset.zoom)));
@@ -1381,7 +1441,7 @@ buildMap(); renderFilters(); fillTargets(); renderPyr(); renderStack(); renderTr
 markSel();
 setBranch(["A","B","C"].includes(S.branch)?S.branch:"C");
 go(location.hash.slice(1)||"map");
-if(matchMedia("(max-width: 700px)").matches){ svg.setAttribute("viewBox", VB.na.join(" ")); applyZoom(VB.na); }
+if(matchMedia("(max-width: 700px)").matches) setVB(VB.na);
 if(!reduceMotion) animMap(); else { mapT=0.2; animMap(); cancelAnimationFrame(mapAnim); }
 })();
 </script>
