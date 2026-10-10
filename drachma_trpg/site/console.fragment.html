@@ -336,6 +336,20 @@ select.inp,input.inp{background:var(--panel-2);border:1px solid var(--line-2);bo
 .turnsep.jumpsep::before,.turnsep.jumpsep::after{border-top:1px dashed var(--c-navy)}
 .entry.chg{border:1px solid var(--line-2);border-left:3px solid var(--ok);background:var(--panel-2);padding:8px 12px;font-size:12.5px;display:grid;gap:5px}
 .entry.chg .label{color:var(--ok)}
+.qa{display:grid;gap:10px;padding:14px;max-height:460px;overflow-y:auto}
+.qa .q{justify-self:end;max-width:85%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px 10px 2px 10px;padding:7px 11px;font-size:13px}
+.qa .a{white-space:pre-wrap;font-size:13px;line-height:1.7;border-left:2px solid var(--c-kgb);padding:2px 0 2px 12px;min-width:0;overflow-wrap:anywhere}
+.qa .a.stream::after{content:"▍";color:var(--c-kgb);animation:blink 1s steps(1) infinite}
+.qa .reg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11.5px;color:var(--ok);margin-top:6px}
+.qa-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.qa-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:0 14px 14px;align-items:end}
+.qa-in textarea{min-height:52px;resize:vertical;font-family:var(--f-body);font-size:13px;letter-spacing:0}
+.qa-in .btns{display:flex;flex-direction:column;gap:6px}
+.badge-free{font-family:var(--f-mono);font-size:10.5px;color:var(--ok);border:1px solid var(--ok);padding:1px 6px;border-radius:2px}
+.npcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.npc{background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:12px;min-width:0}
+.npc h4{margin:2px 0;font-size:15px}
+.npc .career{margin-top:8px}
 .gmmode{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;padding:2px 6px;border-radius:2px;border:1px solid currentColor}
 .ruling{display:grid;gap:4px;font-size:12.5px}
 .ruling .row{display:grid;grid-template-columns:62px minmax(0,1fr) 40px;gap:8px;align-items:baseline;border-bottom:1px dashed var(--line);padding:3px 0}
@@ -484,6 +498,10 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
         <div class="panel-b pcard" id="pcard"></div>
       </aside>
     </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-h"><span>추가 인물 · GM 브리핑 채널에서 생성</span><span class="mono" id="npcCnt">0명</span></div>
+      <div class="panel-b"><div class="npcs" id="npcList"></div></div>
+    </div>
   </section>
 
   <!-- 04 ORG -->
@@ -580,6 +598,19 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
             <span class="st" id="actSt">선택지를 고르거나 D칸에 직접 입력하세요. 같은 선택지를 다시 누르면 선택이 풀립니다.</span>
           </div>
           <div class="jumphint" id="jumpHint"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span>🛈 GM 브리핑 채널 · 진행 외 질의·생성</span><span class="badge-free">턴·시간 소모 없음</span></div>
+          <div class="qa" id="qaLog" aria-live="polite"></div>
+          <div class="qa-quick" id="qaQuick"></div>
+          <div class="qa-in">
+            <textarea class="inp" id="qaIn" placeholder="예) 우리 군 정보기관은 뭐뭐 있어? / 던바의 경력을 상세하게 만들어줘 / 신임 국방정보본부장 인물을 생성해줘" aria-label="GM에게 질문하거나 생성 요청"></textarea>
+            <div class="btns">
+              <button class="btn primary" type="button" id="qaGo">보내기</button>
+              <button class="btn" type="button" id="qaStop" hidden>중지</button>
+              <button class="btn" type="button" id="qaClear">기록 지우기</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="display:grid;gap:16px;min-width:0;align-content:start">
@@ -877,7 +908,7 @@ const NS = "http://www.w3.org/2000/svg";
 const el = (tag,attrs={},parent) => { const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; };
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 /* 세계 상태: 세션(world) 값이 있으면 우선, 없으면 분기 프리셋 */
-const W = () => { const X=sess(); if(!X.world) X.world={people:{},org:{},regions:{},events:[],dam:null}; return X.world; };
+const W = () => { const X=sess(); if(!X.world) X.world={people:{},org:{},regions:{},events:[],dam:null}; if(!X.world.npcs) X.world.npcs=[]; return X.world; };
 const branchDate = () => { const t=new Date(sess().time); return isNaN(t) ? new Date(BRANCH[S.branch].date) : t; };
 const wp = id => W().people[id] || {};
 const postOf = id => wp(id).post || PEOPLE[id].post[S.branch];
@@ -917,7 +948,7 @@ function setBranch(b){
   $("#gameClock").textContent = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
   $("#gameLoc").textContent = `분기점 ${b} · ${B.title}${elapsedTxt()?" · "+elapsedTxt():""} — ${sess().loc}`;
   $("#footBranch").textContent = `ACTIVE BRANCH ${b} · ${B.theme}`;
-  renderMapState(); renderBrief(); renderTimeline(); renderNet(); renderPerson(); renderDamPanel(); renderPyr(); renderTree(); renderSession();
+  renderMapState(); renderBrief(); renderTimeline(); renderNet(); renderPerson(); renderDamPanel(); renderPyr(); renderTree(); renderSession(); renderNpcs(); if(!qaBusy) renderQA();
 }
 $$("#branchSwitch button").forEach(x => x.addEventListener("click", () => setBranch(x.dataset.b)));
 
@@ -1280,7 +1311,7 @@ function renderPerson(){
     <p style="margin:12px 0;font-size:13px;color:var(--fg-dim)">${esc(p.note)}</p>
     ${bar("충성",loyalOf(id),"var(--ok)")}${bar("위험",riskOf(id),"var(--red)")}
     <div class="block" style="border-top:1px dashed var(--line-2);padding-top:10px;margin-top:10px"><div class="label">특성</div><div class="tags" style="margin-top:6px">${p.traits.map(t=>`<span>${esc(t)}</span>`).join("")}</div></div>
-    <div style="border-top:1px dashed var(--line-2);padding-top:10px;margin-top:10px"><div class="label">경력 경로</div><ul class="career">${p.career.map(([y,t])=>`<li><b>${y}</b>${esc(t)}</li>`).join("")}</ul></div>
+    <div style="border-top:1px dashed var(--line-2);padding-top:10px;margin-top:10px"><div class="label">경력 경로</div><ul class="career">${p.career.concat(wp(id).career_extra||[]).map(([y,t])=>`<li><b>${esc(y)}</b>${esc(t)}</li>`).join("")}</ul></div>
     <div class="aging" style="border-top:1px dashed var(--line-2);padding-top:10px">
       <label class="label" for="ageYear">세월의 침식 · 연도 미리보기</label>
       <input type="range" id="ageYear" min="1998" max="2040" value="${by}">
@@ -1312,6 +1343,7 @@ function rosterAt(br){
   for(const id in GRADE){ const g=GRADE[id][br]; if(!g) continue;
     if(out.some(r=>r.pid===id)) continue;
     const o=wp(id); out.push({key:id,nm:PEOPLE[id].name,pid:id,b:+BORN[id].slice(0,4),svc:o.svc||g.svc,mil:o.mil!==undefined?o.mil:g.mil,civ:o.civ!==undefined?o.civ:g.civ,st:(o.status&&o.status!=="현역")?o.status:g.st,post:postOf(id)}); }
+  W().npcs.forEach(n=>{ if(n.status && /사망|숙청|투옥|실종/.test(n.status)) return; out.push({key:"npc:"+n.name,nm:n.name,b:+n.born||0,svc:n.svc,mil:n.mil,civ:n.civ,st:/예편|예비역|전역/.test(n.status||"")?n.status:undefined,post:n.post||"추가 인물"}); });
   out.forEach(r=>{ if(r.pid && (isGone(r.pid) || /예편|예비역|전역/.test(statusOf(r.pid)))) r.st=statusOf(r.pid); });
   // 같은 인물 겸직 → 하나로
   const merged=new Map(); out.forEach(r=>{ const k=r.pid||r.nm; if(merged.has(k)){ merged.get(k).post+=" · "+r.post; } else merged.set(k,{...r}); });
@@ -1650,7 +1682,7 @@ ${hist}
 지역(id: 위협도0-5 상태): ${Object.values(REG).concat(Object.values(PTS)).filter(R=>regionSt(R)[0]>=2).map(R=>`${R._id}: ${regionSt(R)[0]} ${regionSt(R)[1]}`).join(" / ")}
 다모클레스 가동: ${DAM.map(d=>`${d.id} ${damOn(d)}/${d.n}`).join(", ")}
 최근 사건: ${allEvents().filter(e=>e.y<=branchYear()+0.01).slice(-6).map(e=>`${e.d} ${e.t}`).join(" / ")}
-[직전 장면]
+${W().npcs.length?`[추가 인물]\n${W().npcs.map(n=>`- ${n.name} [${n.post||"-"}, ${[n.svc,n.mil||n.civ].filter(Boolean).join(" ")||"-"}, ${n.born?ageAt(+n.born,S.branch)+"세":"나이 미상"}] ${n.note||""}`).join("\n")}\n`:""}[직전 장면]
 ${lastGM.slice(-1800)}`;
 }
 
@@ -1928,6 +1960,135 @@ $("#actGo").addEventListener("click", ()=>play(0));
 $("#jumpGo").addEventListener("click", ()=>play(jumpMonths()));
 $("#jumpN").addEventListener("input", jumpHint); $("#jumpU").addEventListener("change", jumpHint);
 $("#actStop").addEventListener("click", ()=>gmCtl?.abort());
+
+/* ═════════════ GM 브리핑 채널: 진행 외 질의·생성 (턴·시간 소모 없음) ═════════════ */
+const FAC_OK = ["stars","mil","navy","pra","kgb"];
+const qaList = () => { const X=sess(); if(!X.qa) X.qa=[]; return X.qa; };
+let qaBusy=false, qaCtl=null;
+function treeText(nodes, br, d=0, out=[]){
+  nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br,n);
+    out.push(`${"  ".repeat(d)}- ${n.t}${h&&h.nm?` — ${h.nm}${h.mil||h.civ?` (${[h.svc,h.mil||h.civ].filter(Boolean).join(" ")}${h.b?", "+ageAt(h.b,br)+"세":""})`:""}`:""}${n.n?` · ${n.n}`:""}${n.loc?` · ${n.loc}`:""}`);
+    if(n.c) treeText(n.c, br, d+1, out); });
+  return out;
+}
+const qaTokens = q => q.replace(/[?!.,·]/g," ").split(/\s+/).map(t=>t.replace(/(은|는|이|가|을|를|의|에|에서|로|으로|와|과|도|만)$/,"")).filter(t=>t.length>=2 && !/^(뭐뭐|뭐가|무엇|어떤|있어|있나|알려줘|알려|주세요|해줘|우리|현재|지금|목록|정리|설명)$/.test(t));
+function relevantTabs(q){
+  const t=q.toLowerCase(), pick=new Set();
+  ORG_TABS.forEach(([k,n])=>{ const o=ORG[k]; if(t.includes(n.toLowerCase()) || qaTokens(q).some(tok=>(n+o.t+o.sub).includes(tok))) pick.add(k); });
+  if(/정보|첩보|방첩|kgb|보안/.test(t)){ pick.add("intel"); pick.add("milintel"); }
+  if(/군|사령부|전구|사단|함대|부대/.test(t)) pick.add("mil");
+  if(/정부|장관|부처|행정|총리/.test(t)) pick.add("gov");
+  if(/친위|경호|흑수리/.test(t)) pick.add("guard");
+  if(/평의회|총통부|감찰|동원/.test(t)) pick.add("state");
+  return [...pick];
+}
+function localAnswer(q){
+  const br=orgBranch(), toks=qaTokens(q), out=[];
+  const tabs=relevantTabs(q);
+  tabs.forEach(k=>{ out.push(`■ ${ORG[k].t} (${ORG[k].sub})`); out.push(...treeText(ORG[k].c, br).slice(0,60)); out.push(""); });
+  if(!tabs.length && toks.length){
+    const hits=[]; const walk=(nodes,path)=>nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br,n); const txt=[n.t,n.note,n.loc,h&&h.nm].filter(Boolean).join(" ");
+      if(toks.some(tok=>txt.includes(tok))) hits.push(`- ${path?path+" › ":""}${n.t}${h&&h.nm?` — ${h.nm}${h.mil||h.civ?" ("+(h.mil||h.civ)+")":""}`:""}${n.note?`\n    ${n.note}`:""}`);
+      if(n.c) walk(n.c, path?path+" › "+n.t:n.t); });
+    ORG_TABS.forEach(([k])=>walk(ORG[k].c,"")); if(hits.length){ out.push("■ 조직 검색 결과"); out.push(...hits.slice(0,25)); out.push(""); }
+  }
+  Object.keys(PEOPLE).forEach(id=>{ const p=PEOPLE[id]; if(toks.some(tok=>p.name.includes(tok)||p.en.toLowerCase().includes(tok.toLowerCase()))){
+    out.push(`■ ${p.name} [${postOf(id)}, ${rankOf(id)}, ${ageOf(id)}세] · 상태 ${statusOf(id)}`);
+    p.career.concat(wp(id).career_extra||[]).forEach(([y,t])=>out.push(`  ${y} ${t}`)); out.push(`  ${wp(id).note||p.note}`, ""); } });
+  W().npcs.forEach(n=>{ if(toks.some(tok=>n.name.includes(tok))){ out.push(`■ ${n.name} [${n.post||"-"}] ${n.note||""}`); (n.career||[]).forEach(([y,t])=>out.push(`  ${y} ${t}`)); out.push(""); } });
+  Object.values(REG).concat(Object.values(PTS)).forEach(R=>{ if(toks.some(tok=>R.name.includes(tok))){ const [lv,st]=regionSt(R); out.push(`■ ${R.name} · ${st} (위협도 ${lv})\n  ${regionBrief(R)}`, ""); } });
+  if(/생성|만들어|창작|짜줘/.test(q)) out.push("※ 인물 생성·경력 창작은 Claude GM이 연결된 상태(claude.ai에서 열고 Claude 사용 허용)에서만 가능합니다.");
+  return out.join("\n").trim() || "로컬 기록에서 관련 정보를 찾지 못했습니다. 조직·인물·지역 이름을 넣어 다시 물어보세요. (상세 답변은 Claude GM 연결 시 가능)";
+}
+function applyBrief(meta){
+  const w=W(), reg=[];
+  (Array.isArray(meta.new_npcs)?meta.new_npcs:[]).slice(0,6).forEach(n=>{
+    if(!n?.name) return;
+    const npc={name:String(n.name).slice(0,40),born:+n.born||0,svc:n.svc?String(n.svc).slice(0,12):"",mil:n.mil?String(n.mil).slice(0,12):"",civ:n.civ?String(n.civ).slice(0,16):"",post:String(n.post||"").slice(0,80),
+      faction:FAC_OK.includes(n.faction)?n.faction:"mil",career:(Array.isArray(n.career)?n.career:[]).slice(0,16).map(c=>[String(c[0]).slice(0,10),String(c[1]).slice(0,120)]),
+      traits:(Array.isArray(n.traits)?n.traits:[]).slice(0,5).map(t=>String(t).slice(0,30)),note:String(n.note||"").slice(0,200),status:String(n.status||"현역").slice(0,12)};
+    const i=w.npcs.findIndex(x=>x.name===npc.name); if(i>=0) w.npcs[i]=npc; else w.npcs.push(npc);
+    reg.push(`<button class="chip" type="button" data-npc="${esc(npc.name)}"><span class="dot" style="background:${FACTION_COLOR[npc.faction]}"></span>${esc(npc.name)}</button>`);
+  });
+  (Array.isArray(meta.career_add)?meta.career_add:[]).forEach(c=>{
+    const id=String(c?.id||""); const car=(Array.isArray(c?.career)?c.career:[]).slice(0,16).map(x=>[String(x[0]).slice(0,10),String(x[1]).slice(0,120)]);
+    if(PEOPLE[id] && car.length){ const o=w.people[id]||(w.people[id]={}); o.career_extra=(o.career_extra||[]).concat(car).slice(-24);
+      reg.push(`<button class="chip" type="button" data-person="${id}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[id].fac]}"></span>${esc(PEOPLE[id].name)} 경력 +${car.length}</button>`); }
+    const npc=w.npcs.find(n=>n.name===c?.id); if(npc && car.length){ npc.career=(npc.career||[]).concat(car); reg.push(`<button class="chip" type="button" data-npc="${esc(npc.name)}">${esc(npc.name)} 경력 +${car.length}</button>`); }
+  });
+  w.npcs=w.npcs.slice(-40);
+  return reg;
+}
+function renderQA(stream){
+  const L=qaList();
+  let html = L.length ? "" : `<div class="empty">이야기 진행과 별개로 세계관 정보를 묻거나, 인물·경력을 만들어 달라고 요청하세요. 답변은 턴·시간·HP를 소모하지 않고, 생성된 인물과 경력은 세계에 등록되어 이후 이야기에 반영됩니다.</div>`;
+  L.forEach(x=>{ html+=`<div class="q">${esc(x.q)}</div><div class="a">${esc(x.a)}${x.reg&&x.reg.length?`<div class="reg">세계에 등록됨: ${x.reg.join("")}</div>`:""}</div>`; });
+  if(stream!=null) html+=`<div class="a stream">${esc(stream||"GM이 기록을 조회하는 중…")}</div>`;
+  const el=$("#qaLog"); el.innerHTML=html; el.scrollTop=el.scrollHeight;
+  const sel=PEOPLE[S.person]?S.person:"dunbar";
+  $("#qaQuick").innerHTML = [["우리 군 정보기관은 뭐뭐 있어?","군 정보기관 목록"],[`${PEOPLE[sel].name}의 경력을 기수·보직 경로까지 상세하게 만들어줘`,`${PEOPLE[sel].name} 경력 상세`],["공석이 된 요직에 앉힐 신세대 장교 인물을 한 명 생성해줘","새 인물 생성"],["지금 소코부 제국과 망명정부의 동향을 정리해줘","현재 대외 정세"]]
+    .map(([q,l])=>`<button class="chip" type="button" data-qa="${esc(q)}">${esc(l)}</button>`).join("");
+  $$("#qaQuick [data-qa]").forEach(b=>b.addEventListener("click",()=>{ $("#qaIn").value=b.dataset.qa; $("#qaIn").focus(); }));
+}
+function renderNpcs(){
+  const N=W().npcs; $("#npcCnt").textContent=`${N.length}명`;
+  $("#npcList").innerHTML = N.length ? N.map(n=>`<div class="npc" data-npc-card="${esc(n.name)}">
+      <div class="label" style="color:${FACTION_COLOR[n.faction]}">${esc({stars:"스타즈",mil:"정규군·참모",navy:"해군 전략",pra:"친위군·감찰",kgb:"연방보안유지국"}[n.faction])}${n.status&&n.status!=="현역"?` · <span class="s4">${esc(n.status)}</span>`:""}</div>
+      <h4>${esc(n.name)}</h4>
+      <div class="hint">${esc([n.svc,n.mil||n.civ].filter(Boolean).join(" "))}${n.born?` · ${n.born}년생 · ${ageAt(n.born,S.branch)}세`:""}</div>
+      <div style="font-size:12.5px;margin-top:4px">${esc(n.post)}</div>
+      ${n.traits.length?`<div class="tags" style="margin-top:6px">${n.traits.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}
+      ${n.note?`<p class="hint" style="margin:6px 0 0">${esc(n.note)}</p>`:""}
+      ${n.career.length?`<ul class="career">${n.career.map(([y,t])=>`<li><b>${esc(y)}</b>${esc(t)}</li>`).join("")}</ul>`:""}</div>`).join("")
+    : `<div class="empty">아직 추가 인물이 없습니다. 판정·상태창 탭의 GM 브리핑 채널에서 "인물을 생성해줘"라고 요청하면 여기에 등록됩니다.</div>`;
+}
+document.addEventListener("click", e => { const b=e.target.closest("[data-npc]"); if(!b) return; go("people"); const c=document.querySelector(`[data-npc-card="${CSS.escape(b.dataset.npc)}"]`); if(c){ c.scrollIntoView({block:"center"}); c.style.borderColor="var(--amber)"; setTimeout(()=>c.style.borderColor="",1600); } });
+
+async function askGM(){
+  if(qaBusy) return;
+  const q=$("#qaIn").value.trim(); if(!q){ $("#qaIn").focus(); return; }
+  qaBusy=true; qaCtl=new AbortController(); $("#qaGo").disabled=true; $("#qaStop").hidden=!sampleFn;
+  const L=qaList(); renderQA("");
+  try{
+    let a, reg=[];
+    if(sampleFn){
+      const tabs=relevantTabs(q); const br=orgBranch();
+      const trees=(tabs.length?tabs:ORG_TABS.map(([k])=>k)).map(k=>`■ ${ORG[k].t}\n`+treeText(ORG[k].c,br).join("\n")).join("\n\n").slice(0,6000);
+      const recent=L.slice(-4).map(x=>`Q: ${x.q}\nA: ${x.a.slice(0,600)}`).join("\n\n");
+      const prompt=`너는 대체역사 TRPG 'Project Drachma'의 게임 마스터이자 세계관 기록관이다. 지금은 이야기 진행이 아니라 플레이어의 **진행 외 질의·생성 요청**에 답하는 시간이다. 장면을 서술하거나 시간을 흘리거나 판정하지 마라. 아래 세계관 기록과 모순되지 않게, 군사·정치 고증을 살려 한국어로 답하라. 계급은 대한민국 국군 편제(원수~이병), 공무원은 대한민국 공무원 편제(정무직·고위공무원단 가/나급·3~9급)를 쓴다. 경력을 만들 때는 사관학교 기수·임관 연도·병과·보직 경로·진급 연령을 현실적으로 짜라. 목록·표가 어울리면 깔끔한 목록으로 정리하라.
+${worldBrief()}
+[주요 조직 지휘관]
+${orgDigest()}
+[관련 조직도 (분기 ${br} 기준)]
+${trees}
+${recent?`[이전 질의]\n${recent}\n`:""}
+[플레이어 요청]
+${q}
+
+새 인물을 생성했거나 기존 인물의 경력을 만들었다면, 답변 마지막에 아래 JSON을 \`\`\`json 코드 블록 하나로 붙여라(해당 없으면 붙이지 마라):
+{"new_npcs":[{"name":"이름","born":출생연도,"svc":"육군|해군|공군|해병대|친위군|민간","mil":"군 계급 또는 null","civ":"공무원 계급 또는 null","post":"현 직책","faction":"stars|mil|navy|pra|kgb","career":[["연도","보직·사건"]],"traits":["특성"],"note":"성향·야망·약점 한 문장","status":"현역"}],"career_add":[{"id":"기존 인물 id(ethan|arthur|weiss|hoji|crevat|dunbar) 또는 추가 인물 이름","career":[["연도","보직·사건"]]}]}`;
+      const {text}=await sampleFn(prompt,{modelTier:"default",cache:false,signal:qaCtl.signal,onText:({text})=>renderQA(text.split("```")[0].trimEnd())});
+      a=text.split("```")[0].trim();
+      let meta={}; try{ const m=text.match(/```(?:json)?\s*([\s\S]*?)```/); if(m) meta=JSON.parse(m[1]); }catch(e){ meta={}; }
+      reg=applyBrief(meta);
+    } else {
+      a="(오프라인 로컬 기록 조회)\n"+localAnswer(q);
+    }
+    L.push({q,a:a||"(답변 없음)",reg,t:new Date().toISOString()}); sess().qa=L.slice(-30); saveSess();
+    $("#qaIn").value="";
+    if(reg.length){ renderNpcs(); renderPerson(); renderPyr(); }
+  }catch(e){
+    const code=e&&e.code;
+    if(code==="not_granted"||code==="sampling_disabled"||code==="capability_disabled"||code==="not_declared"){ sampleFn=null; setGMMode(); L.push({q,a:"Claude 사용이 허용되지 않아 로컬 기록으로 답합니다.\n"+localAnswer(q),reg:[]}); saveSess(); }
+    else if(code!=="cancelled") L.push({q,a:code==="rate_limited"?"Claude 호출이 잠시 제한되었습니다. 조금 뒤 다시 보내세요.":"GM 연결 중 문제가 생겼습니다. 다시 보내세요.",reg:[]});
+  }finally{
+    qaBusy=false; qaCtl=null; $("#qaGo").disabled=false; $("#qaStop").hidden=true; renderQA();
+  }
+}
+$("#qaGo").addEventListener("click", askGM);
+$("#qaStop").addEventListener("click", ()=>qaCtl?.abort());
+$("#qaIn").addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.ctrlKey||e.metaKey)){ e.preventDefault(); askGM(); } });
+$("#qaClear").addEventListener("click", ()=>{ if(qaBusy) return; sess().qa=[]; saveSess(); renderQA(); });
 /* ═════════════ INIT ═════════════ */
 buildMap(); renderFilters(); fillTargets(); renderOrgTabs(); renderStack();
 markSel();
