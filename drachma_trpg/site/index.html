@@ -196,6 +196,8 @@ section.view{padding-top:18px}
 #netsvg .node text.ini{font-family:var(--f-disp);font-weight:800;font-size:18px;text-anchor:middle;dominant-baseline:central}
 #netsvg .node.sel circle.ring{stroke-width:4;filter:drop-shadow(0 0 6px rgba(232,176,79,.5))}
 #netsvg .node.dim{opacity:.3}
+#netsvg .node.gone circle.ring{stroke-dasharray:3 4;fill:#1A1214}
+#netsvg .node.gone text.n{text-decoration:line-through;fill:var(--fg-mute)}
 .pcard h3{font-family:var(--f-disp);font-size:26px;margin:0;line-height:1}
 .pcard .en{font-family:var(--f-mono);font-size:11px;color:var(--fg-mute);letter-spacing:.06em}
 .meter{display:grid;grid-template-columns:60px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:12px;margin-bottom:6px}
@@ -330,6 +332,16 @@ select.inp,input.inp{background:var(--panel-2);border:1px solid var(--line-2);bo
 .opt.free textarea:focus{outline:none}
 .actbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 14px 14px}
 .actbar .st{font-size:12px;color:var(--fg-mute);flex:1 1 200px}
+.jump{display:inline-flex;gap:4px;align-items:center}
+.jump #jumpN{width:64px}
+.jump #jumpU{width:auto}
+.jumpbtn{border-color:var(--c-navy);color:var(--c-navy)}
+.jumpbtn:hover{background:var(--c-navy);color:#06130F;border-color:var(--c-navy)}
+.jumphint{font-size:11.5px;color:var(--fg-mute);padding:0 14px 12px;margin-top:-6px}
+.turnsep.jumpsep{color:var(--c-navy);font-size:11px}
+.turnsep.jumpsep::before,.turnsep.jumpsep::after{border-top:1px dashed var(--c-navy)}
+.entry.chg{border:1px solid var(--line-2);border-left:3px solid var(--ok);background:var(--panel-2);padding:8px 12px;font-size:12.5px;display:grid;gap:5px}
+.entry.chg .label{color:var(--ok)}
 .gmmode{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;padding:2px 6px;border-radius:2px;border:1px solid currentColor}
 .ruling{display:grid;gap:4px;font-size:12.5px}
 .ruling .row{display:grid;grid-template-columns:62px minmax(0,1fr) 40px;gap:8px;align-items:baseline;border-bottom:1px dashed var(--line);padding:3px 0}
@@ -567,9 +579,15 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
           <div class="opts" id="opts" role="group" aria-label="행동 선택지"></div>
           <div class="actbar">
             <button class="btn primary" type="button" id="actGo">행동 실행</button>
+            <span class="jump" role="group" aria-label="시간 점프">
+              <input class="inp mono" id="jumpN" type="number" min="1" max="120" value="6" aria-label="점프 기간">
+              <select class="inp" id="jumpU" aria-label="점프 단위"><option value="m">개월</option><option value="y">년</option></select>
+              <button class="btn jumpbtn" type="button" id="jumpGo">⏩ 시간 점프</button>
+            </span>
             <button class="btn" type="button" id="actStop" hidden>중지</button>
-            <span class="st" id="actSt">선택지를 고르거나 D칸에 직접 입력하세요.</span>
+            <span class="st" id="actSt">선택지를 고르거나 D칸에 직접 입력하세요. 같은 선택지를 다시 누르면 선택이 풀립니다.</span>
           </div>
+          <div class="jumphint" id="jumpHint"></div>
         </div>
       </div>
       <div style="display:grid;gap:16px;min-width:0;align-content:start">
@@ -777,7 +795,9 @@ const EVENTS = [
   {id:"T23",d:"2022-11-01",y:2022.83,c:"politics",t:"에단 전역 · 호우지 승계",p:"에단 → 제1부의장·비상동원위원장. 호우지 친위군 총사령관.",r:["mtweather","ftmeade"],who:["ethan","hoji"]},
   {id:"BP-C",d:"2022-11-14 11:00",y:2022.87,c:"bp",bp:"C",t:"분기점 C — 권력 재편 독대",p:"레이븐록 지하. 노쇠한 신과 사냥개들.",r:["ravenrock"],who:["drac","ethan"]}
 ];
-const ECAT = { person:["인물","var(--c-stars)"], politics:["정치","var(--c-kgb)"], military:["군사","var(--c-mil)"], war:["전쟁·유혈","var(--c-pra)"], space:["우주","var(--c-navy)"], bp:["분기점","var(--amber)"] };
+const ECAT = { person:["인물","var(--c-stars)"], politics:["정치","var(--c-kgb)"], military:["군사","var(--c-mil)"], war:["전쟁·유혈","var(--c-pra)"], space:["우주","var(--c-navy)"], bp:["분기점","var(--amber)"], session:["플레이 기록","var(--ok)"] };
+const allEvents = () => EVENTS.concat(W().events.map((e,i)=>{ const d=new Date(e.date); const y=isNaN(d)?branchYear():d.getFullYear()+(d.getMonth()+d.getDate()/31)/12;
+  return {id:"S"+i,d:String(e.date).slice(0,10),y,c:"session",t:String(e.title||"사건"),p:String(e.desc||""),r:(e.regions||[]).filter(r=>REG[r]||PTS[r]),who:(e.people||[]).filter(x=>PEOPLE[x])}; }));
 
 const STATS = [["지능(연산)",10],["정치(권모)",6],["카리스마",4],["통솔(군 장악)",5],["체력",null],["공감(신뢰)",-1]];
 const HP_MOD = {A:2,B:-1,C:-3};
@@ -864,7 +884,20 @@ const $$ = s => Array.from(document.querySelectorAll(s));
 const NS = "http://www.w3.org/2000/svg";
 const el = (tag,attrs={},parent) => { const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; };
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const branchDate = () => new Date(BRANCH[S.branch].date);
+/* 세계 상태: 세션(world) 값이 있으면 우선, 없으면 분기 프리셋 */
+const W = () => { const X=sess(); if(!X.world) X.world={people:{},org:{},regions:{},events:[],dam:null}; return X.world; };
+const branchDate = () => { const t=new Date(sess().time); return isNaN(t) ? new Date(BRANCH[S.branch].date) : t; };
+const wp = id => W().people[id] || {};
+const postOf = id => wp(id).post || PEOPLE[id].post[S.branch];
+const rankOf = id => wp(id).rank || PEOPLE[id].rank[S.branch];
+const loyalOf = id => wp(id).loyal ?? PEOPLE[id].loyal;
+const riskOf = id => wp(id).risk ?? PEOPLE[id].risk;
+const statusOf = id => wp(id).status || "현역";
+const isGone = id => /사망|숙청|투옥|실종/.test(statusOf(id));
+const regionSt = R => { const o=W().regions[R._id]; const base=R.st[S.branch]; return o ? [o.lv ?? base[0], o.status || base[1]] : base; };
+const regionBrief = R => W().regions[R._id]?.brief || (typeof R.brief==="string" ? R.brief : R.brief[S.branch]);
+const damOn = d => { const o=W().dam; return o && Number.isFinite(+o[d.id]) ? Math.max(0,Math.min(d.n,+o[d.id])) : d.on[S.branch]; };
+const elapsedTxt = () => { const a=new Date(BRANCH[S.branch].date), b=branchDate(); let m=(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); if(m<=0) return ""; const y=Math.floor(m/12); m%=12; return `분기점 이후 +${y?y+"년 ":""}${m?m+"개월":""}`.trim(); };
 const ageOf = (id, at = branchDate()) => { const b=new Date(BORN[id]); let a=at.getFullYear()-b.getFullYear(); if(at < new Date(at.getFullYear(), b.getMonth(), b.getDate())) a--; return a; };
 const branchYear = () => { const d=branchDate(); return d.getFullYear() + (d.getMonth()+d.getDate()/31)/12; };
 const tip = $("#tip");
@@ -888,17 +921,18 @@ addEventListener("hashchange", () => go(location.hash.slice(1)));
 function setBranch(b){
   S.branch=b; store.set("branch",b);
   $$("#branchSwitch button").forEach(x => x.setAttribute("aria-pressed", x.dataset.b===b));
-  const B=BRANCH[b], d=branchDate();
-  $("#gameClock").textContent = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:00`;
-  $("#gameLoc").textContent = `분기점 ${b} · ${B.title} — ${B.loc}`;
+  const B=BRANCH[b]; sess(); const d=branchDate();
+  $("#gameClock").textContent = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+  $("#gameLoc").textContent = `분기점 ${b} · ${B.title}${elapsedTxt()?" · "+elapsedTxt():""} — ${sess().loc}`;
   $("#footBranch").textContent = `ACTIVE BRANCH ${b} · ${B.theme}`;
   renderMapState(); renderBrief(); renderTimeline(); renderNet(); renderPerson(); renderDamPanel(); renderPyr(); renderTree(); renderSession();
 }
 $$("#branchSwitch button").forEach(x => x.addEventListener("click", () => setBranch(x.dataset.b)));
 
 /* ═════════════ MAP ═════════════ */
-const W=1000,H=430, LAT0=84, LATSPAN=146;
-const P = ([lon,lat]) => [ (lon+180)/360*W, (LAT0-lat)/LATSPAN*H ];
+for(const k in REG) REG[k]._id=k; for(const k in PTS) PTS[k]._id=k;
+const MW=1000,H=430, LAT0=84, LATSPAN=146;
+const P = ([lon,lat]) => [ (lon+180)/360*MW, (LAT0-lat)/LATSPAN*H ];
 const pts = arr => arr.map(p => P(p).map(v=>v.toFixed(1)).join(",")).join(" ");
 const L = s => s.trim().split(/\s+/).map(t=>t.split(",").map(Number));
 
@@ -943,7 +977,7 @@ function buildMap(){
   for(const k in CLIP){ const cp=el("clipPath",{id:"clip-"+k},defs); el("polygon",{points:pts(CLIP[k])},cp); }
   g.grat = el("g",{},svg);
   for(let lon=-180; lon<=180; lon+=30){ const x=P([lon,0])[0]; el("line",{x1:x,y1:0,x2:x,y2:H,class:"grat"},g.grat); }
-  for(let lat=-60; lat<=80; lat+=20){ const y=P([0,lat])[1]; el("line",{x1:0,y1:y,x2:W,y2:y,class:"grat"},g.grat); }
+  for(let lat=-60; lat<=80; lat+=20){ const y=P([0,lat])[1]; el("line",{x1:0,y1:y,x2:MW,y2:y,class:"grat"},g.grat); }
   g.land = el("g",{},svg);
   ["samerica","greenland","iceland","asia","japan","africa","madagascar","borneo","sumatra","australia","newguinea","arctic1","arctic2","ireland"].forEach(k => el("polygon",{points:pts(GEO[k]),class:"land"},g.land));
   g.regions = el("g",{},svg);
@@ -977,14 +1011,14 @@ function buildMap(){
     if(p.label){ const t=el("text",p.left?{x:-3.6,y:-2.6,"text-anchor":"end"}:{x:3.6,y:-2.6},inner); t.textContent=p.label; }
     grp.addEventListener("click", e => { e.stopPropagation(); selectPoint(id); });
     grp.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); selectPoint(id);} });
-    grp.addEventListener("mousemove", e => { const s=p.st[S.branch]; showTip(`<b>${esc(s[1])}</b><br>${esc(p.name)}`, e); });
+    grp.addEventListener("mousemove", e => { const s=regionSt(p); showTip(`<b>${esc(s[1])}</b><br>${esc(p.name)}`, e); });
     grp.addEventListener("mouseleave", hideTip);
   }
   // 좌표 표시
   svg.addEventListener("mousemove", e => {
     const r=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal;
     const x=vb.x+(e.clientX-r.left)/r.width*vb.width, y=vb.y+(e.clientY-r.top)/r.height*vb.height;
-    const lon=x/W*360-180, lat=LAT0-y/H*LATSPAN;
+    const lon=x/MW*360-180, lat=LAT0-y/H*LATSPAN;
     $("#coord").textContent=`LAT ${lat.toFixed(1)}° · LON ${lon.toFixed(1)}°`;
   });
   buildTracks();
@@ -1013,7 +1047,7 @@ let mapAnim=null, mapT=0;
 function animMap(){
   mapT+=0.0006;
   DAM.forEach(d => {
-    const on=d.on[S.branch];
+    const on=damOn(d);
     d._dots.forEach((c,k) => {
       if(k>=on){ c.setAttribute("visibility","hidden"); return; }
       c.setAttribute("visibility","visible");
@@ -1091,7 +1125,7 @@ layerToggle("#lyDam", on => g.dam.style.display = on?"":"none");
 
 function renderMapState(){
   for(const id in PTS){
-    const p=PTS[id], lv=p.st[S.branch][0];
+    const p=PTS[id], lv=regionSt(p)[0];
     p._pulse.style.display = lv>=4 ? "" : "none";
     p._pulse.setAttribute("stroke", lv>=4 ? "var(--red)" : FACTION_COLOR[p.cat]);
   }
@@ -1108,15 +1142,15 @@ function highlightRegions(ids){
 const threat = lv => `<span class="threat s${Math.max(lv,1)}">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?"on":""}"></i>`).join("")}</span>`;
 const LV = ["해당 없음","안정","관찰","경계","위험","임계"];
 function personChips(ids){ return ids.length ? `<div class="chips">${ids.map(p=>`<button class="chip" type="button" data-person="${p}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[p].fac]}"></span>${esc(PEOPLE[p].name)}</button>`).join("")}</div>` : `<div class="empty">연결된 인물 없음</div>`; }
-function eventChips(ids){ return ids.length ? `<div class="chips">${ids.map(e=>{const ev=EVENTS.find(x=>x.id===e); return ev?`<button class="chip" type="button" data-event="${e}"><span class="mono" style="color:var(--amber)">${esc(ev.d.slice(0,7))}</span>${esc(ev.t)}</button>`:"";}).join("")}</div>` : `<div class="empty">연결된 사건 없음</div>`; }
+function eventChips(ids){ return ids.length ? `<div class="chips">${ids.map(e=>{const ev=allEvents().find(x=>x.id===e); return ev?`<button class="chip" type="button" data-event="${e}"><span class="mono" style="color:var(--amber)">${esc(ev.d.slice(0,7))}</span>${esc(ev.t)}</button>`:"";}).join("")}</div>` : `<div class="empty">연결된 사건 없음</div>`; }
 function renderBrief(){
   const id=S.region, isPt=!!PTS[id], R=isPt?PTS[id]:REG[id];
-  const [lv,stx]=R.st[S.branch];
+  const [lv,stx]=regionSt(R);
   $("#briefCode").textContent = `${id.toUpperCase()} · BR-${S.branch}`;
   let h = `<div class="label">${isPt?"거점":"지역"} · ${esc(isPt?(REG[R.region]?.name||"국제"):R.type)}</div>
     <h3>${esc(R.name)}</h3>
     <div class="row"><span class="status s${lv}">${esc(stx)}</span>${threat(lv)}<span class="hint">위협도 ${LV[lv]}</span></div>`;
-  h += `<p>${esc(isPt?R.brief:R.brief[S.branch])}</p>`;
+  h += `<p>${esc(regionBrief(R))}</p>`;
   if(!isPt){
     h += `<dl class="kv">${R.hq?`<dt>사령부</dt><dd>${esc(R.hq)}</dd>`:""}<dt>분기 A</dt><dd>${esc(R.st.A[1])}</dd><dt>분기 B</dt><dd>${esc(R.st.B[1])}</dd><dt>분기 C</dt><dd>${esc(R.st.C[1])}</dd></dl>`;
     if(R.units.length) h += `<div class="block"><div class="label">주둔·전력</div><ul>${R.units.map(u=>`<li>${esc(u)}</li>`).join("")}</ul></div>`;
@@ -1145,7 +1179,8 @@ document.addEventListener("click", e => {
 });
 
 /* ═════════════ TIMELINE ═════════════ */
-const TX = y => 40 + (y-1950)/(2023.5-1950)*1120;
+let TL_END=2023.5;
+const TX = y => 40 + (y-1950)/(TL_END-1950)*1120;
 function renderFilters(){
   $("#tlFilters").innerHTML = `<span class="label" style="align-self:center;margin-right:4px">분류</span>` + Object.entries(ECAT).map(([k,[n,c]]) =>
     `<button class="chip" type="button" data-f="${k}" aria-pressed="${S.filters.has(k)}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("");
@@ -1154,13 +1189,14 @@ function renderFilters(){
 function renderTimeline(){
   const s=$("#tlsvg"); s.innerHTML="";
   const by=branchYear();
+  TL_END=Math.max(2023.5, Math.ceil(by)+1.5);
   el("line",{x1:40,y1:120,x2:1160,y2:120,class:"axis"},s);
-  for(let y=1950;y<=2020;y+=5){ const x=TX(y); el("line",{x1:x,y1:116,x2:x,y2:124,class:"axis"},s); const t=el("text",{x,y:140,class:"yr","text-anchor":"middle"},s); t.textContent=y; }
+  for(let y=1950;y<=TL_END-1;y+=5){ const x=TX(y); el("line",{x1:x,y1:116,x2:x,y2:124,class:"axis"},s); const t=el("text",{x,y:140,class:"yr","text-anchor":"middle"},s); t.textContent=y; }
   // 현재 분기 이후 음영
   el("rect",{x:TX(by),y:20,width:Math.max(0,1160-TX(by)),height:100,fill:"rgba(255,255,255,0.025)"},s);
   const nowL=el("text",{x:TX(by)+4,y:30,class:"yr",fill:"var(--amber)"},s); nowL.textContent="▸ 현재 시점 이후: 원 타임라인 (미확정)";
   // 레인 배치 (겹침 방지)
-  const lanes=[]; const vis=EVENTS.filter(e=>S.filters.has(e.c));
+  const lanes=[]; const vis=allEvents().filter(e=>S.filters.has(e.c)).sort((a,b)=>a.y-b.y);
   vis.forEach(e => {
     const x=TX(e.y);
     if(e.c==="bp"){
@@ -1190,7 +1226,7 @@ function renderTimeline(){
   }).join("");
   $$("#evList .ev-card").forEach(c => c.addEventListener("click", ev => {
     if(ev.target.closest("button")) return;
-    S.evSel=c.dataset.id; const e=EVENTS.find(x=>x.id===S.evSel); highlightRegions(e.r); renderTimeline();
+    S.evSel=c.dataset.id; const e=allEvents().find(x=>x.id===S.evSel); highlightRegions(e.r); renderTimeline();
   }));
   $$("[data-setbp]").forEach(b => b.addEventListener("click", () => setBranch(b.dataset.setbp)));
 }
@@ -1212,12 +1248,12 @@ function renderNet(){
     const t=el("text",{x:lx,y:ly,class:"elabel"+(on?"":" dim"),"text-anchor":"middle"},s); t.textContent=label;
   });
   for(const id in PEOPLE){
-    const p=PEOPLE[id];
-    const gg=el("g",{class:"node"+(id===sel?" sel":"")+(linked.has(id)?"":" dim"),tabindex:0,role:"button","aria-label":p.name},s);
+    const p=PEOPLE[id], gone=isGone(id);
+    const gg=el("g",{class:"node"+(id===sel?" sel":"")+(linked.has(id)?"":" dim")+(gone?" gone":""),tabindex:0,role:"button","aria-label":p.name+(gone?" ("+statusOf(id)+")":"")},s);
     el("circle",{cx:p.x,cy:p.y,r:30,class:"ring",stroke:FACTION_COLOR[p.fac]},gg);
     const ini=el("text",{x:p.x,y:p.y,class:"ini",fill:FACTION_COLOR[p.fac]},gg); ini.textContent=p.ini;
     const n=el("text",{x:p.x,y:p.y+48,class:"n"},gg); n.textContent=p.name;
-    const r=el("text",{x:p.x,y:p.y+62,class:"r"},gg); r.textContent=`${p.rank[S.branch]} · ${ageOf(id)}세`;
+    const r=el("text",{x:p.x,y:p.y+62,class:"r"},gg); r.textContent= gone ? `${statusOf(id)} · ${ageOf(id)}세` : `${rankOf(id)} · ${ageOf(id)}세`;
     const pick=()=>{ S.person=id; renderNet(); renderPerson(); };
     gg.addEventListener("click",pick);
     gg.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();} });
@@ -1244,13 +1280,13 @@ function renderPerson(){
     <div class="label" style="color:${FACTION_COLOR[p.fac]}">${{stars:"스타즈",mil:"정규군·참모",navy:"해군 전략",pra:"친위군·감찰",kgb:"연방보안유지국"}[p.fac]}</div>
     <h3>${esc(p.name)}</h3><div class="en">${p.en} · b. ${BORN[id].slice(0,4)}</div>
     <dl class="kv" style="margin-top:12px">
-      <dt>표기</dt><dd>${esc(p.name)} [${esc(p.post[S.branch])}, ${esc(p.rank[S.branch])}, ${age}세]</dd>
+      <dt>현재</dt><dd>${isGone(id)?`<span class="status s4">${esc(statusOf(id))}</span> `:""}${esc(p.name)} [${esc(postOf(id))}, ${esc(rankOf(id))}, ${age}세]${wp(id).note?`<br><span class="hint">${esc(wp(id).note)}</span>`:""}</dd>
       <dt>A · 1998</dt><dd>${esc(p.rank.A)} — ${esc(p.post.A)}</dd>
       <dt>B · 2020</dt><dd>${esc(p.rank.B)} — ${esc(p.post.B)}</dd>
       <dt>C · 2022</dt><dd>${esc(p.rank.C)} — ${esc(p.post.C)}</dd>
     </dl>
     <p style="margin:12px 0;font-size:13px;color:var(--fg-dim)">${esc(p.note)}</p>
-    ${bar("충성",p.loyal,"var(--ok)")}${bar("위험",p.risk,"var(--red)")}
+    ${bar("충성",loyalOf(id),"var(--ok)")}${bar("위험",riskOf(id),"var(--red)")}
     <div class="block" style="border-top:1px dashed var(--line-2);padding-top:10px;margin-top:10px"><div class="label">특성</div><div class="tags" style="margin-top:6px">${p.traits.map(t=>`<span>${esc(t)}</span>`).join("")}</div></div>
     <div style="border-top:1px dashed var(--line-2);padding-top:10px;margin-top:10px"><div class="label">경력 경로</div><ul class="career">${p.career.map(([y,t])=>`<li><b>${y}</b>${esc(t)}</li>`).join("")}</ul></div>
     <div class="aging" style="border-top:1px dashed var(--line-2);padding-top:10px">
@@ -1267,31 +1303,35 @@ function renderPerson(){
 
 /* ═════════════ ORG ═════════════ */
 const orgBranch = () => S.branch==="A" ? "B" : S.branch;
-const headAt = (h,br) => !h ? null : (h.B||h.C) ? (h[br]||null) : h;
-const ageAt = (b,br) => { const d=new Date(BRANCH[br].date); return d.getFullYear()-b-(d.getMonth()<6?1:0); };
+const headAt = (h,br,n) => { const o=n && W().org[n.t]; if(o && o.nm) return {...o, b:+o.b||0, _chg:true};
+  const x = !h ? null : (h.B||h.C) ? (h[br]||null) : h;
+  if(x && x.pid && wp(x.pid).status && isGone(x.pid)) return {nm:x.nm+` (${statusOf(x.pid)} — 공석)`, b:0, _chg:true};
+  return x; };
+const ageAt = (b,br) => { const d=branchDate(); return d.getFullYear()-b-(d.getMonth()<6?1:0); };
 const visible = (n,br) => !n.only || n.only.includes(br);
 function rosterAt(br){
   const out=[], seen=new Set();
   if(br!=="A"){
-    const walk=(nodes,tab)=>nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br);
+    const walk=(nodes,tab)=>nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br,n);
       if(h && h.b){ const key=h.pid||h.nm.replace(/ \(.*\)$/,""); if(!seen.has(key+"|"+n.t)){ seen.add(key+"|"+n.t); out.push({key,nm:h.nm.replace(/ \(.*\)$/,""),pid:h.pid,b:h.b,svc:h.svc,mil:h.mil,civ:h.civ,st:h.st,post:n.t,tab}); } }
       if(n.c) walk(n.c,tab); });
     ORG_TABS.forEach(([k])=>walk(ORG[k].c,k));
   }
   for(const id in GRADE){ const g=GRADE[id][br]; if(!g) continue;
     if(out.some(r=>r.pid===id)) continue;
-    out.push({key:id,nm:PEOPLE[id].name,pid:id,b:+BORN[id].slice(0,4),svc:g.svc,mil:g.mil,civ:g.civ,st:g.st,post:PEOPLE[id].post[br]}); }
+    const o=wp(id); out.push({key:id,nm:PEOPLE[id].name,pid:id,b:+BORN[id].slice(0,4),svc:o.svc||g.svc,mil:o.mil!==undefined?o.mil:g.mil,civ:o.civ!==undefined?o.civ:g.civ,st:(o.status&&o.status!=="현역")?o.status:g.st,post:postOf(id)}); }
+  out.forEach(r=>{ if(r.pid && (isGone(r.pid) || /예편|예비역|전역/.test(statusOf(r.pid)))) r.st=statusOf(r.pid); });
   // 같은 인물 겸직 → 하나로
   const merged=new Map(); out.forEach(r=>{ const k=r.pid||r.nm; if(merged.has(k)){ merged.get(k).post+=" · "+r.post; } else merged.set(k,{...r}); });
   return [...merged.values()];
 }
 function holderList(rows,br){
   if(!rows.length) return `<div class="empty">이 시점 현역 해당자가 기록에 없습니다.</div>`;
-  return `<div class="holders">${rows.map(r=>`<div class="h">${r.pid?`<button class="chip" type="button" data-person="${r.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[r.pid].fac]}"></span>${esc(r.nm)}</button>`:`<b style="font-weight:500">${esc(r.nm)}</b>`}<small>${esc([r.svc,r.mil&&!r.st?r.mil:null].filter(Boolean).join(" "))}${r.civ?" · "+esc(r.civ):""} · ${ageAt(r.b,br)}세</small><small>${esc(r.post)}</small></div>`).join("")}</div>`;
+  return `<div class="holders">${rows.map(r=>`<div class="h">${r.pid?`<button class="chip" type="button" data-person="${r.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[r.pid].fac]}"></span>${esc(r.nm)}</button>`:`<b style="font-weight:500">${esc(r.nm)}</b>`}<small>${esc([r.svc,r.mil&&!r.st?r.mil:null].filter(Boolean).join(" "))}${r.civ?" · "+esc(r.civ):""} · ${r.pid?ageOf(r.pid):ageAt(r.b,br)}세</small><small>${esc(r.post)}</small></div>`).join("")}</div>`;
 }
 function renderPyr(){
   $$("#rsys button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rs===S.rankSys));
-  const br=S.branch, when=`분기 ${br} · ${BRANCH[br].date.slice(0,10)}`;
+  const br=S.branch, d0=branchDate(), when=`분기 ${br} · ${d0.getFullYear()}-${String(d0.getMonth()+1).padStart(2,"0")}-${String(d0.getDate()).padStart(2,"0")}`;
   if(S.rankSys==="mil"){
     $("#pyr").innerHTML = RANKS.map(([tier,rs],i) => `<div class="tier"><span class="tn">${tier}</span><div class="ranks" style="width:min(100%,${rs.length*68}px)">${rs.map(([r,ins])=>`<button class="rk${r===S.rank?" sel":""}" type="button" data-rank="${r}"><span class="ins">${ins}</span>${r}</button>`).join("")}</div></div>`).join("");
     $$("#pyr [data-rank]").forEach(b => b.addEventListener("click", () => { S.rank=b.dataset.rank; renderPyr(); }));
@@ -1305,7 +1345,7 @@ function renderPyr(){
     $("#pyr").innerHTML = CIV_RANKS.map(([tier,rs],i) => `<div class="tier"><span class="tn">${tier}</span><div class="ranks" style="width:min(100%,${rs.length*78}px)">${rs.map(([r,sub])=>`<button class="rk${r===S.civRank?" sel":""}" type="button" data-civ="${r}"><span class="ins">${sub||"&nbsp;"}</span>${r.replace("고위공무원 ","")}</button>`).join("")}</div></div>`).join("");
     $$("#pyr [data-civ]").forEach(b => b.addEventListener("click", () => { S.civRank=b.dataset.civ; renderPyr(); }));
     const [eq,desc]=CIV_INFO[S.civRank];
-    const rows=rosterAt(br).filter(r=>r.civ===S.civRank);
+    const rows=rosterAt(br).filter(r=>r.civ===S.civRank && !(r.pid && isGone(r.pid)));
     $("#rankInfo").innerHTML = `<div class="label">선택 계급</div><h3 style="font-family:var(--f-disp);font-size:24px;margin:2px 0 6px">${S.civRank}</h3>
       <dl class="kv"><dt>군 상응</dt><dd>${esc(eq)}</dd><dt>보직</dt><dd>${esc(desc)}</dd></dl>
       <div class="label" style="margin-top:12px">재직자 · ${when} · ${rows.length}명</div>${holderList(rows,br)}
@@ -1328,13 +1368,13 @@ function renderTree(){
   const br=orgBranch(), o=ORG[S.org], q=S.orgQ.trim().toLowerCase();
   const hl = t => { const e=esc(t); if(!q) return e; const i=t.toLowerCase().indexOf(q); return i<0?e:esc(t.slice(0,i))+"<mark>"+esc(t.slice(i,i+q.length))+"</mark>"+esc(t.slice(i+q.length)); };
   let units=0, heads=0;
-  const text = n => { const h=headAt(n.h,br); return [n.t,n.note,n.loc,n.n,h&&h.nm,h&&h.mil,h&&h.civ,h&&h.svc].filter(Boolean).join(" ").toLowerCase(); };
+  const text = n => { const h=headAt(n.h,br,n); return [n.t,n.note,n.loc,n.n,h&&h.nm,h&&h.mil,h&&h.civ,h&&h.svc].filter(Boolean).join(" ").toLowerCase(); };
   const match = n => !q || text(n).includes(q) || (n.c||[]).some(c=>visible(c,br)&&match(c));
   const node=(n,depth)=>{
     if(!visible(n,br) || !match(n)) return "";
-    units++; const h=headAt(n.h,br); if(h&&h.b) heads++;
+    units++; const h=headAt(n.h,br,n); if(h&&h.b) heads++;
     const kids=(n.c||[]).map(x=>node(x,depth+1)).join("");
-    const head = h ? `<span class="hd">${h.mil||h.civ?`<b>${esc([h.svc,h.mil,h.civ&&!h.mil?h.civ:null].filter(Boolean).join(" "))}</b>`:""}${h.pid?`<button class="chip" type="button" data-person="${h.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[h.pid].fac]}"></span>${hl(h.nm)}</button>`:hl(h.nm)}${h.b?` · ${ageAt(h.b,br)}세`:""}${h.st?` · ${esc(h.st)}`:""}</span>` : "";
+    const head = h ? `<span class="hd">${h.mil||h.civ?`<b>${esc([h.svc,h.mil,h.civ&&!h.mil?h.civ:null].filter(Boolean).join(" "))}</b>`:""}${h.pid?`<button class="chip" type="button" data-person="${h.pid}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[h.pid].fac]}"></span>${hl(h.nm)}</button>`:hl(h.nm)}${h.b?` · ${ageAt(h.b,br)}세`:""}${h.st?` · ${esc(h.st)}`:""}${h._chg?` <span class="only" style="color:var(--ok);border-color:var(--ok)">변동</span>`:""}</span>` : "";
     const sum = `<span>${hl(n.t)}</span>${n.only?`<span class="only">분기 ${n.only.join("/")} 한정</span>`:""}${head}${n.n?`<span class="num">${esc(n.n)}</span>`:""}${n.loc?`<span class="loc">📍${hl(n.loc)}</span>`:""}${n.map?`<button class="chip" type="button" data-mapgo="${n.map}">⌖ 지도</button>`:""}`;
     const note = n.note?`<div class="note">${hl(n.note)}</div>`:"";
     return kids||note ? `<details ${depth<2||q?"open":""}><summary>${sum}</summary>${note}${kids}</details>` : `<details><summary class="leaf">${sum}</summary></details>`;
@@ -1373,7 +1413,7 @@ function drawOrbit(){
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(tilt);
     ctx.strokeStyle=d.col; ctx.globalAlpha=selB?0.75:0.28; ctx.lineWidth=selB?2.5:1.5; ctx.setLineDash([6,6]);
     ctx.beginPath(); ctx.ellipse(0,0,rr,rr*flat,0,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
-    const on=d.on[S.branch];
+    const on=damOn(d);
     for(let k=0;k<d.n;k++){
       const a=ot*(0.5+0.3*(1100-d.alt)/500) + k/d.n*Math.PI*2;
       const x=Math.cos(a)*rr, y=Math.sin(a)*rr*flat;
@@ -1413,9 +1453,9 @@ cv.addEventListener("click", e => {
   if(best){ S.dam=best.d.id; renderDamPanel(best); if(!orbitRAF) drawOrbit(); }
 });
 function renderDamPanel(hit){
-  const tot=DAM.reduce((a,d)=>a+d.on[S.branch],0);
+  const tot=DAM.reduce((a,d)=>a+damOn(d),0);
   $("#damCount").textContent = `가동 ${tot} / ${DAM.reduce((a,d)=>a+d.n,0)}기 · BR-${S.branch}`;
-  $("#blk").innerHTML = DAM.map(d=>`<button type="button" data-dam="${d.id}" aria-pressed="${S.dam===d.id}"><i style="background:${d.col}"></i><span>Block ${d.blk} · ${esc(d.name)}</span><b>${d.on[S.branch]}/${d.n}</b></button>`).join("");
+  $("#blk").innerHTML = DAM.map(d=>`<button type="button" data-dam="${d.id}" aria-pressed="${S.dam===d.id}"><i style="background:${d.col}"></i><span>Block ${d.blk} · ${esc(d.name)}</span><b>${damOn(d)}/${d.n}</b></button>`).join("");
   $$("#blk [data-dam]").forEach(b=>b.addEventListener("click",()=>{ S.dam=b.dataset.dam; renderDamPanel(); if(!orbitRAF) drawOrbit(); }));
   const d=DAM.find(x=>x.id===S.dam);
   $("#satInfo").innerHTML = `<div class="label">${hit?`위성 ${d.id}-${String(hit.k+1).padStart(2,"0")} · ${hit.alive?'<span class="s1">가동</span>':'<span class="s4">손실/미배치</span>'}`:`Block ${d.blk} 제원`}</div>
@@ -1431,7 +1471,7 @@ $("#simFire").addEventListener("click",()=>{
   const d=DAM.find(x=>x.id===S.dam), tg=PTS[$("#simTarget").value], out=$("#simOut");
   const keys=["#k1","#k2","#k3"].map(k=>$(k).checked);
   if(keys.includes(false)){ out.innerHTML=`<span class="r">인증 거부.</span> 3중 인증 중 ${keys.filter(x=>!x).length}개가 비어 있습니다.\n발사 절차는 총통·우주전략사령관·제1부의장 키가 모두 필요합니다.`; return; }
-  if(d.on[S.branch]===0){ out.innerHTML=`<span class="r">발사 불가.</span> 분기점 ${S.branch} 시점에 ${d.id} 가동 위성이 없습니다.`; return; }
+  if(damOn(d)===0){ out.innerHTML=`<span class="r">발사 불가.</span> 분기점 ${S.branch} 시점에 ${d.id} 가동 위성이 없습니다.`; return; }
   const domestic = ["detroit","appalachia"].includes($("#simTarget").value);
   const eff={AEGIS:"반경 1,200km 전력·통신망 붕괴, 민간 사상 간접 수십만",HELIOS:"상부 구조 정밀 소각, 부수 피해 최소",THOR:"충돌 에너지 약 11 GJ, 지하 60m까지 관통"}[d.id];
   out.innerHTML = `<span class="a">[SIM] ${d.id} → ${esc(tg.name)}</span>\n효과: ${eff}\n정치 파장: ${domestic?'<span class="r">자국민 대상 궤도 타격 — 군 충성도 −15, 신세대 장교단 이반 판정(DC 20) 발생</span>':"소코부·유럽 보복 수위 판정(DC 18) 발생"}\n※ 실제 세션에서는 GM이 d20 판정을 요구합니다.`;
@@ -1484,12 +1524,13 @@ const statMod = name => { const s=STATS.find(([n])=>n===name); return s ? (s[1]=
 function freshSess(br){
   const B=BRANCH[br];
   return { turn:0, hp:B.hp, time:B.date, loc:B.loc, buffs:[...B.buffs], debuffs:[...B.debuffs],
-    feed:[{k:"gm",text:OPENING[br].scene}], options:[...OPENING[br].options], history:[] };
+    feed:[{k:"gm",text:OPENING[br].scene}], options:[...OPENING[br].options], history:[],
+    world:{people:{},org:{},regions:{},events:[],dam:null} };
 }
 const SESS = {};
 const sess = () => SESS[S.branch] || (SESS[S.branch] = store.get("sess."+S.branch, null) || freshSess(S.branch));
 const saveSess = () => store.set("sess."+S.branch, sess());
-let pick = 0, busy = false, gmCtl = null, sampleFn = null;
+let pick = null, busy = false, gmCtl = null, sampleFn = null;
 
 /* ── GM 연결: claude.use("sample") 가능하면 Claude가 GM, 아니면 규칙 엔진 */
 async function initGM(){
@@ -1526,7 +1567,7 @@ function renderState(){
     <li><span>이름/나이</span><span>드락 V. 에버하트 (만 ${age}세)</span></li>
     <li><span>소속/직책</span><span>${esc(B.post)}</span></li>
     <li><span>HP</span>${hpHtml(X.hp)}</li>
-    <li><span>현재 일시/위치</span><span>${esc(stampOf(X.time))} / ${esc(X.loc)}</span></li>
+    <li><span>현재 일시/위치</span><span>${esc(stampOf(X.time))}${elapsedTxt()?` <span class="hint">(${esc(elapsedTxt())})</span>`:""} / ${esc(X.loc)}</span></li>
     <li><span>소지품</span><span>${esc(B.gear)}</span></li>
     <li><span>버프·디버프</span><span class="tags">${X.buffs.map(t=>`<span>${esc(t)}</span>`).join("")}${X.debuffs.map(t=>`<span class="de">${esc(t)}</span>`).join("")}</span></li>
     <li><span>스탯 보정</span><span class="mono" style="font-size:12px">${STATS.map(([n])=>`${n.split("(")[0]} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(" · ")}</span></li>
@@ -1536,9 +1577,11 @@ function renderFeed(streamText){
   const X=sess();
   let html="", t=0;
   X.feed.forEach(e=>{
-    if(e.k==="pc"){ t++; html+=`<div class="turnsep">TURN ${t}</div><div class="entry pc"><span class="label">드락의 행동</span>${esc(e.text)}</div>`; }
+    if(e.k==="pc"){ t++; html+=`<div class="turnsep">TURN ${t}</div><div class="entry pc"><span class="label">드락의 행동${e.jump?" · 이후 "+esc(e.jump)+" 경과":""}</span>${esc(e.text)}</div>`; }
     else if(e.k==="roll") html+=`<div class="entry roll">${e.html}</div>`;
     else if(e.k==="sys") html+=`<div class="entry sys">${esc(e.text)}</div>`;
+    else if(e.k==="jump") html+=`<div class="turnsep jumpsep">⏩ ${esc(e.text)}</div>`;
+    else if(e.k==="chg") html+=`<div class="entry chg"><span class="label">세계 변동</span>${e.html}</div>`;
     else html+=`<div class="entry gm">${esc(e.text)}</div>`;
   });
   if(streamText!=null) html+=`<div class="entry gm stream">${esc(streamText||"GM이 상황을 서술하는 중…")}</div>`;
@@ -1548,11 +1591,14 @@ function renderOpts(){
   const X=sess();
   $("#opts").innerHTML = X.options.map((o,i)=>`<button class="opt" type="button" data-pick="${i}" aria-pressed="${pick===i}"><b>${"ABC"[i]}</b><span>${esc(o)}</span></button>`).join("")
     + `<label class="opt free" data-pick="3" aria-pressed="${pick===3}"><b>D</b><textarea id="freeAct" placeholder="직접 행동이나 대사를 입력하세요. 예) 에단의 눈을 똑바로 보며 '그 서류, 누가 썼나?'라고 묻는다" aria-label="직접 행동·대사 입력"></textarea></label>`;
-  $$("#opts [data-pick]").forEach(b=>b.addEventListener("click",()=>{ pick=+b.dataset.pick; $$("#opts [data-pick]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.pick===pick)); if(pick===3) $("#freeAct").focus(); }));
-  $("#freeAct").addEventListener("input",()=>{ if(pick!==3){ pick=3; $$("#opts [data-pick]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.pick===3)); } });
+  const mark=()=>{ $$("#opts [data-pick]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.pick===pick)); jumpHint(); };
+  $$("#opts [data-pick]").forEach(b=>b.addEventListener("click",e=>{ const v=+b.dataset.pick; if(v!==3 && pick===v){ pick=null; } else pick=v; mark(); if(pick===3 && e.target.tagName!=="TEXTAREA") $("#freeAct").focus(); }));
+  $("#freeAct").addEventListener("input",()=>{ if(pick!==3){ pick=3; mark(); } });
+  jumpHint();
 }
 function renderSession(){
   renderBpCards(); renderState(); renderFeed(); renderOpts();
+  $("#gameLoc").textContent = `분기점 ${S.branch} · ${BRANCH[S.branch].title}${elapsedTxt()?" · "+elapsedTxt():""} — ${sess().loc}`;
   const B=BRANCH[S.branch], age=ageOf("drac");
   $("#files").innerHTML =
 `drachma_trpg/
@@ -1579,7 +1625,7 @@ $("#sessReset").addEventListener("click",()=>{
   const btn=$("#sessReset");
   if(btn.dataset.armed!=="1"){ btn.dataset.armed="1"; btn.textContent="한 번 더 누르면 초기화"; setTimeout(()=>{ btn.dataset.armed=""; btn.textContent="이 분기 처음부터"; },3000); return; }
   btn.dataset.armed=""; btn.textContent="이 분기 처음부터";
-  SESS[S.branch]=freshSess(S.branch); saveSess(); pick=0; renderSession();
+  SESS[S.branch]=freshSess(S.branch); saveSess(); pick=null; setBranch(S.branch);
   $("#ruling").innerHTML=`<span class="empty">새 세션을 시작했습니다.</span>`; $("#formula").textContent="판정 대기."; $("#dieNum").textContent="–";
 });
 
@@ -1595,7 +1641,7 @@ $("#clearLog").addEventListener("click",()=>{ LOG=[]; store.set("log",LOG); rend
 /* ── 프롬프트용 세계 상태 요약 */
 function worldBrief(){
   const B=BRANCH[S.branch], X=sess(), br=S.branch;
-  const npcs=Object.entries(PEOPLE).filter(([k])=>k!=="drac").map(([k,p])=>`- ${p.name} [${p.post[br]}, ${p.rank[br]}, ${ageOf(k)}세] 충성 ${p.loyal??"-"} / 위험 ${p.risk??"-"} · ${p.note}`).join("\n");
+  const npcs=Object.entries(PEOPLE).filter(([k])=>k!=="drac").map(([k,p])=>`- (${k}) ${p.name} [${postOf(k)}, ${rankOf(k)}, ${ageOf(k)}세] 상태 ${statusOf(k)} · 충성 ${loyalOf(k)??"-"} / 위험 ${riskOf(k)??"-"} · ${wp(k).note||p.note}`).join("\n");
   const hist=X.history.slice(-6).map(h=>`T${h.turn}: ${h.action} → ${h.result}. ${h.summary||""}`).join("\n") || "(첫 턴)";
   const lastGM=[...X.feed].reverse().find(e=>e.k==="gm")?.text || "";
   return `[세계] 대체역사 TRPG 'Project Drachma'. 1998년 '피의 그믐날' 쿠데타로 미합중국이 해체되고 드라크마 연방(군벌 테크노크라시)이 들어섰다. 외적: 소코부 제국(구 러시아 극우 군국주의). 내적: 자유의 아들들(레지스탕스), 제네바 망명정부. 다모클레스 궤도 타격 위성망 보유. 계급은 대한민국 국군·공무원 편제를 쓴다.
@@ -1608,6 +1654,10 @@ function worldBrief(){
 ${npcs}
 [지난 경과]
 ${hist}
+[세계 상태]
+지역(id: 위협도0-5 상태): ${Object.values(REG).concat(Object.values(PTS)).filter(R=>regionSt(R)[0]>=2).map(R=>`${R._id}: ${regionSt(R)[0]} ${regionSt(R)[1]}`).join(" / ")}
+다모클레스 가동: ${DAM.map(d=>`${d.id} ${damOn(d)}/${d.n}`).join(", ")}
+최근 사건: ${allEvents().filter(e=>e.y<=branchYear()+0.01).slice(-6).map(e=>`${e.d} ${e.t}`).join(" / ")}
 [직전 장면]
 ${lastGM.slice(-1800)}`;
 }
@@ -1704,8 +1754,8 @@ ${res.line}
 (1~3명, 엇갈린 이해관계)
 
 그리고 마지막에 아래 JSON을 \`\`\`json 코드 블록 하나로 붙여라:
-{"options":["다음 행동 선택지 A","B","C"],"hp_delta":정수(-4~+1),"time":"YYYY-MM-DDTHH:MM","location":"현재 위치","add_buffs":[],"add_debuffs":[],"remove":[],"summary":"이번 턴 결과 한 문장"}
-선택지 3개는 서로 다른 전략 방향의 구체적 행동이어야 한다.`;
+{"options":["다음 행동 선택지 A","B","C"],"hp_delta":정수(-4~+1),"time":"YYYY-MM-DDTHH:MM","location":"현재 위치","add_buffs":[],"add_debuffs":[],"remove":[],"summary":"이번 턴 결과 한 문장", "people_changes":[{"id":"ethan|arthur|weiss|hoji|crevat|dunbar","post":"새 직책","rank":"표시 계급","mil":"군 계급 또는 null","civ":"공무원 계급 또는 null","status":"현역|예편|사망|숙청|투옥|실종|중병","loyal":0~100,"risk":0~100,"note":"변화 사유"}],"org_changes":[{"unit":"조직명(위 목록 그대로)","nm":"새 지휘관","b":출생연도,"svc":"군종","mil":"계급","civ":null,"note":"사유"}],"region_changes":[{"id":"지역id","lv":0~5,"status":"짧은 상태","brief":"한 문장"}],"events":[{"date":"YYYY-MM-DD","title":"사건명","desc":"한 문장","cat":"politics|military|war|space|person","regions":["지역id"],"people":["인물id"]}],"dam":{"AEGIS":n,"HELIOS":n,"THOR":n}}
+people_changes·org_changes·region_changes·events·dam은 이번 턴에 실제로 바뀐 것만 넣고(없으면 빈 배열, dam은 null) 바뀌지 않은 항목은 생략한다. 선택지 3개는 서로 다른 전략 방향의 구체적 행동이어야 한다.`;
     let shown="";
     const {text} = await sampleFn(prompt, { modelTier:"default", cache:false, signal,
       onText:({text})=>{ shown=text.split("```")[0].trimEnd(); renderFeed(shown); } });
@@ -1723,55 +1773,169 @@ ${res.line}
     hp_delta: res.ok?0:-1, time:t.toISOString().slice(0,16), location:X.loc, summary:`${res.ok?"성공":"실패"} — 오프라인 판정` } };
 }
 
-/* ── 턴 실행 */
-async function runTurn(){
+/* ── 시간 점프: 연대기 서술 */
+function orgDigest(){
+  const out=[]; const br=orgBranch();
+  const walk=(nodes,d)=>nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br,n); if(h&&h.b&&d<=3) out.push(`${n.t}: ${h.nm}${h.mil?" "+h.mil:""}${h.civ&&!h.mil?" "+h.civ:""} (${ageAt(h.b,br)}세)`); if(n.c) walk(n.c,d+1); });
+  ORG_TABS.forEach(([k])=>walk(ORG[k].c,0));
+  return out.slice(0,45).join("\n");
+}
+const addMonths = (iso, m) => { const d=new Date(iso); d.setMonth(d.getMonth()+m); return d; };
+const isoMin = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+const durTxt = m => m%12===0 ? `${m/12}년` : m>12 ? `${Math.floor(m/12)}년 ${m%12}개월` : `${m}개월`;
+async function gmChronicle(action, res, months, signal){
+  const X=sess(), from=new Date(X.time), to=addMonths(X.time, months);
+  if(sampleFn){
+    const ages=Object.keys(PEOPLE).map(k=>`${PEOPLE[k].name} ${ageOf(k)}→${ageOf(k,to)}세`).join(", ");
+    const prompt = `너는 50년 경력의 냉혹한 하드코어 TRPG 게임 마스터이자 세계 시뮬레이터다. 플레이어가 시간 점프를 명령했다. ${durTxt(months)} 동안 이 세계가 스스로 살아 움직이도록 시뮬레이션하라: 인물은 늙고 병들고(60~70대는 만성질환·판단력 둔화·편집증, 고령자는 사망 가능), 군·관료는 현실적인 진급·전역·보직 이동 주기를 따르고, 파벌은 야망과 원한으로 움직이며, 소코부 제국·망명정부·자유의 아들들도 가만히 있지 않는다. 주인공도 ${ageOf("drac")}세에서 ${ageOf("drac",to)}세가 된다. 판정 결과가 있으면 그것을 출발점으로 삼아 결과를 끝까지 밀고 가라. 한국어로.
+${worldBrief()}
+[주요 조직 지휘관]
+${orgDigest()}
+
+[시간 점프] ${stampOf(isoMin(from))} → ${stampOf(isoMin(to))} (${durTxt(months)})
+나이 변화: ${ages}
+[점프 직전 플레이어 행동] ${action || "없음 — GM이 이 기간의 흐름을 알아서 결정한다. 주인공은 통상 집무를 이어가되, 세계의 사건이 그를 덮친다."}
+${res?.line ? "[그 행동의 판정] "+res.line : ""}
+
+출력 형식(정확히 지킬 것):
+📅 [경과 연대기 · ${durTxt(months)}]
+- YYYY.MM 사건 (기간에 맞게 4~10줄. 국내 정치·군·정보기관·대외·인물 신상 변화를 고루)
+
+📜 [상황 서술]
+(${stampOf(isoMin(to))} 도착 시점의 장면, 4~7문장. 세월이 남긴 흔적을 감각적으로)
+
+🗣️ [NPC 대사 및 반응]
+이름 [상세 소속, 계급/직급, 나이] : "대사"
+(1~3명. 나이는 도착 시점 기준)
+
+그리고 마지막에 아래 JSON을 \`\`\`json 코드 블록 하나로 붙여라:
+{"options":["다음 행동 A","B","C"],"hp_delta":정수(-6~+1, 노화 반영),"time":"${isoMin(to)}","location":"도착 시점 위치","add_buffs":[],"add_debuffs":[],"remove":["사라진 버프·디버프 이름"],"summary":"이 기간 요약 한 문장", "people_changes":[{"id":"ethan|arthur|weiss|hoji|crevat|dunbar","post":"새 직책","rank":"표시 계급","mil":"군 계급 또는 null","civ":"공무원 계급 또는 null","status":"현역|예편|사망|숙청|투옥|실종|중병","loyal":0~100,"risk":0~100,"note":"변화 사유"}],"org_changes":[{"unit":"조직명(위 목록 그대로)","nm":"새 지휘관","b":출생연도,"svc":"군종","mil":"계급","civ":null,"note":"사유"}],"region_changes":[{"id":"지역id","lv":0~5,"status":"짧은 상태","brief":"한 문장"}],"events":[{"date":"YYYY-MM-DD","title":"사건명","desc":"한 문장","cat":"politics|military|war|space|person","regions":["지역id"],"people":["인물id"]}],"dam":{"AEGIS":n,"HELIOS":n,"THOR":n}}
+연대기에 나온 인물 신상·지휘관 교체·지역 정세·위성 변화는 반드시 위 JSON 변경 항목에도 넣어 콘솔에 반영되게 하라. events에는 연대기의 핵심 사건 2~6개를 넣는다. 선택지 3개는 도착 시점 상황에 맞는 서로 다른 전략 방향이어야 한다.`;
+    const {text} = await sampleFn(prompt, { modelTier:"default", cache:false, signal,
+      onText:({text})=>{ renderFeed(text.split("```")[0].trimEnd()); } });
+    const narr=text.split("```")[0].trim();
+    let meta={};
+    try{ const m=text.match(/```(?:json)?\s*([\s\S]*?)```/); meta=JSON.parse(m?m[1]:text.slice(text.lastIndexOf("{"))); }catch(e){ meta={}; }
+    if(!meta.time) meta.time=isoMin(to);
+    return { narr, meta };
+  }
+  // 오프라인: 날짜 전진 + 노화 규칙
+  const years=months/12, a0=ageOf("drac",from), a1=ageOf("drac",to);
+  let hpLoss=0; for(let y=a0+1;y<=a1;y++) if(y>=65) hpLoss++;
+  const people_changes=[];
+  Object.keys(PEOPLE).filter(k=>k!=="drac" && !isGone(k)).forEach(k=>{ const ag=ageOf(k,to); if(ag>=70 && Math.random()<0.1*Math.max(1,years)) people_changes.push({id:k,status:"중병",note:`${ag}세, 시간 경과에 따른 건강 악화`}); });
+  const narr = `📅 [경과 연대기 · ${durTxt(months)}] (오프라인 규칙 엔진)
+- ${stampOf(isoMin(from)).slice(0,13)} → ${stampOf(isoMin(to)).slice(0,13)}: ${action?`'${action}' 이후 `:""}시간이 흘렀다.
+- 드락 ${a0}세 → ${a1}세${hpLoss?`, 노화로 체력 −${hpLoss}`:""}.${people_changes.length?"\n- "+people_changes.map(c=>`${PEOPLE[c.id].name}: ${c.status}`).join(", "):""}
+상세한 연대기·장면·인물 변화는 Claude GM이 연결된 상태(claude.ai에서 열고 Claude 사용 허용)에서 자동 생성됩니다.`;
+  return { narr, meta:{ options:["경과 기간의 보고를 받고 측근의 변화를 점검한다","미뤄 둔 숙청·인사를 단행한다","대외 정세(소코부·망명정부)부터 손본다"],
+    hp_delta:-hpLoss, time:isoMin(to), location:X.loc, summary:`${durTxt(months)} 경과 (오프라인)`, people_changes,
+    events:[{date:isoMin(to).slice(0,10), title:`시간 점프 +${durTxt(months)}`, desc:action?`행동: ${action}`:"GM 자율 경과", cat:"politics"}] } };
+}
+
+/* ── 결과 적용: 상태창 + 세계 상태 */
+function applyMeta(meta){
+  const X=sess(), w=W(), chg=[];
+  if(Array.isArray(meta.options) && meta.options.length>=3) X.options=meta.options.slice(0,3).map(o=>String(o).slice(0,160));
+  if(Number.isFinite(+meta.hp_delta)) X.hp=Math.max(0,Math.min(20,X.hp+Math.max(-8,Math.min(2,Math.round(+meta.hp_delta)))));
+  if(meta.time && !isNaN(new Date(meta.time)) && new Date(meta.time)>=new Date(X.time)) X.time=String(meta.time).slice(0,16);
+  if(meta.location) X.loc=String(meta.location).slice(0,80);
+  const rm=new Set((meta.remove||[]).map(String));
+  X.buffs=X.buffs.filter(b=>!rm.has(b)).concat((meta.add_buffs||[]).map(String)).slice(-6);
+  X.debuffs=X.debuffs.filter(b=>!rm.has(b)).concat((meta.add_debuffs||[]).map(String)).slice(-6);
+  const clampN=(v,a,b)=>Number.isFinite(+v)?Math.max(a,Math.min(b,Math.round(+v))):undefined;
+  (Array.isArray(meta.people_changes)?meta.people_changes:[]).forEach(c=>{
+    const id=String(c?.id||""); if(!PEOPLE[id]) return;
+    const o=w.people[id]||(w.people[id]={});
+    ["post","rank","status","note","svc"].forEach(k=>{ if(c[k]) o[k]=String(c[k]).slice(0,120); });
+    ["mil","civ"].forEach(k=>{ if(k in c) o[k]=c[k]?String(c[k]).slice(0,20):null; });
+    const l=clampN(c.loyal,0,100), r=clampN(c.risk,0,100); if(l!==undefined) o.loyal=l; if(r!==undefined) o.risk=r;
+    chg.push(`<button class="chip" type="button" data-person="${id}"><span class="dot" style="background:${FACTION_COLOR[PEOPLE[id].fac]}"></span>${esc(PEOPLE[id].name)}</button> ${esc([c.status,c.post,c.rank].filter(Boolean).join(" · "))}${c.note?` <span class="hint">— ${esc(String(c.note).slice(0,80))}</span>`:""}`);
+  });
+  (Array.isArray(meta.org_changes)?meta.org_changes:[]).forEach(c=>{
+    if(!c?.unit || !c?.nm) return;
+    w.org[String(c.unit)]={nm:String(c.nm).slice(0,40),b:clampN(c.b,1900,2010)||0,svc:c.svc?String(c.svc):undefined,mil:c.mil?String(c.mil):undefined,civ:c.civ?String(c.civ):undefined,note:c.note?String(c.note).slice(0,100):undefined};
+    chg.push(`<b style="font-weight:500">${esc(c.unit)}</b> 지휘관 → ${esc(c.nm)}${c.mil?" ("+esc(c.mil)+")":""}${c.note?` <span class="hint">— ${esc(String(c.note).slice(0,80))}</span>`:""}`);
+  });
+  (Array.isArray(meta.region_changes)?meta.region_changes:[]).forEach(c=>{
+    const id=String(c?.id||""), R=REG[id]||PTS[id]; if(!R) return;
+    w.regions[id]={lv:clampN(c.lv,0,5),status:c.status?String(c.status).slice(0,30):undefined,brief:c.brief?String(c.brief).slice(0,200):undefined};
+    chg.push(`<button class="chip" type="button" data-mapgo="${id}">⌖ ${esc(R.name)}</button> ${esc(c.status||"")}${Number.isFinite(+c.lv)?` · 위협도 ${clampN(c.lv,0,5)}`:""}`);
+  });
+  (Array.isArray(meta.events)?meta.events:[]).slice(0,8).forEach(e=>{
+    if(!e?.title) return;
+    const ev={date:String(e.date||X.time).slice(0,10),title:String(e.title).slice(0,60),desc:String(e.desc||"").slice(0,200),cat:String(e.cat||"politics"),regions:Array.isArray(e.regions)?e.regions.map(String):[],people:Array.isArray(e.people)?e.people.map(String):[]};
+    w.events.push(ev); chg.push(`📌 ${esc(ev.date)} ${esc(ev.title)}`);
+  });
+  if(meta.dam && typeof meta.dam==="object"){ w.dam={...(w.dam||{})}; DAM.forEach(d=>{ const v=clampN(meta.dam[d.id],0,d.n); if(v!==undefined && v!==damOn(d)){ w.dam[d.id]=v; chg.push(`다모클레스 ${d.id} 가동 ${v}/${d.n}`); } }); }
+  w.events=w.events.slice(-80);
+  return chg;
+}
+
+/* ── 턴 실행 (일반 턴 / 시간 점프 공용) */
+function currentAction(){ const X=sess(); return pick===3 ? ($("#freeAct")?.value||"").trim() : pick!=null ? X.options[pick] : ""; }
+function jumpMonths(){ const n=Math.max(1,Math.min(120,Math.round(+$("#jumpN").value||1))); return $("#jumpU").value==="y" ? Math.min(240,n*12) : n; }
+function jumpHint(){
+  const a=currentAction(), el=$("#jumpHint"); if(!el) return;
+  el.textContent = a ? `점프 시: 선택한 행동을 먼저 집행한 뒤 ${durTxt(jumpMonths())}이 흐릅니다.` : `선택 없이 점프하면 GM이 ${durTxt(jumpMonths())} 동안의 흐름을 정합니다.`;
+}
+async function play(months){
   if(busy) return;
-  const X=sess();
-  const action = pick===3 ? ($("#freeAct").value||"").trim() : X.options[pick];
-  if(!action){ $("#actSt").textContent="D칸에 행동이나 대사를 입력하세요."; $("#freeAct").focus(); return; }
+  const X=sess(), action=currentAction();
+  if(!months && !action){ $("#actSt").textContent="선택지를 고르거나 D칸에 행동을 입력하세요."; return; }
+  if(pick===3 && !action){ $("#actSt").textContent="D칸에 행동이나 대사를 입력하세요."; $("#freeAct").focus(); return; }
   busy=true; gmCtl=new AbortController();
-  $("#actGo").disabled=true; $("#actStop").hidden=!sampleFn;
-  X.feed.push({k:"pc",text:action}); renderFeed();
+  $("#actGo").disabled=true; $("#jumpGo").disabled=true; $("#actStop").hidden=!sampleFn;
+  const feedLen=X.feed.length, fromIso=X.time;
   try{
-    $("#actSt").textContent = sampleFn ? "GM이 판정 방식을 정하는 중… (처음 한 번은 Claude 사용 허용 창이 뜹니다)" : "규칙 엔진이 판정을 정하는 중…";
-    const R = await gmRuling(action, gmCtl.signal);
-    $("#actSt").textContent = R.roll ? "주사위를 굴립니다…" : "판정 없이 진행합니다…";
-    const r = R.roll ? await rollDie() : 0;
-    const res = showRuling(R, r);
-    X.feed.push({k:"roll",html:`${esc(R.by)} · ${esc(R.stat)}${R.roll?` · DC ${R.dc}`:""}<br>${R.roll?`<span class="${res.crit?"crit":res.ok?"ok":"no"}">${esc(res.line)}</span>`:"판정 불필요 · 자동 처리"}`});
-    renderFeed(""); $("#actSt").textContent="GM이 결과를 서술하는 중…";
-    const {narr, meta} = await gmNarrate(action, R, res, gmCtl.signal);
-    X.feed.push({k:"gm",text:narr||"(서술 없음)"});
+    let R=null, res=null;
+    if(action){
+      X.feed.push({k:"pc",text:action,jump:months?durTxt(months):""}); renderFeed();
+      $("#actSt").textContent = sampleFn ? "GM이 판정 방식을 정하는 중… (처음 한 번은 Claude 사용 허용 창이 뜹니다)" : "규칙 엔진이 판정을 정하는 중…";
+      R = await gmRuling(action, gmCtl.signal);
+      $("#actSt").textContent = R.roll ? "주사위를 굴립니다…" : "판정 없이 진행합니다…";
+      const r = R.roll ? await rollDie() : 0;
+      res = showRuling(R, r);
+      X.feed.push({k:"roll",html:`${esc(R.by)} · ${esc(R.stat)}${R.roll?` · DC ${R.dc}`:""}<br>${R.roll?`<span class="${res.crit?"crit":res.ok?"ok":"no"}">${esc(res.line)}</span>`:"판정 불필요 · 자동 처리"}`});
+    }
+    let out;
+    if(months){
+      const to=addMonths(X.time, months);
+      X.feed.push({k:"jump",text:`시간 점프 +${durTxt(months)} · ${stampOf(isoMin(new Date(X.time))).slice(0,13)} → ${stampOf(isoMin(to)).slice(0,13)}`});
+      renderFeed(""); $("#actSt").textContent=`GM이 ${durTxt(months)}의 세월을 시뮬레이션하는 중…`;
+      out = await gmChronicle(action, res, months, gmCtl.signal);
+    } else {
+      renderFeed(""); $("#actSt").textContent="GM이 결과를 서술하는 중…";
+      out = await gmNarrate(action, R, res, gmCtl.signal);
+    }
+    X.feed.push({k:"gm",text:out.narr||"(서술 없음)"});
     X.turn++;
-    if(Array.isArray(meta.options) && meta.options.length>=3) X.options=meta.options.slice(0,3).map(o=>String(o).slice(0,160));
-    if(Number.isFinite(+meta.hp_delta)) X.hp=Math.max(0,Math.min(20,X.hp+Math.max(-6,Math.min(2,Math.round(+meta.hp_delta)))));
-    if(meta.time && !isNaN(new Date(meta.time))) X.time=String(meta.time).slice(0,16);
-    if(meta.location) X.loc=String(meta.location).slice(0,80);
-    const rm=new Set((meta.remove||[]).map(String));
-    X.buffs=X.buffs.filter(b=>!rm.has(b)).concat((meta.add_buffs||[]).map(String)).slice(-6);
-    X.debuffs=X.debuffs.filter(b=>!rm.has(b)).concat((meta.add_debuffs||[]).map(String)).slice(-6);
-    X.history.push({turn:X.turn, action, result:R.roll?res.verdict:"자동 처리", summary:String(meta.summary||"").slice(0,200)});
-    X.feed=X.feed.slice(-60);
-    log(`T${X.turn} ${action.slice(0,40)}${R.roll?` · ${res.total} vs DC${R.dc}`:""}`, R.roll?res.ok:null);
+    const chg=applyMeta(out.meta||{});
+    if(months && new Date(X.time)<=new Date(fromIso)) X.time=isoMin(addMonths(fromIso, months));
+    if(chg.length) X.feed.push({k:"chg",html:chg.map(c=>`<div>${c}</div>`).join("")});
+    X.history.push({turn:X.turn, action:(action||"(GM 자율)")+(months?` +${durTxt(months)}`:""), result:R?.roll?res.verdict:months?"시간 경과":"자동 처리", summary:String(out.meta?.summary||"").slice(0,200)});
+    X.feed=X.feed.slice(-80);
+    log(`T${X.turn} ${months?`⏩+${durTxt(months)} `:""}${(action||"GM 자율 경과").slice(0,36)}${R?.roll?` · ${res.total} vs DC${R.dc}`:""}`, R?.roll?res.ok:null);
     if(X.hp<=0) X.feed.push({k:"sys",text:"HP 0 — 총통이 쓰러졌습니다. '이 분기 처음부터'로 다시 시작할 수 있습니다."});
-    pick=0; saveSess();
-    $("#actSt").textContent="다음 행동을 고르세요.";
+    pick=null; saveSess();
+    $("#actSt").textContent = months ? `${durTxt(months)}이 흘렀습니다. 지도·연표·인물·조직 탭에 변화가 반영되었습니다.` : "다음 행동을 고르세요.";
   }catch(e){
-    X.feed.pop(); // 실패한 턴의 행동 기록 제거
+    X.feed.length=feedLen; // 실패한 턴의 기록 제거
     const code=e&&e.code;
     if(code==="not_granted"||code==="sampling_disabled"||code==="capability_disabled"||code==="not_declared"){ sampleFn=null; setGMMode("Claude 사용이 허용되지 않아 규칙 엔진으로 전환했습니다. 다시 실행하세요."); }
-    else if(code==="cancelled") $("#actSt").textContent="중지했습니다. 같은 행동을 다시 실행할 수 있습니다.";
+    else if(code==="cancelled") $("#actSt").textContent="중지했습니다. 다시 실행할 수 있습니다.";
     else if(code==="rate_limited") $("#actSt").textContent="Claude 호출이 잠시 제한되었습니다. 조금 뒤 다시 실행하세요.";
     else if(code==="invalid_json") $("#actSt").textContent="GM 판정 형식을 읽지 못했습니다. 다시 실행하세요.";
-    else $("#actSt").textContent="GM 연결 중 문제가 생겼습니다. 다시 실행하세요.";
+    else { console.warn(e); $("#actSt").textContent="GM 연결 중 문제가 생겼습니다. 다시 실행하세요."; }
   }finally{
-    busy=false; gmCtl=null; $("#actGo").disabled=false; $("#actStop").hidden=true;
-    renderSession();
+    busy=false; gmCtl=null; $("#actGo").disabled=false; $("#jumpGo").disabled=false; $("#actStop").hidden=true;
+    setBranch(S.branch);
   }
 }
-$("#actGo").addEventListener("click", runTurn);
+$("#actGo").addEventListener("click", ()=>play(0));
+$("#jumpGo").addEventListener("click", ()=>play(jumpMonths()));
+$("#jumpN").addEventListener("input", jumpHint); $("#jumpU").addEventListener("change", jumpHint);
 $("#actStop").addEventListener("click", ()=>gmCtl?.abort());
-
 /* ═════════════ INIT ═════════════ */
 buildMap(); renderFilters(); fillTargets(); renderOrgTabs(); renderStack();
 markSel();
