@@ -310,7 +310,12 @@ select.inp,input.inp{background:var(--panel-2);border:1px solid var(--line-2);bo
 .tags span.de{border-color:var(--red);color:var(--red)}
 .roller{display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;align-items:center}
 @media (max-width:520px){.roller{grid-template-columns:minmax(0,1fr)}}
-.feed{display:grid;gap:12px;padding:14px;max-height:620px;overflow-y:auto;scroll-behavior:smooth}
+.feed{display:grid;gap:12px;padding:14px;max-height:620px;overflow-y:auto}
+.scrollbox{position:relative;min-width:0}
+.newbtn{position:absolute;right:16px;bottom:10px;z-index:2;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.04em;padding:4px 11px;border-radius:12px;background:var(--panel-2);color:var(--amber);border:1px solid var(--amber-dim);cursor:pointer}
+.newbtn:hover{border-color:var(--amber)}
+.newbtn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.newbtn[hidden]{display:none}
 .entry{min-width:0}
 .entry.gm{white-space:pre-wrap;font-size:13.5px;line-height:1.75;color:var(--fg)}
 .entry.gm.stream::after{content:"▍";color:var(--amber);animation:blink 1s steps(1) infinite}
@@ -593,7 +598,7 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
       <div style="display:grid;gap:16px;min-width:0;align-content:start">
         <div class="panel">
           <div class="panel-h"><span>📜 작전 콘솔</span><span><span class="gmmode s3" id="gmMode">GM 연결 확인 중</span> <span class="mono" id="turnNo">TURN 0</span></span></div>
-          <div class="feed" id="feed" aria-live="polite"></div>
+          <div class="scrollbox"><div class="feed" id="feed" aria-live="polite"></div><button class="newbtn" type="button" id="feedNew" hidden aria-label="새 내용으로 이동">▼ 새 내용</button></div>
           <div class="opts" id="opts" role="group" aria-label="행동 선택지"></div>
           <div class="actbar">
             <button class="btn primary" type="button" id="actGo">행동 실행</button>
@@ -609,7 +614,7 @@ footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-fa
         </div>
         <div class="panel">
           <div class="panel-h"><span>🛈 GM 브리핑 채널 · 진행 외 질의·생성</span><span class="badge-free">턴·시간 소모 없음</span></div>
-          <div class="qa" id="qaLog" aria-live="polite"></div>
+          <div class="scrollbox"><div class="qa" id="qaLog" aria-live="polite"></div><button class="newbtn" type="button" id="qaNew" hidden aria-label="새 내용으로 이동">▼ 새 내용</button></div>
           <div class="qa-quick" id="qaQuick"></div>
           <div class="qa-in">
             <textarea class="inp" id="qaIn" placeholder="예) 우리 군 정보기관은 뭐뭐 있어? / 던바의 경력을 상세하게 만들어줘 / 신임 국방정보본부장 인물을 생성해줘" aria-label="GM에게 질문하거나 생성 요청"></textarea>
@@ -1605,7 +1610,46 @@ function renderState(){
     <li><span>스탯 보정</span><span class="mono" style="font-size:12px">${STATS.map(([n])=>`${n.split("(")[0]} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(" · ")}</span></li>
     <li><span>동기화 파일</span><span class="mono" style="font-size:12px">state.md, timeline.md${X.turn?", characters/*.md":""}</span></li></ul>`;
 }
-function renderFeed(streamText){
+/* ── 스크롤 보존: 플레이어가 읽는 위치를 콘솔이 빼앗지 않는다.
+   mode: "keep"(기본, 위치 유지) · "anchor"(방금 추가한 항목을 상단에) · "bottom"(맨 아래) */
+const SCROLL={};
+function scrollSt(el){ return SCROLL[el.id] || (SCROLL[el.id]={top:0,set:0,want:null,pend:null,anchor:null,btn:null}); }
+function scrollGap(el){ return el.scrollHeight - el.clientHeight - el.scrollTop; }
+function applyScroll(el, mode, top){
+  const st=scrollSt(el);
+  if(mode==="bottom"){ st.want=null; el.scrollTop=el.scrollHeight; }
+  else if(mode==="anchor"){
+    const a=st.anchor && st.anchor(el);
+    // 아래 내용이 아직 짧아 상단에 못 올리면 목표를 기억했다가 내용이 늘 때 마저 맞춘다
+    st.want = a ? Math.max(0, a.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop - 8) : null;
+    el.scrollTop = st.want!=null ? st.want : top;
+  } else {
+    // 앵커 목표가 남아 있고 사용자가 그 사이 스크롤하지 않았으면 목표 쪽으로, 아니면 위치 유지
+    if(st.want!=null && Math.abs(top-st.set)<=1) el.scrollTop=st.want;
+    else { st.want=null; el.scrollTop=top; }
+  }
+  if(st.want!=null && el.scrollTop>=st.want-1) st.want=null;
+  st.top=st.set=el.scrollTop;
+  if(st.btn && scrollGap(el)<=40) st.btn.hidden=true;
+}
+function renderScrolled(el, mode, render){
+  const st=scrollSt(el), vis=el.clientHeight>0;
+  const top=vis?el.scrollTop:st.top, h=vis?el.scrollHeight:0;
+  render();
+  if(!vis){ if(mode!=="keep") st.pend=mode; return; }   // 숨은 탭: 보일 때 적용
+  st.pend=null;
+  applyScroll(el, mode||"keep", top);
+  if(st.btn && el.scrollHeight>h+1 && scrollGap(el)>40) st.btn.hidden=false;
+}
+function wireScroll(el, btn, anchor){
+  const st=scrollSt(el); st.btn=btn; st.anchor=anchor;
+  el.addEventListener("scroll", ()=>{ if(el.clientHeight>0) st.top=el.scrollTop; if(scrollGap(el)<=40) btn.hidden=true; }, {passive:true});
+  btn.addEventListener("click", ()=>{ el.scrollTo({top:el.scrollHeight, behavior:reduceMotion?"auto":"smooth"}); btn.hidden=true; });
+  // 탭이 숨겨졌다 다시 보이면 위치를 복원하거나 보류된 모드를 적용한다
+  if(window.ResizeObserver){ let was=el.clientHeight>0; new ResizeObserver(()=>{ const vis=el.clientHeight>0; if(vis && !was){ const m=st.pend||"keep"; st.pend=null; applyScroll(el, m, st.top); } was=vis; }).observe(el); }
+}
+let feedBranch=null;
+function renderFeed(streamText, mode){
   const X=sess();
   let html="", t=0;
   X.feed.forEach(e=>{
@@ -1617,8 +1661,9 @@ function renderFeed(streamText){
     else html+=`<div class="entry gm">${esc(e.text)}</div>`;
   });
   if(streamText!=null) html+=`<div class="entry gm stream">${esc(streamText||"GM이 상황을 서술하는 중…")}</div>`;
-  const f=$("#feed"); f.innerHTML=html; f.scrollTop=f.scrollHeight;
+  const f=$("#feed"); renderScrolled(f, mode, ()=>{ f.innerHTML=html; });
 }
+wireScroll($("#feed"), $("#feedNew"), el=>{ const pcs=el.querySelectorAll(".entry.pc"), pc=pcs[pcs.length-1]; if(!pc) return null; const prev=pc.previousElementSibling; return prev&&prev.classList.contains("turnsep")?prev:pc; });
 function renderOpts(){
   const X=sess();
   $("#opts").innerHTML = X.options.map((o,i)=>`<button class="opt" type="button" data-pick="${i}" aria-pressed="${pick===i}"><b>${"ABC"[i]}</b><span>${esc(o)}</span></button>`).join("")
@@ -1629,7 +1674,7 @@ function renderOpts(){
   jumpHint();
 }
 function renderSession(){
-  renderBpCards(); renderState(); renderFeed(); renderOpts();
+  renderBpCards(); renderState(); renderFeed(null, feedBranch===S.branch ? "keep" : "bottom"); feedBranch=S.branch; renderOpts();
   $("#gameLoc").textContent = `분기점 ${S.branch} · ${BRANCH[S.branch].title}${elapsedTxt()?" · "+elapsedTxt():""} — ${sess().loc}`;
   const B=BRANCH[S.branch], age=ageOf("drac");
   $("#files").innerHTML =
@@ -1657,7 +1702,7 @@ $("#sessReset").addEventListener("click",()=>{
   const btn=$("#sessReset");
   if(btn.dataset.armed!=="1"){ btn.dataset.armed="1"; btn.textContent="한 번 더 누르면 초기화"; setTimeout(()=>{ btn.dataset.armed=""; btn.textContent="이 분기 처음부터"; },3000); return; }
   btn.dataset.armed=""; btn.textContent="이 분기 처음부터";
-  SESS[S.branch]=freshSess(S.branch); saveSess(); pick=null; setBranch(S.branch);
+  SESS[S.branch]=freshSess(S.branch); saveSess(); pick=null; feedBranch=null; setBranch(S.branch); if(!qaBusy) renderQA(null,"bottom");
   $("#ruling").innerHTML=`<span class="empty">새 세션을 시작했습니다.</span>`; $("#formula").textContent="판정 대기."; $("#dieNum").textContent="–";
 });
 
@@ -1922,7 +1967,7 @@ async function play(months){
   try{
     let R=null, res=null;
     if(action){
-      X.feed.push({k:"pc",text:action,jump:months?durTxt(months):""}); renderFeed();
+      X.feed.push({k:"pc",text:action,jump:months?durTxt(months):""}); renderFeed(undefined,"anchor");
       $("#actSt").textContent = sampleFn ? "GM이 판정 방식을 정하는 중… (처음 한 번은 Claude 사용 허용 창이 뜹니다)" : "규칙 엔진이 판정을 정하는 중…";
       R = await gmRuling(action, gmCtl.signal);
       $("#actSt").textContent = R.roll ? "주사위를 굴립니다…" : "판정 없이 진행합니다…";
@@ -1972,7 +2017,7 @@ $("#actStop").addEventListener("click", ()=>gmCtl?.abort());
 /* ═════════════ GM 브리핑 채널: 진행 외 질의·생성 (턴·시간 소모 없음) ═════════════ */
 const FAC_OK = ["stars","mil","navy","pra","kgb"];
 const qaList = () => { const X=sess(); if(!X.qa) X.qa=[]; return X.qa; };
-let qaBusy=false, qaCtl=null;
+let qaBusy=false, qaCtl=null, qaPending=null;
 function treeText(nodes, br, d=0, out=[]){
   nodes.forEach(n=>{ if(!visible(n,br)) return; const h=headAt(n.h,br,n);
     out.push(`${"  ".repeat(d)}- ${n.t}${h&&h.nm?` — ${h.nm}${h.mil||h.civ?` (${[h.svc,h.mil||h.civ].filter(Boolean).join(" ")}${h.b?", "+ageAt(h.b,br)+"세":""})`:""}`:""}${n.n?` · ${n.n}`:""}${n.loc?` · ${n.loc}`:""}`);
@@ -2027,17 +2072,19 @@ function applyBrief(meta){
   w.npcs=w.npcs.slice(-40);
   return reg;
 }
-function renderQA(stream){
+let qaBranch=null;
+function renderQA(stream, mode){
   const L=qaList();
-  let html = L.length ? "" : `<div class="empty">이야기 진행과 별개로 세계관 정보를 묻거나, 인물·경력을 만들어 달라고 요청하세요. 답변은 턴·시간·HP를 소모하지 않고, 생성된 인물과 경력은 세계에 등록되어 이후 이야기에 반영됩니다.</div>`;
+  let html = (L.length||qaPending!=null) ? "" : `<div class="empty">이야기 진행과 별개로 세계관 정보를 묻거나, 인물·경력을 만들어 달라고 요청하세요. 답변은 턴·시간·HP를 소모하지 않고, 생성된 인물과 경력은 세계에 등록되어 이후 이야기에 반영됩니다.</div>`;
   L.forEach(x=>{ html+=`<div class="q">${esc(x.q)}</div><div class="a">${esc(x.a)}${x.reg&&x.reg.length?`<div class="reg">세계에 등록됨: ${x.reg.join("")}</div>`:""}</div>`; });
-  if(stream!=null) html+=`<div class="a stream">${esc(stream||"GM이 기록을 조회하는 중…")}</div>`;
-  const el=$("#qaLog"); el.innerHTML=html; el.scrollTop=el.scrollHeight;
+  if(stream!=null) html+=(qaPending!=null?`<div class="q">${esc(qaPending)}</div>`:"")+`<div class="a stream">${esc(stream||"GM이 기록을 조회하는 중…")}</div>`;
+  const el=$("#qaLog"); if(!mode){ mode = qaBranch===S.branch ? "keep" : "bottom"; } qaBranch=S.branch; renderScrolled(el, mode, ()=>{ el.innerHTML=html; });
   const sel=PEOPLE[S.person]?S.person:"dunbar";
   $("#qaQuick").innerHTML = [["우리 군 정보기관은 뭐뭐 있어?","군 정보기관 목록"],[`${PEOPLE[sel].name}의 경력을 기수·보직 경로까지 상세하게 만들어줘`,`${PEOPLE[sel].name} 경력 상세`],["공석이 된 요직에 앉힐 신세대 장교 인물을 한 명 생성해줘","새 인물 생성"],["지금 소코부 제국과 망명정부의 동향을 정리해줘","현재 대외 정세"]]
     .map(([q,l])=>`<button class="chip" type="button" data-qa="${esc(q)}">${esc(l)}</button>`).join("");
   $$("#qaQuick [data-qa]").forEach(b=>b.addEventListener("click",()=>{ $("#qaIn").value=b.dataset.qa; $("#qaIn").focus(); }));
 }
+wireScroll($("#qaLog"), $("#qaNew"), el=>{ const qs=el.querySelectorAll(".q"); return qs[qs.length-1]||null; });
 function renderNpcs(){
   const N=W().npcs; $("#npcCnt").textContent=`${N.length}명`;
   $("#npcList").innerHTML = N.length ? N.map(n=>`<div class="npc" data-npc-card="${esc(n.name)}">
@@ -2056,7 +2103,7 @@ async function askGM(){
   if(qaBusy) return;
   const q=$("#qaIn").value.trim(); if(!q){ $("#qaIn").focus(); return; }
   qaBusy=true; qaCtl=new AbortController(); $("#qaGo").disabled=true; $("#qaStop").hidden=!sampleFn;
-  const L=qaList(); renderQA("");
+  const L=qaList(); qaPending=q; renderQA("","anchor");
   try{
     let a, reg=[];
     if(sampleFn){
@@ -2090,7 +2137,7 @@ ${q}
     if(code==="not_granted"||code==="sampling_disabled"||code==="capability_disabled"||code==="not_declared"){ sampleFn=null; setGMMode(); L.push({q,a:"Claude 사용이 허용되지 않아 로컬 기록으로 답합니다.\n"+localAnswer(q),reg:[]}); saveSess(); }
     else if(code!=="cancelled") L.push({q,a:code==="rate_limited"?"Claude 호출이 잠시 제한되었습니다. 조금 뒤 다시 보내세요.":"GM 연결 중 문제가 생겼습니다. 다시 보내세요.",reg:[]});
   }finally{
-    qaBusy=false; qaCtl=null; $("#qaGo").disabled=false; $("#qaStop").hidden=true; renderQA();
+    qaBusy=false; qaCtl=null; qaPending=null; $("#qaGo").disabled=false; $("#qaStop").hidden=true; renderQA();
   }
 }
 $("#qaGo").addEventListener("click", askGM);
