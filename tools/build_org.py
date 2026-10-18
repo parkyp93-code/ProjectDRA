@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-"""org_data.py → console.fragment.html(ORG 블록) + index.html(완전 문서) + factions/*.md 재생성."""
-import json, re, sys, pathlib
+"""org_data.py → console.fragment.html(ORG 블록) + session.json → console.fragment.html(SESSION 블록)
++ index.html(완전 문서) + factions/*.md 재생성.
+
+SESSION_JSON 환경변수로 session.json 경로를 바꿀 수 있다(테스트용).
+"""
+import json, os, re, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from org_data import ORG, TABS
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "drachma_trpg"
 FRAG = ROOT / "site" / "console.fragment.html"
 INDEX = ROOT / "site" / "index.html"
+SESSION_JSON = pathlib.Path(os.environ.get("SESSION_JSON") or (ROOT / "session.json"))
 
 def head_txt(h):
     def one(x):
@@ -78,8 +83,17 @@ for rel, lines in files.items():
 # console.fragment.html ORG 블록 교체
 src = FRAG.read_text(encoding="utf-8")
 js = "const ORG = " + json.dumps(ORG, ensure_ascii=False) + ";\nconst ORG_TABS = " + json.dumps(TABS, ensure_ascii=False) + ";\n"
-src, k = re.subn(r"const ORG = .*?\n(?=const DAM = \[)", lambda m: js + "\n", src, count=1, flags=re.S)
+src, k = re.subn(r"const ORG = .*?\n(?=const SESSION = |const DAM = \[)", lambda m: js + "\n", src, count=1, flags=re.S)
 assert k == 1, "ORG block not found"
+
+# console.fragment.html SESSION 블록 교체 (없으면 ORG 블록 바로 뒤에 삽입)
+SESSION = json.loads(SESSION_JSON.read_text(encoding="utf-8"))
+SESSION = {k: v for k, v in SESSION.items() if k != "_doc"}
+sjs = "const SESSION = " + json.dumps(SESSION, ensure_ascii=False).replace("</", "<\\/") + ";\n"
+src, k = re.subn(r"^const SESSION = .*\n", lambda m: sjs, src, count=1, flags=re.M)
+if k == 0:
+    src, k = re.subn(r"(?=const DAM = \[)", lambda m: sjs + "\n", src, count=1)
+assert k == 1, "SESSION insertion point not found"
 FRAG.write_text(src, encoding="utf-8")
 
 # index.html (완전 문서) 생성
@@ -90,3 +104,4 @@ INDEX.write_text(
     '<style>[hidden]{display:none!important}img{max-width:100%}</style>\n'
     + head + "</style>\n</head>\n<body>" + body.rstrip() + "\n</body>\n</html>\n", encoding="utf-8")
 print("built:", ", ".join(files), "+ site/index.html")
+print(f"session: {SESSION_JSON} · branch {SESSION.get('branch') or '-'} · turn {SESSION.get('turn', 0)} · history {len(SESSION.get('history') or [])}건")
