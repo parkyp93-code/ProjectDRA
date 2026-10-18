@@ -13,7 +13,12 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 | `drachma_trpg/state.md`, `timeline.md` | 현재 상태, 연표 | 직접 편집 |
 | `drachma_trpg/characters/*.md` | 인물 원장 | 직접 편집. 추가 인물은 `high_command.md`의 "추가 인물" 절에 같은 표 스키마로 |
 | `drachma_trpg/lore/*.md` | 다모클레스, 세계 정세 | 직접 편집 |
-| `tools/org_data.py` | **조직 편제 단일 원본** | 여기만 고친다 |
+| `tools/org_data.py` | **조직 편제 단일 원본 (정사·기본 설정)** | 여기만 고친다 |
+| `drachma_trpg/session.json` | **플레이로 생긴 변화** (진행 기록, 인물 상태, 지휘관 교체, 신규 인물 `world.npcs`, 사건) | JSON 형식 유지. 콘솔 사이트는 이 파일을 표시한다 |
+
+어디에 기록할지 구분한다.
+- 대화에서 진행된 이야기의 결과(누가 죽었다, 누가 경질됐다, `/ask`로 생성한 인물): `session.json`의 `world`
+- 세계관의 기본 편제를 넓히거나 고치는 작업(조직도 확장, 정사 설정 보강): `org_data.py`
 | `drachma_trpg/factions/*.md`, `site/index.html` | 자동 생성물 | 직접 수정 금지. `python3 tools/build_org.py`로 재생성 |
 
 조직의 지휘관 교체는 `org_data.py`에서 해당 노드의 `h` 값을 바꿔 반영한다.

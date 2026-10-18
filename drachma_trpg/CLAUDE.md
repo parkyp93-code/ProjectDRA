@@ -45,6 +45,7 @@
 - 점프 종료 시 `timeline.md`(경과 사건), `characters/*.md`(나이·직책·생사), `factions/*.md`, `lore/*.md`, `state.md` 전부 동기화
 
 ## 5. 턴 종료 동기화 체크리스트
+- [ ] `session.json` — 진행 기록(history)·상태·세계 변동(world). 콘솔 사이트가 표시하는 유일한 진행 기록
 - [ ] `state.md` — 턴 수, HP, 일시/위치, 버프·디버프
 - [ ] `timeline.md` — 신규 사건, 분기 이탈 기록
 - [ ] `characters/*.md` — 생사, 직책, 충성도/위험도 변동
@@ -62,7 +63,7 @@
 ## 7. 디렉터리
 ```
 drachma_trpg/
-├── CLAUDE.md · timeline.md · state.md
+├── CLAUDE.md · timeline.md · state.md · session.json (진행 기록 → 콘솔)
 ├── characters/  protagonist · stars_inner · high_command
 ├── factions/    government · military · intelligence · praetorian  (← tools/org_data.py 자동 생성)
 ├── lore/        damocles · world_state

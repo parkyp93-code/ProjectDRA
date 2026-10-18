@@ -58,11 +58,26 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 ```
 
 ## 턴 종료 동기화 (필수)
+- **`session.json` (콘솔 사이트의 유일한 진행 기록)**: 매 턴 반드시 갱신한다. JSON 형식을 깨지 않는다.
+  - `branch`: 분기점을 고른 턴에 설정한다.
+  - `turn`, `time`(`YYYY-MM-DDTHH:MM`), `loc`, `hp`, `buffs`, `debuffs`
+  - `options`: 이번에 제시한 선택지 1~3
+  - `history`에 한 건 추가: `{turn, time, action, ruling, summary, narration, jump?}`
+    - `ruling`: 판정 줄 그대로, 판정이 없으면 "판정 없음"
+    - `narration`: 📜·🗣️ 부분 전문
+    - `jump`: 시간 점프면 "6개월" 같은 기간
+  - `world`에 이번 턴에 바뀐 것만 반영한다.
+    - `people[id]`: id는 ethan, arthur, weiss, hoji, crevat, dunbar 중 하나. 필드는 `{post, rank, mil, civ, status, loyal, risk, note, career_extra}`이고, status는 현역·예편·사망·숙청·투옥·실종·중병 중 하나
+    - `org["조직 제목 그대로"]`: `{nm, b, svc, mil, civ, note}`. 지휘관 교체
+    - `regions[id]`: `{lv, status, brief}`. id는 콘솔 지역·거점 id
+    - `events[]`: `{date, title, desc, cat, regions[], people[]}`
+    - `dam`: `{AEGIS, HELIOS, THOR}`
+    - `npcs[]`: 새로 등장시킨 인물
 - `state.md`: 턴 수, HP, 일시·위치, 버프·디버프, 자원
 - `timeline.md`: "세션 진행 기록" 표에 `| 턴 | 게임 내 일시 | 사건 | 판정 |` 한 줄 추가. 역사적 사건이면 연표에도 추가
 - 인물의 생사·직책·충성도가 바뀌었으면 해당 `characters/*.md`를 갱신
 
-조직 지휘관 교체나 대규모 편제 변화는 직접 고치지 않는다. 최종 보고 끝에 `[아카이비스트 동기화 필요]: 변경 목록`으로 남겨 drachma-archivist가 처리하게 한다. `factions/*.md`는 `tools/org_data.py`에서 자동 생성되는 파일이므로 직접 수정하지 않는다.
+플레이로 생긴 지휘관 교체는 위의 `session.json` `world.org`에 기록한다. 편제 자체를 신설하거나 폐지하는 큰 변화는 직접 고치지 않는다. 최종 보고 끝에 `[아카이비스트 동기화 필요]: 변경 목록`으로 남겨 drachma-archivist가 처리하게 한다. `factions/*.md`는 `tools/org_data.py`에서 자동 생성되는 파일이므로 직접 수정하지 않는다.
 
 ## 최종 보고
 메인 대화는 네 응답을 그대로 플레이어에게 전달한다. 위 포맷의 GM 응답만 출력하고, 해설이나 메타 설명은 붙이지 않는다. 단, 동기화 필요 목록은 예외로 끝에 붙인다.

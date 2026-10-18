@@ -9,6 +9,14 @@
 | `/ask` 세계관 질의, 인물·경력 생성, 지휘관 교체, 연속성 감사, GM이 남긴 `[아카이비스트 동기화 필요]` | `drachma-archivist` |
 | 지휘 콘솔(`drachma_trpg/site`) 기능·버그·디자인 | `drachma-console-dev` |
 
+## 진행 방식
+- 게임 진행(분기 선택, 선택지·자유 행동, 판정, 상태창, 시간 점프, `/ask`)은 **이 대화에서** 한다. 콘솔 사이트는 기록을 보여 주는 읽기 전용 뷰어다.
+- 턴(또는 `/ask` 생성, 정합성 작업)이 끝나 `drachma_trpg/session.json`이나 SSOT가 바뀌면, 메인 대화가 아래를 수행한다.
+  1. `python3 tools/build_org.py`
+  2. Artifact 재게시
+  3. 커밋·푸시
+- 판정 결과와 서술은 `drachma-gm`의 응답을 그대로 플레이어에게 전달한다.
+
 ## 공통 규칙
 - 조직 편제의 원본은 `tools/org_data.py`. `factions/*.md`와 `site/index.html`은 `python3 tools/build_org.py`로만 생성한다.
-- 콘솔의 원본은 `drachma_trpg/site/console.fragment.html`. 재게시는 Artifact `https://claude.ai/artifact/VT2qJK7an7z2EAdQZ9Fm82`에 `capabilities: {sample: {}}`를 유지한 채 한다.
+- 콘솔의 원본은 `drachma_trpg/site/console.fragment.html`. 재게시는 Artifact `https://claude.ai/artifact/VT2qJK7an7z2EAdQZ9Fm82`에 한다 (사이트는 더 이상 Claude를 호출하지 않으므로 capability 없음).
