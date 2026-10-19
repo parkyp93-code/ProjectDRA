@@ -18,7 +18,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 - **데이터 상수**: `BRANCH`, `PEOPLE`, `GRADE`, `REG`/`PTS`, `EVENTS`, `ORG`, `DAM`, `OPENING`
 - **세계 상태 접근**: 분기 프리셋 값을 직접 읽지 말고 아래 헬퍼를 쓴다. 이 헬퍼들은 세션 세계 상태 `sess().world`를 프리셋보다 우선한다. 프리셋을 직접 읽으면 시간 점프와 세계 변동이 화면에 반영되지 않는다.
   - `W()`, `branchDate()`, `postOf/rankOf/loyalOf/riskOf/statusOf/isGone`, `regionSt/regionBrief`, `damOn`, `headAt(n.h, br, n)`, `allEvents()`, `rosterAt()`
-- **GM 호출**: `sampleFn`은 claude.ai의 `sample` capability다. 없는 환경에서는 규칙 엔진(`ruleEngine`, `localAnswer`)으로 동작해야 하므로, 새 GM 기능에는 반드시 오프라인 폴백을 둔다.
+- **진행 기록**: 사이트는 `drachma_trpg/session.json`을 빌드 시 `SESSION`으로 주입받아 읽기 전용으로 표시한다. GM 호출·플레이 UI는 없다.
 - **세션 흐름**: `play(months)` → `gmRuling` → `rollDie` → `showRuling` → `gmNarrate`/`gmChronicle` → `applyMeta`. 브리핑 채널은 `askGM` → `applyBrief`.
 
 ## 디자인 규칙
@@ -45,4 +45,4 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 ## 최종 보고
 - 바뀐 동작, 검증한 항목과 결과, 확인하지 못한 항목을 짧게 정리한다.
 - Artifact 재게시와 git 커밋·푸시는 메인 대화가 수행한다. 하위 에이전트에서는 하지 않는다.
-- 재게시할 때 `capabilities: {sample: {}}`가 유지돼야 한다는 점을 보고에 적는다.
+- 사이트는 읽기 전용 뷰어이고 Claude를 호출하지 않는다. 재게시 capability는 없다(루트 CLAUDE.md 기준).
