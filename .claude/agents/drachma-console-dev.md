@@ -15,11 +15,10 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 | `tools/build_org.py` | 원본 → `index.html` 생성, `factions/*.md` 생성 |
 
 ## 코드 구조 (원본 안)
-- **데이터 상수**: `BRANCH`, `PEOPLE`, `GRADE`, `REG`/`PTS`, `EVENTS`, `ORG`, `DAM`, `OPENING`
+- **데이터 상수**: `BRANCH`, `PEOPLE`, `GRADE`, `REG`/`PTS`, `EVENTS`, `ORG`, `SESSION`, `DAM`
 - **세계 상태 접근**: 분기 프리셋 값을 직접 읽지 말고 아래 헬퍼를 쓴다. 이 헬퍼들은 세션 세계 상태 `sess().world`를 프리셋보다 우선한다. 프리셋을 직접 읽으면 시간 점프와 세계 변동이 화면에 반영되지 않는다.
   - `W()`, `branchDate()`, `postOf/rankOf/loyalOf/riskOf/statusOf/isGone`, `regionSt/regionBrief`, `damOn`, `headAt(n.h, br, n)`, `allEvents()`, `rosterAt()`
 - **진행 기록**: 사이트는 `drachma_trpg/session.json`을 빌드 시 `SESSION`으로 주입받아 읽기 전용으로 표시한다. GM 호출·플레이 UI는 없다.
-- **세션 흐름**: `play(months)` → `gmRuling` → `rollDie` → `showRuling` → `gmNarrate`/`gmChronicle` → `applyMeta`. 브리핑 채널은 `askGM` → `applyBrief`.
 
 ## 디자인 규칙
 - 다크 단일 테마(벙커 전술 콘솔)를 유지하고, 색은 `:root` 토큰만 쓴다.
@@ -39,7 +38,6 @@ tools: Read, Glob, Grep, Edit, Write, Bash
      - 1440px·390px에서 6개 탭 모두 `pageerror`·콘솔 에러 0
      - `document.documentElement.scrollWidth - innerWidth === 0`
      - 변경한 기능의 실제 상호작용
-   - Claude GM 경로는 `addInitScript`로 `window.claude = {use: async n => n==='sample' ? fn : null}` 스텁을 넣어 검증한다(`fn`은 텍스트 반환, `fn.json`은 객체 반환).
 5. 화면 변경이면 스크린샷을 찍어 직접 확인한다.
 
 ## 최종 보고
