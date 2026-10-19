@@ -7,6 +7,45 @@ SESSION_JSON 환경변수로 session.json 경로를 바꿀 수 있다(테스트�
 import json, os, re, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from org_data import ORG, TABS
+from org_billets import BILLETS
+
+def apply_billets(org, billets):
+    """각 노드에 g(보임)를 붙이고 n이 없으면 BILLETS 정원으로 채운다. 누락·빈 값·잉여 항목이 있으면 실패."""
+    seen, missing, empty, mismatch = set(), [], [], []
+    def walk(nodes, path):
+        for n in nodes:
+            t = n["t"]; p = f"{path} > {t}"
+            seen.add(t)
+            b = billets.get(t)
+            if b is None:
+                missing.append(p)
+            elif len(b) != 2 or not all(isinstance(x, str) and x.strip() for x in b):
+                empty.append(p)
+            else:
+                cap, grade = b
+                if n.get("n"):
+                    # 기존 n 우선. BILLETS는 같은 값이어야 한다("비공개" → "비공개(추정 …)" 확장만 허용).
+                    if cap != n["n"] and not cap.startswith(n["n"] + "("):
+                        mismatch.append(f"{p}: n={n['n']!r} / BILLETS={cap!r}")
+                else:
+                    n["n"] = cap
+                n["g"] = grade
+            walk(n.get("c", []), p)
+    for key, tab in org.items():
+        walk(tab["c"], key)
+    extra = sorted(set(billets) - seen)
+    problems = [("BILLETS 항목 없음", missing), ("정원·보임 빈 값", empty),
+                ("ORG에 없는 BILLETS 제목", extra), ("기존 n과 정원 불일치", mismatch)]
+    if any(v for _, v in problems):
+        msg = ["org_billets.py 검사 실패:"]
+        for label, items in problems:
+            if items:
+                msg.append(f"[{label}] {len(items)}건")
+                msg += [f"  - {x}" for x in items]
+        raise SystemExit("\n".join(msg))
+    return len(seen)
+
+NODE_COUNT = apply_billets(ORG, BILLETS)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "drachma_trpg"
 FRAG = ROOT / "site" / "console.fragment.html"
@@ -31,7 +70,7 @@ def md_tree(nodes, depth=0):
     for n in nodes:
         line = "  " * depth + f"- **{n['t']}**"
         if n.get("only"): line += f" `분기 {'/'.join(n['only'])} 한정`"
-        meta = [x for x in (head_txt(n.get("h")), n.get("n") and f"인원 {n['n']}", n.get("loc") and f"📍{n['loc']}") if x]
+        meta = [x for x in (head_txt(n.get("h")), n.get("n") and f"정원 {n['n']}", n.get("g") and f"보임 {n['g']}", n.get("loc") and f"📍{n['loc']}") if x]
         if meta: line += " — " + " · ".join(meta)
         if n.get("note"): line += f"  \n" + "  " * depth + f"  _{n['note']}_"
         out.append(line)
@@ -42,7 +81,7 @@ def md_section(key):
     o = ORG[key]
     return [f"## {o['t']}", f"> {o['sub']}", ""] + md_tree(o["c"]) + [""]
 
-HDR = "> last_sync: Turn 0 · 자동 생성: `python3 tools/build_org.py` (원본 `tools/org_data.py`) — 직접 수정 금지\n> 표기: 단일 값은 B·C 공통, `B: … / C: …`는 분기별 상이. 분기점 A(1998-02-14)에는 연방 편제가 존재하지 않음.\n"
+HDR = "> last_sync: Turn 0 · 자동 생성: `python3 tools/build_org.py` (원본 `tools/org_data.py` · 정원·보임 `tools/org_billets.py`) — 직접 수정 금지\n> 표기: 단일 값은 B·C 공통, `B: … / C: …`는 분기별 상이. 분기점 A(1998-02-14)에는 연방 편제가 존재하지 않음.\n"
 
 RANK_MD = """## 계급 체계 (대한민국 국군 편제 동기화)
 | 구분 | 계급 |
@@ -104,4 +143,5 @@ INDEX.write_text(
     '<style>[hidden]{display:none!important}img{max-width:100%}</style>\n'
     + head + "</style>\n</head>\n<body>" + body.rstrip() + "\n</body>\n</html>\n", encoding="utf-8")
 print("built:", ", ".join(files), "+ site/index.html")
+print(f"billets: 노드 {NODE_COUNT}개 · BILLETS {len(BILLETS)}항목 · 누락 0")
 print(f"session: {SESSION_JSON} · branch {SESSION.get('branch') or '-'} · turn {SESSION.get('turn', 0)} · history {len(SESSION.get('history') or [])}건")
