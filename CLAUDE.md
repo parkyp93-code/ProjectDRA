@@ -15,7 +15,8 @@
   1. `python3 tools/build_org.py`
   2. Artifact 재게시
   3. 커밋·푸시
-- 판정 결과와 서술은 `drachma-gm`의 응답을 그대로 플레이어에게 전달한다.
+- 판정 결과와 서술은 `drachma-gm`의 응답을 그대로 플레이어에게 전달한다. 단, 응답 속도를 위해 일반 턴은 메인 대화가 GM 규칙(`drachma-gm.md` 서술 스타일)대로 직접 진행해도 된다.
+- 서술은 소설처럼 쉽고 짧게. 메타 설명·동기화 목록은 플레이어에게 늘어놓지 않는다.
 
 ## 공통 규칙
 - 조직 편제의 원본은 `tools/org_data.py`. `factions/*.md`와 `site/index.html`은 `python3 tools/build_org.py`로만 생성한다.
