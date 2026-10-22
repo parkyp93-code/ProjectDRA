@@ -1465,13 +1465,25 @@ function freshSess(br){
   const B=BRANCH[br];
   return { live:false, turn:0, hp:B.hp, time:B.date, loc:B.loc, buffs:[...B.buffs], debuffs:[...B.debuffs], options:[], history:[], world:emptyWorld() };
 }
+/* 현 주인공 — SESSION.protagonist (없으면 드락). 진행 중 분기를 볼 때만 적용 */
+const PROT = (()=>{ const p=obj(SESSION && SESSION.protagonist); if(!p.name) return null;
+  return { id:String(p.id||""), name:String(p.name), born:p.born?String(p.born):"", rank:String(p.rank||""), post:String(p.post||""), gear:String(p.gear||""),
+    stats:arr(p.stats).filter(x=>Array.isArray(x)&&x.length>=2).map(([n,v])=>[String(n), v==null||!Number.isFinite(+v)?null:+v]),
+    traits:arr(p.traits).map(String) }; })();
+const PROT_SINCE = SESSION && SESSION.protagonist_since!=null && Number.isFinite(+SESSION.protagonist_since) ? +SESSION.protagonist_since : 4;
+const prot = () => isLive() ? PROT : null;
+const DRAC_NAME = "드락 V. 에버하트";
+const actorOf = h => { const p=h.protagonist; if(p) return String(typeof p==="object" ? p.name||p.id||"" : p) || "주인공";
+  return PROT && (+h.turn||0) >= PROT_SINCE ? PROT.name : "드락"; };
+const ageFrom = (born, at) => { const b=new Date(born), d=new Date(at); if(isNaN(b)||isNaN(d)) return null;
+  let a=d.getFullYear()-b.getFullYear(); if(d < new Date(d.getFullYear(), b.getMonth(), b.getDate())) a--; return a; };
 const SESS = {};
 const sess = () => SESS[S.branch] || (SESS[S.branch] = isLive() ? fromSession() : freshSess(S.branch));
 
 function renderBadge(){
   const b=$("#sessBadge");
   if(!LIVE){ b.className="sbadge idle"; b.textContent="세션 미개시 · 대화에서 분기점을 선택하세요"; b.removeAttribute("title"); }
-  else if(isLive()){ b.className="sbadge live"; b.textContent=`세션 진행 중 · 분기 ${LIVE} · TURN ${sess().turn}`; b.removeAttribute("title"); }
+  else if(isLive()){ b.className="sbadge live"; b.textContent=`세션 진행 중 · 분기 ${LIVE} · TURN ${sess().turn}${PROT?` · 주인공 ${PROT.name}`:""}`; b.removeAttribute("title"); }
   else { b.className="sbadge preset"; b.textContent="프리셋 보기"; b.title=`진행 중인 세션은 분기 ${LIVE}입니다`; }
 }
 function renderBpCards(){
@@ -1496,14 +1508,20 @@ function renderState(){
   $("#stateSrc").textContent = live ? `session.json · TURN ${X.turn}` : `프리셋 · 분기 ${S.branch}`;
   const note = !LIVE ? `<div class="notice">대화에서 분기점을 선택하면 세션이 시작됩니다. 아래는 분기점 ${S.branch} 프리셋 값입니다.</div>`
     : !live ? `<div class="notice">프리셋 보기 — 아래는 분기점 ${S.branch} 프리셋 값입니다. ${backLive()}</div>` : "";
-  $("#statebox").innerHTML = `${note}<div class="ttl">드락 V. 에버하트 · 분기점 ${S.branch}</div><ul>
-    <li><span>이름/나이</span><span>드락 V. 에버하트 (만 ${age}세)${isGone("drac")?` <span class="status s4">${esc(statusOf("drac"))}</span>`:""}</span></li>
-    <li><span>소속/직책</span><span>${esc(wp("drac").post || B.post)}</span></li>
+  const P=prot(), pAge=P&&P.born?ageFrom(P.born,X.time):null;
+  const statLine = P&&P.stats.length ? P.stats.map(([n,v])=>`${esc(n.split("(")[0])} ${v==null?"—":(v>=0?"+":"")+v}`).join(" · ")
+    : STATS.map(([n])=>`${n.split("(")[0]} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(" · ");
+  $("#statebox").innerHTML = `${note}<div class="ttl">${esc(P?P.name:DRAC_NAME)} · 분기점 ${S.branch}</div><ul>
+    ${P ? `<li><span>이름/나이</span><span>${esc(P.name)}${pAge!=null?` (만 ${pAge}세)`:""}</span></li>
+    <li><span>소속/직책</span><span>${esc([P.rank,P.post].filter(Boolean).join(" · ")||"—")}</span></li>`
+    : `<li><span>이름/나이</span><span>${DRAC_NAME} (만 ${age}세)${isGone("drac")?` <span class="status s4">${esc(statusOf("drac"))}</span>`:""}</span></li>
+    <li><span>소속/직책</span><span>${esc(wp("drac").post || B.post)}</span></li>`}
     <li><span>HP</span>${hpHtml(X.hp)}</li>
     <li><span>현재 일시/위치</span><span>${esc(stampOf(X.time))}${elapsedTxt()?` <span class="hint">(${esc(elapsedTxt())})</span>`:""} / ${esc(X.loc)}</span></li>
-    <li><span>소지품</span><span>${esc(B.gear)}</span></li>
+    <li><span>소지품</span><span>${esc(P&&P.gear?P.gear:B.gear)}</span></li>
     <li><span>버프·디버프</span><span class="tags">${X.buffs.map(t=>`<span>${esc(t)}</span>`).join("")}${X.debuffs.map(t=>`<span class="de">${esc(t)}</span>`).join("")}${X.buffs.length+X.debuffs.length?"":`<span class="hint" style="border:0;padding:0">없음</span>`}</span></li>
-    <li><span>스탯 보정</span><span class="mono" style="font-size:12px">${STATS.map(([n])=>`${n.split("(")[0]} ${statMod(n)>=0?"+":""}${statMod(n)}`).join(" · ")}</span></li>
+    <li><span>스탯 보정</span><span class="mono" style="font-size:12px">${statLine}</span></li>
+    ${P&&P.traits.length?`<li><span>고유 특성</span><span class="tags">${P.traits.map(t=>`<span>${esc(t)}</span>`).join("")}</span></li>`:""}
     ${live && X.options.length?`<li><span>대기 중 선택지</span><ol class="optlist">${X.options.map(o=>`<li>${esc(o)}</li>`).join("")}<li class="hint">직접 입력 — 대화에서</li></ol></li>`:""}
     <li><span>동기화 파일</span><span class="mono" style="font-size:12px">session.json, state.md, timeline.md${X.turn?", characters/*.md":""}</span></li></ul>`;
 }
@@ -1522,7 +1540,7 @@ function renderHistory(){
     const rl=rulingTxt(h.ruling), cls=/대실패|실패|자연 ?1\b/.test(rl)?"no":/대성공|성공|자연 ?20/.test(rl)?"ok":"";
     return `<article class="hcard${i===0?" latest":""}">
       <div class="hh"><span class="tn">TURN ${esc(h.turn ?? H.length-i)}</span><span class="when">${esc(h.time?stampOf(h.time):"일시 미기록")}</span>${h.jump?`<span class="jbadge">⏩ 시간 점프 · ${esc(h.jump)}</span>`:""}${i===0?`<span class="status s1">최신</span>`:""}</div>
-      ${h.action?`<div class="act"><span class="label">드락의 행동</span>${esc(h.action)}</div>`:""}
+      ${h.action?`<div class="act"><span class="label">${esc(actorOf(h))}의 행동</span>${esc(h.action)}</div>`:""}
       ${rl?`<div class="rul ${cls}">🎲 ${esc(rl)}</div>`:""}
       ${h.summary?`<div class="sum">${esc(h.summary)}</div>`:""}
       ${h.narration?`<details><summary>서술 전문 보기</summary><div class="narr">${esc(h.narration)}</div></details>`:""}
@@ -1573,7 +1591,7 @@ function renderSession(){
 ├── <b>timeline.md</b>           연표 · 분기 ${S.branch} 기준
 ├── <b>state.md</b>              상태창 · TURN ${live?sess().turn:0}
 ├── characters/
-│   ├── protagonist.md    드락 (${age}세)
+│   ├── protagonist.md    ${live&&PROT?`${esc(PROT.name)}${PROT.born&&ageFrom(PROT.born,sess().time)!=null?` (${ageFrom(PROT.born,sess().time)}세)`:""}`:`드락 (${age}세)`}
 │   ├── stars_inner.md    에단 · 맥도널드
 │   └── high_command.md   바이스 · 호우지 · 크레바트 · 던바
 ├── factions/
@@ -1592,7 +1610,7 @@ function renderNpcs(){
   const N=W().npcs; $("#npcCnt").textContent=`${N.length}명`;
   $("#npcList").innerHTML = N.length ? N.map(n=>`<div class="npc" data-npc-card="${esc(n.name)}">
       <div class="label" style="color:${FACTION_COLOR[n.faction]}">${esc(FAC_NAME[n.faction])}${n.status&&n.status!=="현역"?` · <span class="s4">${esc(n.status)}</span>`:""}</div>
-      <h4>${esc(n.name)}</h4>
+      <h4>${esc(n.name)}${prot()&&prot().name===n.name?` <span class="status s1">현 주인공</span>`:""}</h4>
       <div class="hint">${esc([n.svc,n.mil||n.civ].filter(Boolean).join(" "))}${n.born?` · ${n.born}년생 · ${ageAt(n.born,S.branch)}세`:""}</div>
       <div style="font-size:12.5px;margin-top:4px">${esc(n.post)}</div>
       ${n.traits.length?`<div class="tags" style="margin-top:6px">${n.traits.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}
