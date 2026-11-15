@@ -11,7 +11,8 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 |---|---|
 | `drachma_trpg/site/console.fragment.html` | **원본**. 모든 수정은 여기서 한다. Artifact 게시용이라 `<!doctype>`, `<html>`, `<head>`, `<body>` 태그가 없다 |
 | `drachma_trpg/site/index.html` | 자동 생성물. 직접 수정 금지 |
-| `tools/org_data.py` | 조직 편제 데이터. 빌드할 때 원본의 `const ORG = …` 블록이 이 데이터로 교체된다 |
+| `tools/org_data.py` | 구 연방 조직 편제. 빌드할 때 원본의 `const ORG = …` 블록이 이 데이터로 교체된다 |
+| `tools/org_2045.py` | 진영별 편제(제국·드락발트)와 병력 막대. 빌드 시 `const ORG_SIDES` 로 주입. 조직 탭의 진영 버튼(`S.orgSide`, `OS()/curTabs()/curOrg()`)이 사용 |
 | `tools/build_org.py` | 원본 → `index.html` 생성, `factions/*.md` 생성 |
 
 ## 코드 구조 (원본 안)

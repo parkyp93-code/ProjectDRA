@@ -7,6 +7,7 @@ SESSION_JSON 환경변수로 session.json 경로를 바꿀 수 있다(테스트�
 import json, os, re, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from org_data import ORG, TABS
+from org_2045 import ORG_SIDES
 from org_billets import BILLETS
 
 def apply_billets(org, billets):
@@ -121,7 +122,7 @@ for rel, lines in files.items():
 
 # console.fragment.html ORG 블록 교체
 src = FRAG.read_text(encoding="utf-8")
-js = "const ORG = " + json.dumps(ORG, ensure_ascii=False) + ";\nconst ORG_TABS = " + json.dumps(TABS, ensure_ascii=False) + ";\n"
+js = "const ORG = " + json.dumps(ORG, ensure_ascii=False) + ";\nconst ORG_TABS = " + json.dumps(TABS, ensure_ascii=False) + ";\nconst ORG_SIDES = " + json.dumps(ORG_SIDES, ensure_ascii=False) + ";\n"
 src, k = re.subn(r"const ORG = .*?\n(?=const SESSION = |const DAM = \[)", lambda m: js + "\n", src, count=1, flags=re.S)
 assert k == 1, "ORG block not found"
 
