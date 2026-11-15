@@ -2851,7 +2851,67 @@
     "people": []
    }
   ],
-  "dam": null,
+  "dam": {
+   "asof": "2046-09-28",
+   "status": "발사 불가 — 3중 인증 미충족 (2036 이후 상태 지속)",
+   "fleet": {
+    "AEGIS": 5,
+    "HELIOS": 6,
+    "THOR": 6,
+    "total": 17
+   },
+   "control": [
+    {
+     "side": "empire",
+     "who": "알렉스 베넷 (항공우주군 우주사령부, 반덴버그)",
+     "sats": {
+      "AEGIS": 2,
+      "HELIOS": 3,
+      "THOR": 3
+     }
+    },
+    {
+     "side": "drakvalt",
+     "who": "다나 크로울리 (국방공군 우주전략군, 슈리버)",
+     "sats": {
+      "AEGIS": 3,
+      "HELIOS": 3,
+      "THOR": 3
+     }
+    }
+   ],
+   "keys": [
+    {
+     "key": "총통 승인 키",
+     "holder": "오언 하딩 (제국 외무대신, 2036-03-10부터 보관)",
+     "side": "empire"
+    },
+    {
+     "key": "우주전략사령관 인증",
+     "holder": "양분 — 베넷(제국)·크로울리(드락발트), 어느 쪽도 단독 인증 불가",
+     "side": "split"
+    },
+    {
+     "key": "제1부의장 인증",
+     "holder": "드락발트 국가재건최고회의 부의장 새뮤얼 존슨 (구 권한대행 승계준비반 키)",
+     "side": "drakvalt"
+    }
+   ],
+   "history": [
+    {
+     "date": "2021-07",
+     "text": "무르만스크 북방함대 기지 THOR 2발 (드락 총통)"
+    },
+    {
+     "date": "2036-03-10",
+     "text": "윌리엄, 섬망 상태에서 무작위 좌표 20곳 입력 — 하딩이 송신 직전 키 회수, 송신 0건"
+    },
+    {
+     "date": "2040~",
+     "text": "위성 통제권 양분. 양측 모두 사용 불가"
+    }
+   ]
+  },
   "npcs": [
    {
     "name": "엘리자베스 렌",
@@ -5207,6 +5267,539 @@
    "콜럼비아 (레인 독자 지휘)": "전략원잠 1척 (잔여 탄두 약 18발 추정)",
    "전략미사일사령부 (중립)": "마이넛·워런 사일로 지대만 중립 유지",
    "드락발트": "맘스트롬 ICBM 약 50기 (2046-08 장악)"
+  },
+  "control": {
+   "asof": "2046-09-28",
+   "sides": {
+    "empire": {
+     "label": "드라크마 제국",
+     "color": "var(--c-stars)"
+    },
+    "drakvalt": {
+     "label": "드락발트",
+     "color": "var(--c-pra)"
+    },
+    "neutral": {
+     "label": "중립·완충",
+     "color": "var(--muted)"
+    },
+    "independent": {
+     "label": "독립국",
+     "color": "var(--c-kgb)"
+    },
+    "sokobu": {
+     "label": "소코부 제국",
+     "color": "var(--c-navy)"
+    },
+    "ally": {
+     "label": "제국 승인국 (영·프)",
+     "color": "var(--ok)"
+    },
+    "exile": {
+     "label": "망명정부",
+     "color": "var(--muted)"
+    }
+   },
+   "regions": {
+    "gulf": "empire",
+    "pac": "empire",
+    "atl": "drakvalt",
+    "glk": "drakvalt",
+    "canada": "independent",
+    "mexico": "neutral",
+    "sokobu": "sokobu",
+    "europe": "ally"
+   },
+   "points": {
+    "washington": "drakvalt",
+    "pentagon": "drakvalt",
+    "ftmeade": "drakvalt",
+    "langley": "drakvalt",
+    "norfolk": "drakvalt",
+    "mtweather": "drakvalt",
+    "ravenrock": "drakvalt",
+    "detroit": "drakvalt",
+    "schriever": "drakvalt",
+    "appalachia": "neutral",
+    "bangor": "empire",
+    "sandiego": "empire",
+    "vandenberg": "empire",
+    "kingsbay": "empire",
+    "neworleans": "empire",
+    "geneva": "exile",
+    "london": "ally",
+    "paris": "ally",
+    "reykjavik": "sokobu",
+    "moscow": "sokobu",
+    "murmansk": "sokobu",
+    "baltic": "sokobu"
+   },
+   "new_points": [
+    {
+     "id": "atlanta",
+     "name": "애틀랜타 · 제국 수도",
+     "ll": [
+      -84.39,
+      33.75
+     ],
+     "side": "empire",
+     "brief": "임시 황궁(조지아 주 의사당)·재상부·통합군 총사령부. 휴전선에서 150km."
+    },
+    {
+     "id": "seattle",
+     "name": "시애틀 · 태평양 총독부",
+     "ll": [
+      -122.33,
+      47.61
+     ],
+     "side": "empire",
+     "brief": "황태제 윌리엄(총독)·투석 중. 2042~ 사실상 유배지."
+    },
+    {
+     "id": "chattanooga",
+     "name": "채터누가 · 정전선",
+     "ll": [
+      -85.31,
+      35.05
+     ],
+     "side": "neutral",
+     "brief": "2045-01-15 정전협정. 제1기갑사단 '채터누가' 대치."
+    },
+    {
+     "id": "huntsville",
+     "name": "헌츠빌 (점령)",
+     "ll": [
+      -86.59,
+      34.73
+     ],
+     "side": "drakvalt",
+     "brief": "2039 제로 게이트 급습, 2042-09 드락발트 점령."
+    },
+    {
+     "id": "nashville",
+     "name": "내슈빌 · 점령지 군정청",
+     "ll": [
+      -86.78,
+      36.16
+     ],
+     "side": "drakvalt",
+     "brief": "2042-06 함락. 드락발트 남부 전선군 사령부."
+    },
+    {
+     "id": "malmstrom",
+     "name": "맘스트롬 ICBM 지대",
+     "ll": [
+      -111.18,
+      47.5
+     ],
+     "side": "drakvalt",
+     "brief": "2046-08 근위군 케르베로스 돌격대 장악. ICBM 약 50기."
+    },
+    {
+     "id": "minot",
+     "name": "마이넛 ICBM 지대 (중립)",
+     "ll": [
+      -101.36,
+      48.42
+     ],
+     "side": "neutral",
+     "brief": "전략미사일사령부 잔여 — 중립."
+    },
+    {
+     "id": "warren",
+     "name": "워런 ICBM 지대 (중립)",
+     "ll": [
+      -104.87,
+      41.13
+     ],
+     "side": "neutral",
+     "brief": "전략미사일사령부 잔여 — 중립."
+    },
+    {
+     "id": "faslane",
+     "name": "파슬레인 · 콜럼비아 억류",
+     "ll": [
+      -4.82,
+      56.07
+     ],
+     "side": "ally",
+     "brief": "2041-02 레인 망명, 전략원잠 콜럼비아 영국 억류."
+    }
+   ],
+   "frontline": {
+    "name": "채터누가 정전선 (2045-01-15)",
+    "ll": [
+     [
+      -78.55,
+      33.85
+     ],
+     [
+      -80.9,
+      34.98
+     ],
+     [
+      -83.1,
+      34.98
+     ],
+     [
+      -85.3,
+      34.95
+     ],
+     [
+      -88.2,
+      35.0
+     ],
+     [
+      -90.1,
+      35.0
+     ],
+     [
+      -90.2,
+      36.5
+     ],
+     [
+      -94.6,
+      36.5
+     ]
+    ]
+   }
+  },
+  "network": {
+   "asof": "2046-09-28",
+   "nodes": [
+    {
+     "id": "william",
+     "name": "윌리엄 M. 에버하트",
+     "side": "empire",
+     "role": "황태제 · 태평양 총독 · 섭정 1순위",
+     "born": 1995,
+     "status": "투석·합병증"
+    },
+    {
+     "id": "andrew",
+     "name": "앤드루 1세",
+     "side": "empire",
+     "role": "황제 (뇌졸중, 직무 불능)",
+     "born": 1977,
+     "status": "와병"
+    },
+    {
+     "id": "claire",
+     "name": "클레어 M. 에버하트",
+     "side": "empire",
+     "role": "황태후",
+     "born": 1965,
+     "status": "현직"
+    },
+    {
+     "id": "brooks",
+     "name": "타일러 브룩스",
+     "side": "empire",
+     "role": "재상 · 임시 국정 관리",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "harding",
+     "name": "오언 하딩",
+     "side": "empire",
+     "role": "외무대신 · 다모클레스 키",
+     "born": 1994,
+     "status": "현직"
+    },
+    {
+     "id": "oneill",
+     "name": "그레이스 오닐",
+     "side": "empire",
+     "role": "공화파 원내대표 · 헌장 기초자",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "lee",
+     "name": "토머스 리",
+     "side": "empire",
+     "role": "황태제 시의",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "bell",
+     "name": "마커스 벨",
+     "side": "empire",
+     "role": "통합군 총사령관",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "holt",
+     "name": "브랜든 홀트",
+     "side": "empire",
+     "role": "해병대 사령관 (윌즈 탈퇴)",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "chao",
+     "name": "에밀리 차오",
+     "side": "empire",
+     "role": "황립 보안청장",
+     "born": 1995,
+     "status": "현직"
+    },
+    {
+     "id": "nakamura",
+     "name": "케이 나카무라",
+     "side": "empire",
+     "role": "황립 해군 총장 · W 전대",
+     "born": 1982,
+     "status": "현직"
+    },
+    {
+     "id": "parkhurst",
+     "name": "제임스 파크허스트",
+     "side": "empire",
+     "role": "해안방위군 사령관",
+     "born": 1996,
+     "status": "현직"
+    },
+    {
+     "id": "torres",
+     "name": "마크 토레스",
+     "side": "drakvalt",
+     "role": "대원수 (국가원수)",
+     "born": 1982,
+     "status": "현직"
+    },
+    {
+     "id": "haas",
+     "name": "그레고리 하스",
+     "side": "drakvalt",
+     "role": "수상",
+     "born": 1986,
+     "status": "현직"
+    },
+    {
+     "id": "lopez",
+     "name": "멀리사 로페스",
+     "side": "drakvalt",
+     "role": "흑수리 근위군 사령관",
+     "born": 1987,
+     "status": "현직"
+    },
+    {
+     "id": "crowley",
+     "name": "다나 크로울리",
+     "side": "drakvalt",
+     "role": "우주전략군 (다모클레스 절반)",
+     "born": 1987,
+     "status": "현직"
+    },
+    {
+     "id": "mirage",
+     "name": "사이먼 웨일 '미라지'",
+     "side": "drakvalt",
+     "role": "국가보안국 제4국 (전 고스트-09)",
+     "born": 2005,
+     "status": "현직"
+    },
+    {
+     "id": "noah",
+     "name": "노아 한",
+     "side": "captive",
+     "role": "이복형 · 구금 (랭글리)",
+     "born": 1985,
+     "status": "구금"
+    },
+    {
+     "id": "kerato",
+     "name": "루카스 케라토",
+     "side": "captive",
+     "role": "전 특무관 · 구금 (랭글리)",
+     "born": 1997,
+     "status": "구금"
+    },
+    {
+     "id": "daniel",
+     "name": "대니얼 H. 에버하트",
+     "side": "exile",
+     "role": "망명정부 고문 (제네바)",
+     "born": 1980,
+     "status": "망명"
+    },
+    {
+     "id": "lane",
+     "name": "빅터 레인",
+     "side": "ally",
+     "role": "영국 망명 · 콜럼비아",
+     "born": 1984,
+     "status": "망명"
+    }
+   ],
+   "edges": [
+    [
+     "william",
+     "andrew",
+     "family",
+     "형제 · 14번가 다리 구출(2040)"
+    ],
+    [
+     "william",
+     "claire",
+     "family",
+     "어머니"
+    ],
+    [
+     "william",
+     "noah",
+     "family",
+     "이복형 · 신장 기증 의사"
+    ],
+    [
+     "william",
+     "daniel",
+     "family",
+     "형 · '가업이 된 나라'"
+    ],
+    [
+     "andrew",
+     "noah",
+     "family",
+     "이복형제"
+    ],
+    [
+     "william",
+     "brooks",
+     "rival",
+     "동기 → 균열 · 섭정 경쟁"
+    ],
+    [
+     "william",
+     "harding",
+     "ally",
+     "동기 · 다모클레스를 막은 손"
+    ],
+    [
+     "william",
+     "lee",
+     "ally",
+     "동기 · 시의"
+    ],
+    [
+     "william",
+     "bell",
+     "ally",
+     "동기 · '식스를 잃을 순 없다'"
+    ],
+    [
+     "william",
+     "parkhurst",
+     "ally",
+     "윌즈 · 포토맥·14번가 보트"
+    ],
+    [
+     "william",
+     "oneill",
+     "tension",
+     "전 변호인 · 도일 진실 요구"
+    ],
+    [
+     "william",
+     "holt",
+     "tension",
+     "윌즈 탈퇴 · '제국엔 남는다'"
+    ],
+    [
+     "william",
+     "kerato",
+     "tension",
+     "도일 암살 지시 · 직계 후배"
+    ],
+    [
+     "william",
+     "mirage",
+     "enemy",
+     "고스트 배신 (2040 데트릭)"
+    ],
+    [
+     "william",
+     "torres",
+     "enemy",
+     "펠트로 살해자 · 노아·케라토 인질"
+    ],
+    [
+     "brooks",
+     "oneill",
+     "ally",
+     "헌장 합의 (2046)"
+    ],
+    [
+     "brooks",
+     "bell",
+     "ally",
+     "재상–총사령관"
+    ],
+    [
+     "nakamura",
+     "andrew",
+     "ally",
+     "봉투를 보고 합류 (2040)"
+    ],
+    [
+     "chao",
+     "harding",
+     "ally",
+     "정보·외교 라인"
+    ],
+    [
+     "torres",
+     "haas",
+     "ally",
+     "타도스 집권부"
+    ],
+    [
+     "torres",
+     "lopez",
+     "ally",
+     "근위군 · 오그던 암살 후 재편"
+    ],
+    [
+     "torres",
+     "crowley",
+     "ally",
+     "우주·다모클레스"
+    ],
+    [
+     "mirage",
+     "kerato",
+     "enemy",
+     "제4국 구금 관리"
+    ],
+    [
+     "mirage",
+     "noah",
+     "enemy",
+     "제4국 구금 관리"
+    ],
+    [
+     "noah",
+     "kerato",
+     "ally",
+     "같은 구금동"
+    ],
+    [
+     "harding",
+     "torres",
+     "tension",
+     "석유↔인질 협상선"
+    ],
+    [
+     "lane",
+     "andrew",
+     "tension",
+     "찰스턴 핵 발사자 → 망명"
+    ]
+   ]
   }
  }
 }
