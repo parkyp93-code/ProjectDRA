@@ -250,3 +250,19 @@ ORG_SIDES = {
               "org": DRAKVALT, "force": DRAKVALT_FORCE, "forceTitle": "드락발트 국방군 병력 배분 · 현역 약 62만 + 민병 30만 (징병제)",
               "doctrine": DRAKVALT_DOCTRINE, "rankEq": {"상장": "대장", "대원수": "원수", "국무위원급": "장관급", "1급": "고위공무원 가급", "수상": "총리급"}},
 }
+
+# ── 상세 군 편제(사단·여단·연대·함정) — org_2045_mil.py ──
+from org_2045_mil import EMPIRE_ARMY, DRAKVALT_MIL, EMPIRE_FORCE as _EF, DRAKVALT_FORCE as _DF
+EMPIRE["army"] = EMPIRE_ARMY
+DRAKVALT["mil"] = DRAKVALT_MIL
+ORG_SIDES["empire"]["force"] = _EF
+ORG_SIDES["drakvalt"]["force"] = _DF
+ORG_SIDES["empire"]["doctrine"] += [
+ ["사관학교", "웨스트포인트·아나폴리스·콜로라도를 모두 잃어 2041 신설 — 찰스턴 시타델(육군), 펜서콜라(해군), 맥스웰(항공우주). 윌즈 '부름'의 1차 관찰지"],
+ ["전력 배치", "동남 군관구(채터누가 정면 17만) · 걸프·텍사스 군관구(석유 방위 9만) · 캐스케이드 군관구(서부 25만, 해군 포함)"],
+]
+ORG_SIDES["drakvalt"]["doctrine"] += [
+ ["사관학교", "구 연방 사관학교 3교(웨스트포인트·아나폴리스·콜로라도)를 그대로 보유. 철 반지는 졸업식에서 수여"],
+ ["전력 배치", "남부 전선군(채터누가 정면 14만) · 대서양 방면군(17만) · 오대호 방면군(19만) · 근위군(9만) + 국민돌격대 30만"],
+ ["핵", "맘스트롬 ICBM 약 50기(근위군 전략로켓군) + 화이트먼 B-2·B-52 전략폭격집단"],
+]
