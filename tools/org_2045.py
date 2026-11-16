@@ -266,3 +266,7 @@ ORG_SIDES["empire"]["doctrine"].append(_sec.SEC_DOCTRINE_EMPIRE)
 ORG_SIDES["drakvalt"]["doctrine"].append(_sec.SEC_DOCTRINE_DRAKVALT)
 ORG_SIDES["drakvalt"]["rankEq"]["2급"] = "고위공무원 나급"
 ORG_SIDES["empire"]["rankEq"].update({"재상": "총리급", "치안총감": "차관급", "치안정감": "고위공무원 가급", "치안감": "고위공무원 나급", "경무관": "3급(부이사관)"})
+
+# ── 2060-12 갱신 레이어 (Turn 42 · /jump 10년) — org_2060.py ──
+import org_2060 as _o60
+_SUCC60 = _o60.apply(EMPIRE, DRAKVALT, ORG_SIDES)
