@@ -38,6 +38,7 @@ EXPLICIT = {
  "태평양 총독부": dict(h=H("에이드리언 카스텔로", 1996, civ="총독"), g="총독 (장관급)", note="2054 윌리엄 즉위로 총독 겸임 해제"),
  "국영기업 (섭정 임명 · 2046-12)": dict(t="국영기업 (재상 임명 · 2054~)", h=H("그레이스 오닐 (재상, 임명권)", 1994, civ="재상"), g="재상 임명",
    note="2054 섭정부 폐지로 사장 인사권이 재상에게. 의회 감사관 상주"),
+ "제국 선거관리원": dict(note="대의원 300석 선거. 다음 총선 2061"),
  "황립 보안청": dict(h=H("아이작 웹 (예비역 육군 소장)", 1997, civ="장관급"), note="2058 차오 퇴임 후 임명. 윌즈 1세대·블랙 할로우 출신"),
  "[기밀] 연방보안유지국 (잔존 법인)": dict(t="[청산 2051-03] 연방보안유지국 (잔존 법인)", h=GONE("—"), g="—", n="0",
    note="2051-02 '86 청문회' → '특수부대 정리법'으로 청산. 브레넌 징역 7년(2058 가석방), 헤일 무죄"),
@@ -106,7 +107,7 @@ def apply(EMPIRE, DRAKVALT, ORG_SIDES):
             for k, v in ex.items(): n[k] = v
         else:
             h = n.get("h")
-            if h and h.get("b") and "✝" not in h["nm"] and not any(k in h["nm"] for k in ("윌리엄", "앤드루", "제로", "공석")):
+            if h and h.get("b") and "✝" not in h["nm"] and not any(k in h["nm"] for k in ("윌리엄 M. 에버하트", "윌리엄 1세", "앤드루 1세", "제로", "공석")):
                 lim, tgt = _limit(h)
                 if lim and YEAR - h["b"] > lim:
                     base = _base(h["nm"])
