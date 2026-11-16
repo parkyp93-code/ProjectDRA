@@ -274,3 +274,7 @@ _SUCC60 = _o60.apply(EMPIRE, DRAKVALT, ORG_SIDES)
 # ── 2070-12 드라크마 연합 (Turn 43 · /jump 10년) — org_2070.py ──
 import org_2070 as _o70
 _o70.apply(ORG_SIDES)
+
+# ── 2080-12 연합 갱신 (Turn 44 · /jump 10년) — org_2080.py ──
+import org_2080 as _o80
+_o80.apply(ORG_SIDES)

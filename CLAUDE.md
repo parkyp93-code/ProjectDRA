@@ -21,5 +21,5 @@
 - 서술은 소설처럼 쉽고 짧게. 메타 설명·동기화 목록은 플레이어에게 늘어놓지 않는다.
 
 ## 공통 규칙
-- 조직 편제의 원본은 `tools/org_data.py`(구 연방 2022). 분열 이후 진영별 편제(드라크마 제국·드락발트)는 `tools/org_2045.py`(콘솔 `ORG_SIDES`, 조직 탭 기본 = 제국; 상세 군 편제 `org_2045_mil.py`, 국가기관·정보·치안 `org_2045_sec.py`, 2060 갱신 레이어 `org_2060.py`, 2070 통일 연합 `org_2070.py` — 기본 진영 union). `factions/*.md`와 `site/index.html`은 `python3 tools/build_org.py`로만 생성한다.
+- 조직 편제의 원본은 `tools/org_data.py`(구 연방 2022). 분열 이후 진영별 편제(드라크마 제국·드락발트)는 `tools/org_2045.py`(콘솔 `ORG_SIDES`, 조직 탭 기본 = 제국; 상세 군 편제 `org_2045_mil.py`, 국가기관·정보·치안 `org_2045_sec.py`, 2060 갱신 레이어 `org_2060.py`, 2070 통일 연합 `org_2070.py` — 기본 진영 union, 2080 갱신 `org_2080.py`). `factions/*.md`와 `site/index.html`은 `python3 tools/build_org.py`로만 생성한다.
 - 콘솔의 원본은 `drachma_trpg/site/console.fragment.html`. 재게시는 Artifact `https://claude.ai/artifact/VT2qJK7an7z2EAdQZ9Fm82`에 한다 (사이트는 더 이상 Claude를 호출하지 않으므로 capability 없음).
