@@ -270,3 +270,7 @@ ORG_SIDES["empire"]["rankEq"].update({"재상": "총리급", "치안총감": "�
 # ── 2060-12 갱신 레이어 (Turn 42 · /jump 10년) — org_2060.py ──
 import org_2060 as _o60
 _SUCC60 = _o60.apply(EMPIRE, DRAKVALT, ORG_SIDES)
+
+# ── 2070-12 드라크마 연합 (Turn 43 · /jump 10년) — org_2070.py ──
+import org_2070 as _o70
+_o70.apply(ORG_SIDES)
