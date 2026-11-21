@@ -1,5 +1,5 @@
 # 인물 원장 — 평행우주 B (1976-06)
-> last_sync: Turn 1 · 모든 인물은 가상. 편제상 직책은 `tools/org_b.py`(→ `factions/*.md`)가 원본, 이 원장은 성격·관계·동기를 기록한다.
+> last_sync: Turn 5 (1979-06) · 현직은 콘솔/`session.json` world.people 기준 · 모든 인물은 가상. 편제상 직책은 `tools/org_b.py`(→ `factions/*.md`)가 원본, 이 원장은 성격·관계·동기를 기록한다.
 
 ## 밴크로프트 7인 (1975-11-12, 이름 없는 모임)
 | ID | 이름 | 생년 | 임관 | 성향 | 비고 |

@@ -205,7 +205,7 @@ GRADE = {
  "crane": {"B": {"civ": "4급"}}, "randolph": {"B": {"civ": "상원의원"}}, "cole": {"B": {"civ": "국가원수"}}
 }
 
-STACK = {"title": "미군 병력 배분 · 현역 약 210만 (지원병제 3년차)", "sub": "1976-06",
+STACK = {"title": "미군 병력 배분 · 현역 약 210만 (지원병제 3년차)", "sub": "1979-06",
          "force": [["atl", "육군", 77.9, "var(--c-mil)"], ["norfolk", "해군", 52.5, "var(--c-navy)"], ["pentagon", "공군", 58.5, "var(--c-kgb)"], ["pac", "해병대", 19.2, "var(--c-pra)"]]}
 
 STRATEGIC = {
