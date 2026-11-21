@@ -205,8 +205,8 @@ GRADE = {
  "crane": {"B": {"civ": "4급"}}, "randolph": {"B": {"civ": "상원의원"}}, "cole": {"B": {"civ": "국가원수"}}
 }
 
-STACK = {"title": "미군 병력 배분 · 현역 약 210만 (지원병제 3년차)", "sub": "1986-06",
-         "force": [["atl", "육군", 77.9, "var(--c-mil)"], ["norfolk", "해군", 52.5, "var(--c-navy)"], ["pentagon", "공군", 58.5, "var(--c-kgb)"], ["pac", "해병대", 19.2, "var(--c-pra)"]]}
+STACK = {"title": "미군 병력 배분 · 현역 약 145만 (냉전 후 감군)", "sub": "1997-06",
+         "force": [["atl", "육군", 49.5, "var(--c-mil)"], ["norfolk", "해군", 39.6, "var(--c-navy)"], ["pentagon", "공군", 37.7, "var(--c-kgb)"], ["pac", "해병대", 17.4, "var(--c-pra)"]]}
 
 STRATEGIC = {
  "tab": "전략 핵전력", "title": "핵 3축 — 1976년 6월", "asof": "1976-06",
