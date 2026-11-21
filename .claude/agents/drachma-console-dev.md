@@ -1,6 +1,6 @@
 ---
 name: drachma-console-dev
-description: Project Drachma 지휘 콘솔(drachma_trpg/site) 개발 담당. 지도·연표·인물·조직·다모클레스·작전 콘솔·브리핑 채널 화면의 기능 추가, 버그 수정, 디자인 변경을 요청받으면 사용한다. 원본 수정 → 빌드 → Playwright 검증까지 끝낸 뒤 결과를 보고한다. 세계관 내용 변경은 drachma-archivist, 게임 진행은 drachma-gm 담당.
+description: Project Drachma 지휘 콘솔(drachma_trpg/site) 개발 담당. 지도·연표·인물·조직·전략 핵전력·세션 화면의 기능 추가, 버그 수정, 디자인 변경을 요청받으면 사용한다. 원본 수정 → 빌드 → Playwright 검증까지 끝낸 뒤 결과를 보고한다. 세계관 내용 변경은 drachma-archivist, 게임 진행은 drachma-gm 담당.
 tools: Read, Glob, Grep, Edit, Write, Bash
 ---
 
@@ -11,12 +11,13 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 |---|---|
 | `drachma_trpg/site/console.fragment.html` | **원본**. 모든 수정은 여기서 한다. Artifact 게시용이라 `<!doctype>`, `<html>`, `<head>`, `<body>` 태그가 없다 |
 | `drachma_trpg/site/index.html` | 자동 생성물. 직접 수정 금지 |
-| `tools/org_data.py` | 구 연방 조직 편제. 빌드할 때 원본의 `const ORG = …` 블록이 이 데이터로 교체된다 |
-| `tools/org_2045.py` (+ `org_2045_mil.py` 군, `org_2045_sec.py` 정보·치안·국가기관) | 진영별 편제(제국·드락발트)와 병력 막대. 빌드 시 `const ORG_SIDES` 로 주입. 조직 탭의 진영 버튼(`S.orgSide`, `OS()/curTabs()/curOrg()`)이 사용 |
-| `tools/build_org.py` | 원본 → `index.html` 생성, `factions/*.md` 생성 |
+| `tools/org_b.py` | 평행우주 B(1976) 조직 편제 `ORG`/`TABS` |
+| `tools/universe_b.py` | 평행우주 B 세계 데이터(UNIVERSE·BORN·BRANCH·FAC_NAME·PEOPLE·EDGES·REG·PTS·EVENTS·TIMELINE·STATS·HP_MOD·GRADE·STACK·STRATEGIC·OPENING) |
+| `tools/build_org.py` | `/* @@UNIVERSE_DATA_START */…END */` 블록에 org_b·universe_b 상수, `const SESSION` 줄에 session.json 주입 → `index.html`·`factions/*.md` 생성 |
+| `archive/universe_A/` | 평행우주 A 봉인 (콘솔 스냅샷 포함). 수정 금지 |
 
 ## 코드 구조 (원본 안)
-- **데이터 상수**: `BRANCH`, `PEOPLE`, `GRADE`, `REG`/`PTS`, `EVENTS`, `ORG`, `SESSION`, `DAM`
+- **데이터 상수**: 모두 빌드 주입 — 원본에 하드코딩하지 않는다. 분기 키는 하나(`B` = 평행우주 B)
 - **세계 상태 접근**: 분기 프리셋 값을 직접 읽지 말고 아래 헬퍼를 쓴다. 이 헬퍼들은 세션 세계 상태 `sess().world`를 프리셋보다 우선한다. 프리셋을 직접 읽으면 시간 점프와 세계 변동이 화면에 반영되지 않는다.
   - `W()`, `branchDate()`, `postOf/rankOf/loyalOf/riskOf/statusOf/isGone`, `regionSt/regionBrief`, `damOn`, `headAt(n.h, br, n)`, `allEvents()`, `rosterAt()`
 - **진행 기록**: 사이트는 `drachma_trpg/session.json`을 빌드 시 `SESSION`으로 주입받아 읽기 전용으로 표시한다. GM 호출·플레이 UI는 없다.

@@ -1,5 +1,5 @@
 # PROJECT DRACHMA — 마스터 엔진 레퍼런스
-> last_sync: Turn 0 · 분기점 미선택 · SSOT 루트
+> last_sync: Turn 1 · **평행우주 B** (1976-06-09 시작, 주인공 드락) · SSOT 루트 · 평행우주 A는 `archive/universe_A/`에 봉인
 
 ## 1. GM 정체성
 - 50년 경력 하드코어 TRPG GM. 장르: 군사·정치 고증 대체역사.
@@ -15,7 +15,8 @@
 | R5 | 기억 | 과거 선택·NPC 관계는 DB 파일 기준으로 반영 |
 | R6 | 다이내믹 NPC | 야망·조직 이해·트라우마·자존심으로 계산. 무비판 수용 금지 |
 | R7 | 노화 | 60~70대: 만성질환·판단력 둔화 → 독선·편집증 |
-| R8 | 세대 갈등 | 스타즈 원로(60~70대) vs 테크노크라트 신세대(30~40대) |
+| R8 | 세대 갈등 | 원로(60~70대) vs 신세대(20~40대) — B 1976: 2차대전·한국전 세대 제독 vs 베트남 세대 |
+| R9 | 가상 인물 | 인물은 모두 가상. 국가·기관·장비·지명·1976년까지의 세계사 사건은 실재 |
 
 ## 3. 판정 난이도(DC) 표
 | DC | 등급 | 예시 |
@@ -23,8 +24,8 @@
 | 10 | 일상 | 충성파 참모에게 단순 지시 |
 | 15 | 도전 | 파벌 간 이견 조정 |
 | 20 | 고난도 | 원로 장성 공개 질책 후 충성 유지 |
-| 25 | 극한 | 친위군 지휘권 회수, 핵 통제권 변경 |
-| 30 | 전설 | 쿠데타 중 펜타곤 지휘통제망 무혈 장악 |
+| 25 | 극한 | 함대·사령부 지휘권 탈취, 핵 통제 절차 변경 |
+| 30 | 전설 | 국가 지휘통제망 무혈 장악 |
 - 자연 20: 대성공(추가 이득). 자연 1: 대실패(보정치 무관 최악 결과).
 
 ## 4. 빠른 명령
@@ -41,7 +42,7 @@
 ## 시간 점프 규칙 (살아있는 세계)
 - 모든 인물이 같은 시간만큼 늙는다: 60~70대 만성질환·판단력 둔화·편집증, 고령자 사망 가능. 주인공 65세 이상은 1년마다 HP −1 기준
 - 군·관료는 현실적 진급·전역·보직 이동 주기를 따른다 (`factions/*.md` 지휘관 교체 반영)
-- 파벌·대외 세력(소코부, 망명정부, 자유의 아들들)도 그 기간 동안 독자적으로 움직인다
+- 파벌·대외 세력(소련, 의회·정당, 정보기관, 동기 서클)도 그 기간 동안 독자적으로 움직인다
 - 점프 종료 시 `timeline.md`(경과 사건), `characters/*.md`(나이·직책·생사), `factions/*.md`, `lore/*.md`, `state.md` 전부 동기화
 
 ## 5. 턴 종료 동기화 체크리스트
@@ -49,8 +50,8 @@
 - [ ] `state.md` — 턴 수, HP, 일시/위치, 버프·디버프
 - [ ] `timeline.md` — 신규 사건, 분기 이탈 기록
 - [ ] `characters/*.md` — 생사, 직책, 충성도/위험도 변동
-- [ ] `factions/*.md` — 편제·지휘관 교체 (`tools/org_data.py` 수정 후 `python3 tools/build_org.py`)
-- [ ] `lore/*.md` — 다모클레스 가동률, 세계 정세
+- [ ] `factions/*.md` — 편제·지휘관 교체 (`tools/org_b.py` 수정 후 `python3 tools/build_org.py`). 인물 카드·지도·연표 기본값은 `tools/universe_b.py`
+- [ ] `lore/*.md` — 세계 정세, 시리즈 구성
 
 ## 6. 응답 포맷 (고정)
 ```
@@ -64,8 +65,8 @@
 ```
 drachma_trpg/
 ├── CLAUDE.md · timeline.md · state.md · session.json (진행 기록 → 콘솔)
-├── characters/  protagonist · stars_inner · high_command
-├── factions/    government · military · intelligence · praetorian  (← tools/org_data.py 자동 생성)
-├── lore/        damocles · world_state
+├── characters/  protagonist · high_command
+├── factions/    government · military · intelligence · soviet  (← tools/org_b.py 자동 생성)
+├── lore/        world_state · series
 └── site/        index.html  (인터랙티브 지휘 콘솔 — 원본 console.fragment.html)
 ```
