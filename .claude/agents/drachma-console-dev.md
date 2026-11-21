@@ -19,7 +19,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 ## 코드 구조 (원본 안)
 - **데이터 상수**: 모두 빌드 주입 — 원본에 하드코딩하지 않는다. 분기 키는 하나(`B` = 평행우주 B)
 - **세계 상태 접근**: 분기 프리셋 값을 직접 읽지 말고 아래 헬퍼를 쓴다. 이 헬퍼들은 세션 세계 상태 `sess().world`를 프리셋보다 우선한다. 프리셋을 직접 읽으면 시간 점프와 세계 변동이 화면에 반영되지 않는다.
-  - `W()`, `branchDate()`, `postOf/rankOf/loyalOf/riskOf/statusOf/isGone`, `regionSt/regionBrief`, `damOn`, `headAt(n.h, br, n)`, `allEvents()`, `rosterAt()`
+  - `W()`, `branchDate()`, `postOf/rankOf/loyalOf/riskOf/statusOf/isGone`, `regionSt/regionBrief`, `headAt(n.h, br, n)`, `allEvents()`, `rosterAt()`
 - **진행 기록**: 사이트는 `drachma_trpg/session.json`을 빌드 시 `SESSION`으로 주입받아 읽기 전용으로 표시한다. GM 호출·플레이 UI는 없다.
 
 ## 디자인 규칙
