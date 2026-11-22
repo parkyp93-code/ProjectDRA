@@ -6,8 +6,8 @@ build_org.py가 console.fragment.html의 `/* @@UNIVERSE_DATA */` 블록에 JS �
 """
 
 UNIVERSE = {"id": "B", "name": "평행우주 B", "title": "블러드라인 — 평행우주 B",
-            "console_title": "합중국 해군 지휘 콘솔", "console_sub": "평행우주 B · 1976 · 드락 V. 에버하트",
-            "classification": "기밀 · 평행우주 B · U.S. NAVY · ANNAPOLIS 1976 — EYES ONLY"}
+            "console_title": "드라크마 연방 총통 지휘 콘솔", "console_sub": "평행우주 B · 2013 · 총통 드락 V. 에버하트",
+            "classification": "기밀 · 평행우주 B · DRACHMA FEDERATION · 2013 — 총통 열람"}
 
 BORN = {"drac": "1954-07-04", "margaret": "1954-03-18", "arthur": "1954-01-22", "farnsworth": "1927-10-02",
         "reich": "1900-01-27", "crane": "1939-05-14", "crevat": "1946-02-08", "victor": "1920-11-11",
@@ -205,8 +205,8 @@ GRADE = {
  "crane": {"B": {"civ": "4급"}}, "randolph": {"B": {"civ": "상원의원"}}, "cole": {"B": {"civ": "국가원수"}}
 }
 
-STACK = {"title": "미군 병력 배분 · 현역 약 145만 (냉전 후 감군)", "sub": "1997-06",
-         "force": [["atl", "육군", 49.5, "var(--c-mil)"], ["norfolk", "해군", 39.6, "var(--c-navy)"], ["pentagon", "공군", 37.7, "var(--c-kgb)"], ["pac", "해병대", 17.4, "var(--c-pra)"]]}
+STACK = {"title": "드라크마 연방군 병력 배분 · 현역 165만 (증강 중)", "sub": "2013-07",
+         "force": [["atl", "육군", 62, "var(--c-mil)"], ["norfolk", "해군", 38, "var(--c-navy)"], ["pentagon", "공군", 36, "var(--c-kgb)"], ["pac", "해병대", 22, "var(--c-pra)"]]}
 
 STRATEGIC = {
  "tab": "전략 핵전력", "title": "핵 3축 — 1976년 6월", "asof": "1976-06",

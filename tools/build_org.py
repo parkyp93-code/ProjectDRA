@@ -41,12 +41,13 @@ def md_section(key):
     o = ORG[key]
     return [f"## {o['t']}", f"> {o['sub']}", ""] + md_tree(o["c"]) + [""]
 
-HDR = "> 평행우주 B · 1976-06 기준 · 자동 생성: `python3 tools/build_org.py` (원본 `tools/org_b.py`) — 직접 수정 금지. 인물은 가상, 기관·지명은 실재.\n"
+HDR = "> 평행우주 B · 2013-07 드라크마 연방 기준 · 자동 생성: `python3 tools/build_org.py` (원본 `tools/org_b.py`) — 직접 수정 금지. 인물은 가상, 기관·지명은 실재.\n"
 FILES = {
- "factions/government.md": ["# 백악관·행정부·의회 (평행우주 B, 1976)", HDR] + md_section("state") + md_section("gov"),
- "factions/military.md": ["# 미군 — 합참·통합사령부·해군 (평행우주 B, 1976)", HDR] + md_section("mil") + md_section("navy"),
- "factions/intelligence.md": ["# 정보기관 (평행우주 B, 1976)", HDR] + md_section("intel"),
- "factions/soviet.md": ["# 소비에트 연방 — 주적 (평행우주 B, 1976)", HDR] + md_section("ussr"),
+ "factions/government.md": ["# 드라크마 연방 — 총통실·내각·원로원·하일즈 (평행우주 B, 2013)", HDR] + md_section("state") + md_section("gov") + md_section("hails"),
+ "factions/enterprises.md": ["# 드라크마 연방 국영기업 (평행우주 B, 2013)", HDR] + md_section("soe"),
+ "factions/military.md": ["# 드라크마 연방군 — 총참모부·통합사령부·해군 (평행우주 B, 2013)", HDR] + md_section("mil") + md_section("navy"),
+ "factions/intelligence.md": ["# 연방 정보·보안기관 (평행우주 B, 2013)", HDR] + md_section("intel"),
+ "factions/soviet.md": ["# 러시아 (평행우주 B, 2013)", HDR] + md_section("ussr"),
 }
 fdir = ROOT / "factions"
 for old in fdir.glob("*.md"):
